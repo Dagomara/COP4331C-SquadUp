@@ -31,15 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.resolve(__dirname, '../frontend/chat-app/build')));
 
 app.get('/', isAuthorized, (req, res) => {
-    res.render('home', {
-        users: [
-            {name: 'Anson', email: 'anson@gmail.com'},
-            {name: 'Greg', email: 'greg@gmail.com'},
-            {name: 'Chris', email: 'chris@gmail.com'},
-            {name: 'Dan', email: 'dan@gmail.com'},
-            {name: 'Drew', email: 'drew@gmail.com'}
-        ]
-    });
+    
 });
 
 // All other GET requests not handled before will return our React app
