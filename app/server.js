@@ -29,6 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, '../frontend/chat-app/build')));
+app.use("/api", require("./routes/api"));
 
 app.get('/', isAuthorized, (req, res) => {
     
