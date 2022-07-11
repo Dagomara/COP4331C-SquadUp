@@ -1,0 +1,8 @@
+{
+  "gameID": 4,
+  "name": "Rocket League",
+  "level": "i1-1000",
+  "rank": ["Unranked", "Bronze", "Silver","Gold","Platinum","Diamond","Champion","Grand Champion","Supersonic Legend"],
+  "wins": "i",
+  "losses": "i"
+}

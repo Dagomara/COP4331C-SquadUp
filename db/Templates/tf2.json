@@ -1,0 +1,11 @@
+{
+    "gameID": 1,
+    "name": "Team Fortress 2",
+    "level": "i1-250",
+    "positions": ["attack", "defense", "support"],
+    "characters": ["scout","pyro","soldier","engineer",
+      "demoman","spy","sniper","heavy","medic"],
+    "gamemodes": ["Capture The Flag", "Control Point", "Payload", "King of The Hill", "Mann vs. Machine", "Special Delivery", "Territorial Control", "Medieval Mode", "Arena", "Capture The Flag"],
+    "wins": "i",
+    "losses": "i"
+  }

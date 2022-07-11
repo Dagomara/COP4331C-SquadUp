@@ -1,0 +1,10 @@
+{
+    "gameID": 2,
+    "name": "Valorant",
+    "level": "iIron1 - Radiant",
+    "positions": ["duelist", "initiator", "controller", "sentinel"],
+    "characters": ["astra", "brimstone", "omen", "viper", "phoenix", "jett", "yoru", "raze", "reyna", "neon", "breach", "fade", "kay/o", "skye", "sova", "chamber", "cypher", "killjoy", "sage"],
+    "gamemodes": ["unrated", "competitive", "spike rush", "deathmatch", "escalation", "replication"],
+    "wins": "i",
+    "losses": "i"
+  }

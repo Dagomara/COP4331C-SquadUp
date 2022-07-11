@@ -1,0 +1,23 @@
+{
+  "name": "squadup",
+  "version": "1.0.0",
+  "description": "to preview SquadUP workings :)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "Michael Miller, Jr.",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "connect-mongo": "3.2.0",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "express-session": "^1.17.3",
+    "mongodb": "^4.7.0",
+    "mongoose": "^6.4.3",
+    "nodemon": "^2.0.18",
+    "socket.io": "^4.5.1"
+  }
+}
