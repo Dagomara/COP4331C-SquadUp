@@ -66,7 +66,7 @@ API Endpoints:
 - Block User
     Input:
     + User discordID
-    + Friend username + Tag
+    + Friend username
 
     Output:
     + Blocked discordID
