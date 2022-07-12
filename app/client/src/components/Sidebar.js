@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 
-export default function Sidebar(props) {
+function Sidebar(props) {
     //console.log(`props: ${props}`);
     return (
         <div id="body-pd">
@@ -27,3 +27,5 @@ export default function Sidebar(props) {
         </div>
         );
 };
+
+export default Sidebar;
