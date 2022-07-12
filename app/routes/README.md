@@ -1,21 +1,19 @@
 API Endpoints:
 
-- Login/Register (through Discord)
+- editProfile
     Input:
-    + DiscordLoginAuth
-    + Username
-    + Tag : 4 digits, unique
+    + User discordID
+    + username (name + Tag:4 digits, unique)
     + Gender
     + School
 
     Output:
-    + DiscordID
+    + User discordID
     + Success/Error
-
 
 - Add games
     Input:
-    + User DiscordID
+    + User discordID
     + Game
     + Rank
     + Level 
@@ -27,22 +25,22 @@ API Endpoints:
 
 - Matchmaking
     Input:
-    + User DiscordID *
-    + Game Name *
+    + User discordID *
+    + Game
     + Rank
     + School
     + Gender
 
     Output:
-    + Matching User DiscordID through FuzzySearch
+    + Matching User discordID through FuzzySearch
     + Waiting/Success/Error message
 
 - View Profile
     Input:
-    + Username + Tag
+    + username + Tag
 
     Output:
-    + Username + Tag
+    + username + Tag
     + Games
     + School
     + Rank
@@ -51,35 +49,35 @@ API Endpoints:
 
 - Add Friends
     Input:
-    + User DiscordID
-    + Friend Username + Tag
+    + User discordID
+    + Friend username
 
     Output:
-    + Friend Username + Tag
+    + Friend username
     + Success/Error message
 
 - Get Friends
     Input:
-    + User DiscordID
+    + User discordID
 
     Output:
     + Friends List
 
 - Block User
     Input:
-    + User DiscordID
-    + Friend Username + Tag
+    + User discordID
+    + Friend username + Tag
 
     Output:
-    + Blocked DiscordID
-    + Username + Tag
+    + Blocked discordID
+    + username
     + Success/Error message
 
 - Get Blocked List
     Input:
-    + User DiscordID
+    + User discordID
 
     Output:
-    + Blocked DiscordID
-    + Blocked Username + Tag
+    + Blocked discordID
+    + Blocked username
     + Success/Error message
