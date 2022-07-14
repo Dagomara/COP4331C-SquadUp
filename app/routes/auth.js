@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const axios = require("axios");
 const url = require('url');
+const guildID = process.env.GUILD_ID;
+
 
 // Provide oAuth2 authentication, prepare new users into db 
 router.get("/callback", async (req, res) => {
@@ -69,6 +71,28 @@ router.get("/callback", async (req, res) => {
               req.session.guilds = gResponse;
               console.log(req.session.userdata);
               console.log(req.session.guilds);
+
+              // add user to SquadUP server if they're not already there
+              let svr = gResponse.find(obj => obj.id == guildID);
+              if (!svr) {
+                console.log(`PUTting ${req.session.userdata.username} into the SquadUP guild:`);
+                console.log(`Access token: ${response.access_token}`);
+                console.log(`discordID: ${req.session.userdata.id}`);
+                let parms = { "access_token": response.access_token };
+
+                let guildAddUrl = `https://discord.com/api/guilds/${guildID}/members/${req.session.userdata.id}`;
+                console.log(`guildAddUrl: ${guildAddUrl}`);
+                axios.put(guildAddUrl, { access_token: response.access_token })
+                .then(gRes => {
+                    console.log(`statusCode: ${gRes.status.response.request.data}`);
+                    //console.log(res);
+                })
+                .catch(error => {
+                    console.error(error);
+                    console.log("damn");
+                });
+              }
+              
               res.redirect("http://localhost:3000/queue");
               }).catch((error) => {
                 console.log(error);
