@@ -2,10 +2,10 @@
   "name": "squadup",
   "version": "1.0.0",
   "description": "to preview SquadUP workings :)",
-  "main": "api.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon routes/api.js",
+    "start": "nodemon index.js",
     "heroku-postbuild": " NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "keywords": [],

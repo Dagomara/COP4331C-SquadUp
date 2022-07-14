@@ -11,16 +11,23 @@ API Endpoints:
     + User discordID
     + Success/Error
 
+- View Profile
+    Input:
+    + Username + Tag
+
+    Output:
+    + Games
+    + Gender
+    + School
+    + Status
+
 - Add games
     Input:
     + User discordID
-    + Game
-    + Rank
-    + Level 
-    + ...
+    + Game parameters
 
     Output:
-    + Game
+    + GameID
     + Success/Error
 
 - Matchmaking
@@ -34,18 +41,6 @@ API Endpoints:
     Output:
     + Matching User discordID through FuzzySearch
     + Waiting/Success/Error message
-
-- View Profile
-    Input:
-    + username + Tag
-
-    Output:
-    + username + Tag
-    + Games
-    + School
-    + Rank
-    + Level
-    + ...
 
 - Add Friends
     Input:

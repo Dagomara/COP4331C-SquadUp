@@ -1,81 +1,115 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const router = express.Router();
 
-const port = process.env.PORT || 5000;
+const path = require('path');
+const PORT = process.env.PORT || 5000;
 
 const app = express();
+
+app.set('port', (process.env.PORT || 5000));
 
 app.use(cors());
 app.use(bodyParser.json());
 
-app.get("/getFriends", (req, res) => {
-    res.json({message : 'NO FRIENDS'});
-});
+require('dotenv').config();
+const MongoClient = require('mongodb').MongoClient;
+const url = process.env.MONGODB_URI;
+const client = new MongoClient(url);
+client.connect();
 
-app.post('/editProfile', async (req, res) => 
+module.exports = router;
+
+app.patch('/editProfile', async (req, res) => 
 {
-  // incoming: discordID, name, gender, school
+  // incoming: discordID, username, gender, school
   // outgoing: discordID, error
 
   let error = '';
 
-  const { username } = req.body;
+  const discordID = req.body.discordID;
 
-  let _search = search.trim();
-  
-  const db = client.db("<database-name>");
-  const results = await db.collection('Users').find({"Users":{$regex:_search+'.*', $options:'r'}}).toArray();
-  
-  let usr = '';
-  let tg = -1;
-  let gm = [];
-  let sch = -1;
+  const db = client.db("api-testing");
+  const results = await db.collection('Users').findOneAndUpdate({discordID:discordID}, 
+    { $set:{
+      username:req.body.username,
+      gender:req.body.gender,
+      school:req.body.school,}}
+      );
 
-  if( results.length > 0 )
-  {
-    usr = results[0].username;
-    tg = results[0].tag;
-    gm = results[0].games;
-    sch = results[0].school;
-  }
-
-  let ret = { username:usr, tag:tg, games:gm, school:sch, error:''};
-  res.status(200).json(ret);
+  res.status(200).json(results);
 });
 
-app.get('/viewProfile', async (req, res) => 
+app.post('/viewProfile', async (req, res) => 
 {
-  // incoming: username
-  // outgoing: username, games, school, error
+  // incoming: tag, username
+  // outgoing: games, gender, school, status
 
   let error = '';
 
-  const { username } = req.body;
+  const { username, tag} = req.body;
 
-  let _search = search.trim();
-  
-  const db = client.db("<database-name>");
-  const results = await db.collection('Users').find({"Users":{$regex:_search+'.*', $options:'r'}}).toArray();
-  
-  let usr = '';
-  let tg = -1;
-  let gm = [];
-  let sch = -1;
+  const db = client.db("api-testing");
+  const results = await db.collection('Users').find({username:username, tag: tag}).toArray();
+
+  let games = [];
+  let gender = '';
+  let school = '';
+  let status = '';
 
   if( results.length > 0 )
   {
-    usr = results[0].username;
-    tg = results[0].tag;
-    gm = results[0].games;
-    sch = results[0].school;
-  }
+    games = results[0].games;
+    gender = results[0].gender;
+    school = results[0].school;
+    status = results[0].status;
 
-  let ret = { username:usr, tag:tg, games:gm, school:sch, error:''};
-  res.status(200).json(ret);
+    let ret = {
+      games:games, 
+      gender:gender, 
+      school:school, 
+      status:status,
+      error:''};
+    res.status(200).json(ret);
+  }
+  else
+  {
+    error = 'User not found';
+    res.status(200).json(error);
+  }
 });
 
-app.listen(port, () =>
+
+
+app.use((req, res, next) =>
 {
-  console.log('Server listening on port ' + port);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PATCH, DELETE, OPTIONS'
+  );
+  next();
+});
+
+// Server static assets if in production
+if (process.env.NODE_ENV === 'production')
+{
+  // Set static folder
+  app.use(express.static('frontend/build'));
+
+  app.get('*', (req, res) =>
+ {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+  });
+}
+
+//app.listen(5000); // start Node + Express server on port 5000
+app.listen(PORT, () =>
+{
+  console.log('Server listening on port ' + PORT);
 });
