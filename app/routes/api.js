@@ -23,6 +23,7 @@ module.exports = router;
 
 app.patch('/editProfile', async (req, res) => 
 {
+  // Will be also used when user registers
   // incoming: discordID, username, gender, school
   // outgoing: discordID, error
 
@@ -41,46 +42,65 @@ app.patch('/editProfile', async (req, res) =>
   res.status(200).json(results);
 });
 
-app.post('/viewProfile', async (req, res) => 
+app.post('/viewProfile', async (req, res, next) => 
 {
-  // incoming: tag, username
-  // outgoing: games, gender, school, status
+  // incoming: discordID
+  // outgoing: games, gender, school, status, error
 
   let error = '';
 
-  const { username, tag} = req.body;
+  const {tag, username} = req.body;
 
   const db = client.db("api-testing");
-  const results = await db.collection('Users').find({username:username, tag: tag}).toArray();
+  const results = await db.collection('Users').find({discordID:discordID}).toArray();
 
-  let games = [];
-  let gender = '';
-  let school = '';
-  let status = '';
+  let gm = [];
+  let gen = '';
+  let sch = '';
+  let st = '';
 
   if( results.length > 0 )
   {
-    games = results[0].games;
-    gender = results[0].gender;
-    school = results[0].school;
-    status = results[0].status;
+    gm = results[0].games;
+    gen = results[0].gender;
+    sch = results[0].school;
+    st = results[0].status;
+  }
 
-    let ret = {
-      games:games, 
-      gender:gender, 
-      school:school, 
-      status:status,
-      error:''};
-    res.status(200).json(ret);
-  }
-  else
-  {
-    error = 'User not found';
-    res.status(200).json(error);
-  }
+  let ret = { games:gm, gender:gen, school:sch, status:st, error:''};
+  res.status(200).json(ret);
+
 });
 
+app.post('/addGames', async (req, res, next) => 
+{
+  // incoming: discordID, games
+  // outgoing: games, error
 
+  let error = '';
+
+  const {tag, username} = req.body;
+
+  const db = client.db("api-testing");
+  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+
+  let gm = [];
+  let gen = '';
+  let sch = '';
+  let st = '';
+
+  if( results.length > 0 )
+  {
+    gm = results[0].games;
+    gen = results[0].gender;
+    sch = results[0].school;
+    st = results[0].status;
+  }
+
+  let ret = { games:gm, gender:gen, school:sch, status:st, error:''};
+  res.status(200).json(ret);
+
+});
 
 app.use((req, res, next) =>
 {
