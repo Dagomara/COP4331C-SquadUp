@@ -23,15 +23,15 @@ module.exports = router;
 
 app.patch('/editProfile', async (req, res) => 
 {
-  // Will be also used when user registers
+  // Will be used when the user registers or want to change profile
   // incoming: discordID, username, gender, school
   // outgoing: discordID, error
 
   let error = '';
 
   const discordID = req.body.discordID;
-
   const db = client.db("api-testing");
+
   const results = await db.collection('Users').findOneAndUpdate({discordID:discordID}, 
     { $set:{
       username:req.body.username,
@@ -79,27 +79,12 @@ app.post('/addGames', async (req, res, next) =>
 
   let error = '';
 
-  const {tag, username} = req.body;
+  const {discordID, games} = req.body;
 
   const db = client.db("api-testing");
-  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  const results = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
 
-  let gm = [];
-  let gen = '';
-  let sch = '';
-  let st = '';
-
-  if( results.length > 0 )
-  {
-    gm = results[0].games;
-    gen = results[0].gender;
-    sch = results[0].school;
-    st = results[0].status;
-  }
-
-  let ret = { games:gm, gender:gen, school:sch, status:st, error:''};
-  res.status(200).json(ret);
-
+  res.status(200).json(results);
 });
 
 app.use((req, res, next) =>
