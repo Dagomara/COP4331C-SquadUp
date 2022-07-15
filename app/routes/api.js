@@ -45,11 +45,11 @@ app.patch('/editProfile', async (req, res) =>
 app.post('/viewProfile', async (req, res, next) => 
 {
   // incoming: discordID
-  // outgoing: games, gender, school, status, error
+  // outgoing: games, gender, school, status,
 
   let error = '';
 
-  const {tag, username} = req.body;
+  const {discordID} = req.body;
 
   const db = client.db("api-testing");
   const results = await db.collection('Users').find({discordID:discordID}).toArray();
