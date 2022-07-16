@@ -28,20 +28,19 @@ app.use(session({
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Have Node serve the files for our built React app
-app.use(express.static(path.resolve(__dirname, '../frontend/chat-app/build')));
+app.use(express.static(path.resolve(__dirname, '../client/build')));
 app.use("/api", require("./routes/api"));
 app.use("/auth", require("./routes/auth"));
 
 //app.get('/', isAuthorized, (req, res) => {});
 
 // All other GET requests not handled before will return our React app
+//if (process.env.NODE_ENV === 'production') {
 app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../frontend/chat-app/build', 'index.html'));
+    res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
   });
-
+//}
 
 app.listen(PORT, () => {
     console.log(`Now listening to requests on port ${PORT}`);
 });
-
-

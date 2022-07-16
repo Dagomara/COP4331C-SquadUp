@@ -271,21 +271,3 @@ app.use((req, res, next) =>
   );
   next();
 });
-
-// Server static assets if in production
-if (process.env.NODE_ENV === 'production')
-{
-  // Set static folder
-  app.use(express.static('frontend/build'));
-
-  app.get('*', (req, res) =>
- {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-  });
-}
-
-//app.listen(5000); // start Node + Express server on port 5000
-app.listen(PORT, () =>
-{
-  console.log('Server listening on port ' + PORT);
-});
