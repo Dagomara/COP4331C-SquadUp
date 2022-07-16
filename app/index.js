@@ -1,5 +1,4 @@
 require('dotenv').config(); // get .env stuffs
-// require('./strategies/discordstrategy');
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -8,10 +7,15 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(session);
 // const passport = require('passport');
-// const db = require('./database/database');
 const path = require('path');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const db = require('./db/connect');
 
-// db.then(() => console.log('Connected to MongoDB.')).catch(err => console.log(err));
+app.use(cors());
+app.use(bodyParser.json());
+
+db.then(() => console.log('Connected to MongoDB.')).catch(err => console.log(err));
 
 app.use(session({
     secret: 'some random secret',
@@ -22,8 +26,12 @@ app.use(session({
     resave: false,
     name: 'discord.oauth2',
     // Session Store for users to stay logged in
-//     store: new MongoStore({ mongooseConnection: mongoose.connection })
+    store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
+
+
+
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 

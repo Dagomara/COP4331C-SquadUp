@@ -1,3 +1,4 @@
 const mongoose = require('mongoose');
-
-mongoose.connect("mongodb+srv://herokuApp:4R3rqM7iQP02Hf4c@squadup.09b3w.mongodb.net/discordauth?retryWrites=true&w=majority");
+//const MongoClient = require('mongodb').MongoClient;
+const uri = process.env.MONGODB_URI;
+module.exports = mongoose.connect(uri, { useNewUrlParser: true});

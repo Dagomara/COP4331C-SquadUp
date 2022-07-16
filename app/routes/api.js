@@ -1,27 +1,13 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
 const router = express.Router();
 
 const path = require('path');
-const PORT = process.env.PORT || 5000;
-
-const app = express();
-
-app.set('port', (process.env.PORT || 5000));
-
-app.use(cors());
-app.use(bodyParser.json());
 
 require('dotenv').config();
-const MongoClient = require('mongodb').MongoClient;
-const url = process.env.MONGODB_URI;
-const client = new MongoClient(url);
-client.connect();
 
-module.exports = router;
+// const db = client.db("api-testing");
 
-app.patch('/editProfile', async (req, res) => 
+router.patch('/editProfile', async (req, res) => 
 {
   // Will be used when the user first signs in OR wants to change profile
   // incoming: discordID, username, gender, school
@@ -30,7 +16,6 @@ app.patch('/editProfile', async (req, res) =>
   let error = '';
 
   const discordID = req.body.discordID;
-  const db = client.db("api-testing");
 
   const edit = await db.collection('Users').findOneAndUpdate({discordID:discordID}, 
     { $set:{
@@ -49,7 +34,7 @@ app.patch('/editProfile', async (req, res) =>
   res.status(200).json(ret);
 });
 
-app.post('/viewProfile', async (req, res, next) => 
+router.post('/viewProfile', async (req, res, next) => 
 {
   // incoming: discordID
   // outgoing: discordID, games, gender, school, status
@@ -58,7 +43,6 @@ app.post('/viewProfile', async (req, res, next) =>
 
   const {discordID} = req.body;
 
-  const db = client.db("api-testing");
   const results = await db.collection('Users').find({discordID:discordID}).toArray();
 
   let gm = [];
@@ -79,7 +63,7 @@ app.post('/viewProfile', async (req, res, next) =>
 
 });
 
-app.post('/addGame', async (req, res, next) => 
+router.post('/addGame', async (req, res, next) => 
 {
   // incoming: discordID, game
   // outgoing: game
@@ -88,7 +72,6 @@ app.post('/addGame', async (req, res, next) =>
 
   const {discordID, games} = req.body;
 
-  const db = client.db("api-testing");
   const addition = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
 
   // Return updated games
@@ -97,7 +80,7 @@ app.post('/addGame', async (req, res, next) =>
   res.status(200).json(updatedGames);
 });
 
-app.post('/deleteGame', async (req, res, next) => 
+router.post('/deleteGame', async (req, res, next) => 
 {
   // incoming: discordID, gameID
   // outgoing: game
@@ -106,7 +89,6 @@ app.post('/deleteGame', async (req, res, next) =>
 
   const {discordID, gameID} = req.body;
   
-  const db = client.db("api-testing");
   const deletion = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $pull: { 'games': {gameID:gameID} } });
   
   // Return updated games
@@ -116,7 +98,7 @@ app.post('/deleteGame', async (req, res, next) =>
   res.status(200).json(results);
 });
 
-app.post('/editGame', async (req, res, next) => 
+router.post('/editGame', async (req, res, next) => 
 {
   // incoming: discordID, game
   // outgoing: games
@@ -126,7 +108,6 @@ app.post('/editGame', async (req, res, next) =>
   const {discordID, games} = req.body;
   const gameID = games.gameID;
 
-  const db = client.db("api-testing");
   const deletion = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $pull: { 'games': {gameID:gameID} } });
   const reinsertion = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
 
@@ -136,7 +117,7 @@ app.post('/editGame', async (req, res, next) =>
   res.status(200).json(updatedGames);
 });
 
-app.post('/viewGames', async (req, res, next) => 
+router.post('/viewGames', async (req, res, next) => 
 {
   // incoming: discordID
   // outgoing: games
@@ -145,7 +126,6 @@ app.post('/viewGames', async (req, res, next) =>
 
   const {discordID} = req.body;
   
-  const db = client.db("api-testing");
   const results = await db.collection('Users').find({discordID:discordID}).toArray();
 
   let games = results[0].games;
@@ -153,7 +133,7 @@ app.post('/viewGames', async (req, res, next) =>
   res.status(200).json(games);
 });
 
-app.post('/goOnline', async (req, res, next) => 
+router.post('/goOnline', async (req, res, next) => 
 {
   // incoming: discordID
   // outgoing: updated status
@@ -163,7 +143,6 @@ app.post('/goOnline', async (req, res, next) =>
   const {discordID} = req.body;
   const st = 'online';
   
-  const db = client.db("api-testing");
   const goOnline = await db.collection('Users').findOneAndUpdate({discordID:discordID}, 
     { $set:{ status:st,}});
 
@@ -173,7 +152,7 @@ app.post('/goOnline', async (req, res, next) =>
   res.status(200).json(status);
 });
 
-app.post('/goOffline', async (req, res, next) => 
+router.post('/goOffline', async (req, res, next) => 
 {
   // incoming: discordID
   // outgoing: updated status
@@ -183,7 +162,6 @@ app.post('/goOffline', async (req, res, next) =>
   const {discordID} = req.body;
   const st = 'offline';
   
-  const db = client.db("api-testing");
   const goOffline = await db.collection('Users').findOneAndUpdate({discordID:discordID}, 
     { $set:{ status:st,}});
 
@@ -193,7 +171,7 @@ app.post('/goOffline', async (req, res, next) =>
   res.status(200).json(status);
 });
 
-app.post('/addFriend', async (req, res, next) => 
+router.post('/addFriend', async (req, res, next) => 
 {
   // incoming: discordID, friendDiscordID
   // outgoing: updated friend list
@@ -202,7 +180,6 @@ app.post('/addFriend', async (req, res, next) =>
 
   const {discordID, friends} = req.body;
 
-  const db = client.db("api-testing");
   const addition = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $push:{friends:friends}});
 
   // Return updated friends
@@ -211,7 +188,7 @@ app.post('/addFriend', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
-app.post('/deleteFriend', async (req, res, next) => 
+router.post('/deleteFriend', async (req, res, next) => 
 {
   // incoming: discordID, friendDiscordID
   // outgoing: updated friend list
@@ -220,7 +197,6 @@ app.post('/deleteFriend', async (req, res, next) =>
 
   const {discordID, friends} = req.body;
 
-  const db = client.db("api-testing");
   const deletion = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $pull:{friends:friends}});
 
   // Return updated friends
@@ -229,7 +205,7 @@ app.post('/deleteFriend', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
-app.post('/viewFriends', async (req, res, next) => 
+router.post('/viewFriends', async (req, res, next) => 
 {
   // incoming: discordID
   // outgoing: friends
@@ -238,27 +214,25 @@ app.post('/viewFriends', async (req, res, next) =>
 
   const {discordID} = req.body;
   
-  const db = client.db("api-testing");
   const results = await db.collection('Users').find({discordID:discordID}).toArray();
 
   let ret = {friends:results[0].friends};
   res.status(200).json(ret);
 });
 
-app.post('/test', async (req, res, next) => 
+router.post('/test', async (req, res, next) => 
 {
   // incoming: discordID, game
   // outgoing: game, error
 
   const {discordID, games} = req.body;
 
-  const db = client.db("api-testing");
   const results = games.gameID;
 
   res.status(200).json(results);
 });
 
-app.use((req, res, next) =>
+router.use((req, res, next) =>
 {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader(
@@ -271,3 +245,7 @@ app.use((req, res, next) =>
   );
   next();
 });
+
+// client.connect();
+
+module.exports = router;
