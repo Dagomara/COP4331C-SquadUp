@@ -23,29 +23,36 @@ module.exports = router;
 
 app.patch('/editProfile', async (req, res) => 
 {
-  // Will be used when the user registers or want to change profile
+  // Will be used when the user first signs in OR wants to change profile
   // incoming: discordID, username, gender, school
-  // outgoing: discordID, error
+  // outgoing: edited profile
 
   let error = '';
 
   const discordID = req.body.discordID;
   const db = client.db("api-testing");
 
-  const results = await db.collection('Users').findOneAndUpdate({discordID:discordID}, 
+  const edit = await db.collection('Users').findOneAndUpdate({discordID:discordID}, 
     { $set:{
       username:req.body.username,
       gender:req.body.gender,
       school:req.body.school,}}
       );
 
-  res.status(200).json(results);
+  // Returning the edited profile
+  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  usr = results[0].username;
+  gen = results[0].gender;
+  sch = results[0].school;
+
+  let ret = {discordID:discordID,username:usr,gender:gen,school:sch};
+  res.status(200).json(ret);
 });
 
 app.post('/viewProfile', async (req, res, next) => 
 {
   // incoming: discordID
-  // outgoing: games, gender, school, status,
+  // outgoing: discordID, games, gender, school, status
 
   let error = '';
 
@@ -67,22 +74,186 @@ app.post('/viewProfile', async (req, res, next) =>
     st = results[0].status;
   }
 
-  let ret = { games:gm, gender:gen, school:sch, status:st, error:''};
+  let ret = {discordID:discordID,games:gm,gender:gen,school:sch,status:st};
   res.status(200).json(ret);
 
 });
 
-app.post('/addGames', async (req, res, next) => 
+app.post('/addGame', async (req, res, next) => 
 {
-  // incoming: discordID, games
-  // outgoing: games, error
+  // incoming: discordID, game
+  // outgoing: game
 
   let error = '';
 
   const {discordID, games} = req.body;
 
   const db = client.db("api-testing");
-  const results = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
+  const addition = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
+
+  // Return updated games
+  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  let updatedGames = results[0].games;
+  res.status(200).json(updatedGames);
+});
+
+app.post('/deleteGame', async (req, res, next) => 
+{
+  // incoming: discordID, gameID
+  // outgoing: game
+
+  let error = '';
+
+  const {discordID, gameID} = req.body;
+  
+  const db = client.db("api-testing");
+  const deletion = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $pull: { 'games': {gameID:gameID} } });
+  
+  // Return updated games
+  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  let updatedGames = results[0].games;
+  res.status(200).json(updatedGames);
+  res.status(200).json(results);
+});
+
+app.post('/editGame', async (req, res, next) => 
+{
+  // incoming: discordID, game
+  // outgoing: games
+
+  let error = '';
+
+  const {discordID, games} = req.body;
+  const gameID = games.gameID;
+
+  const db = client.db("api-testing");
+  const deletion = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $pull: { 'games': {gameID:gameID} } });
+  const reinsertion = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
+
+  // Return updated games
+  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  let updatedGames = results[0].games;
+  res.status(200).json(updatedGames);
+});
+
+app.post('/viewGames', async (req, res, next) => 
+{
+  // incoming: discordID
+  // outgoing: games
+
+  let error = '';
+
+  const {discordID} = req.body;
+  
+  const db = client.db("api-testing");
+  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+
+  let games = results[0].games;
+
+  res.status(200).json(games);
+});
+
+app.post('/goOnline', async (req, res, next) => 
+{
+  // incoming: discordID
+  // outgoing: updated status
+
+  let error = '';
+
+  const {discordID} = req.body;
+  const st = 'online';
+  
+  const db = client.db("api-testing");
+  const goOnline = await db.collection('Users').findOneAndUpdate({discordID:discordID}, 
+    { $set:{ status:st,}});
+
+  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  let status = results[0].status;
+
+  res.status(200).json(status);
+});
+
+app.post('/goOffline', async (req, res, next) => 
+{
+  // incoming: discordID
+  // outgoing: updated status
+
+  let error = '';
+
+  const {discordID} = req.body;
+  const st = 'offline';
+  
+  const db = client.db("api-testing");
+  const goOffline = await db.collection('Users').findOneAndUpdate({discordID:discordID}, 
+    { $set:{ status:st,}});
+
+  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  let status = results[0].status;
+
+  res.status(200).json(status);
+});
+
+app.post('/addFriend', async (req, res, next) => 
+{
+  // incoming: discordID, friendDiscordID
+  // outgoing: updated friend list
+
+  let error = '';
+
+  const {discordID, friends} = req.body;
+
+  const db = client.db("api-testing");
+  const addition = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $push:{friends:friends}});
+
+  // Return updated friends
+  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  let ret = {friends:results[0].friends};
+  res.status(200).json(ret);
+});
+
+app.post('/deleteFriend', async (req, res, next) => 
+{
+  // incoming: discordID, friendDiscordID
+  // outgoing: updated friend list
+
+  let error = '';
+
+  const {discordID, friends} = req.body;
+
+  const db = client.db("api-testing");
+  const deletion = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $pull:{friends:friends}});
+
+  // Return updated friends
+  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  let ret = {friends:results[0].friends};
+  res.status(200).json(ret);
+});
+
+app.post('/viewFriends', async (req, res, next) => 
+{
+  // incoming: discordID
+  // outgoing: friends
+
+  let error = '';
+
+  const {discordID} = req.body;
+  
+  const db = client.db("api-testing");
+  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+
+  let ret = {friends:results[0].friends};
+  res.status(200).json(ret);
+});
+
+app.post('/test', async (req, res, next) => 
+{
+  // incoming: discordID, game
+  // outgoing: game, error
+
+  const {discordID, games} = req.body;
+
+  const db = client.db("api-testing");
+  const results = games.gameID;
 
   res.status(200).json(results);
 });
