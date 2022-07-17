@@ -12,19 +12,24 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const database = require('./db/connect');
 
-app.use(cors());
-app.use(bodyParser.json());
+const corsOptions = {
+    origin: 'http://localhost:3001', // do not write '*'
+    credentials: true,
+};
+app.use(cors(corsOptions));
+//app.use(bodyParser.json());
 
 database.then(() => console.log('Connected to MongoDB.')).catch(err => console.log(err));
 
 app.use(session({
     secret: 'some random secret',
     cookie: {
-        maxAge: 60000 * 60 * 24
+        maxAge: 60000 * 60 * 24, // 1 day
+        secure:  process.env.NODE_ENV !== "production"? false : true
     },
     saveUninitialized: false, // session management
     resave: false,
-    name: 'discord.oauth2',
+    name: 'discID',
     // Session Store for users to stay logged in
     store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));

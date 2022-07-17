@@ -2,12 +2,14 @@ const router = require("express").Router();
 const axios = require("axios");
 const url = require('url');
 const guildID = process.env.GUILD_ID;
+const User = require('../db/UserSchema');
 
 
 // Provide oAuth2 authentication, prepare new users into db 
 router.get("/callback", async (req, res) => {
     const accessCode = req.query.code; 
     let username;
+    let isUserNew = false;
     console.log(`callback: code is ${accessCode}`);
     if(!accessCode){
         res.send("No access code returned from discord")
@@ -47,10 +49,35 @@ router.get("/callback", async (req, res) => {
                 // console.log(res2.data);
                 return res2.data;
             })
-            .then(userResponse =>{
-              username = `${userResponse.username}#${userResponse.discriminator}`
-              console.log(`username: ${username}`);
-              req.session.userdata = userResponse;
+            .then(async (userResponse) =>{
+                username = `${userResponse.username}#${userResponse.discriminator}`
+                console.log(`username: ${username}`);
+                req.session.userdata = userResponse;
+
+                // See if user exists already
+                const user = await User.findOne({ discordID: userResponse.id });
+                if (user) {
+                    console.log("User exists.");
+                    // session save this user
+                }
+                else {
+                    console.log(`Adding new user ${userResponse.username}`);
+                    let newUser = await User.create({
+                        discordID: userResponse.id,
+                        username: userResponse.username,
+                        tag: parseInt(userResponse.discriminator),
+                        status: "online",
+                        gender: "",
+                        school: "",
+                        games: [],
+                        friends: [],
+                        blocked: []
+                    });
+                    let savedUser = await newUser.save();
+                    console.log(savedUser);
+                    // session save this user
+                }
+
             }).catch((error) => {
                 console.log(error);
             });
@@ -66,15 +93,15 @@ router.get("/callback", async (req, res) => {
                 // console.log(res2.data);
                 return res2.data;
             })
-            .then(gResponse => {
+            .then(async (gResponse) => {
               console.log("got to gResponse section");
               req.session.guilds = gResponse;
               console.log(req.session.userdata);
-              console.log(req.session.guilds);
+              //console.log(req.session.guilds);
 
               // add user to SquadUP server if they're not already there
               let svr = gResponse.find(obj => obj.id == guildID);
-              if (!svr) {
+              if (!svr && false) {
                 console.log(`PUTting ${req.session.userdata.username} into the SquadUP guild:`);
                 console.log(`Access token: ${response.access_token}`);
                 console.log(`discordID: ${req.session.userdata.id}`);
@@ -93,6 +120,8 @@ router.get("/callback", async (req, res) => {
                 });
               }
               
+              //req.session.cookie.discordID = req.session.userdata.id;
+              console.log("redirect!");
               res.redirect("http://localhost:3000/queue");
               }).catch((error) => {
                 console.log(error);
@@ -106,7 +135,8 @@ router.get("/callback", async (req, res) => {
 
 // GET userData router from **ComponentDidMount** 
 router.get("/getUserData",(req, res)=>{
-    console.log("tryna get userdata");
+    console.log("tryna get userdata\nreq.session:");
+    console.log(req.session);
     if(!req.session.userdata){
         console.log("no data");
         res.json({
@@ -114,14 +144,14 @@ router.get("/getUserData",(req, res)=>{
         })
     }
     else{
-        res.set("Access-Control-Allow-Origin", "*"); 
+        res.set("Access-Control-Allow-Origin", "http://localhost:3000"); 
         res.set("Access-Control-Allow-Credentials", "true");
         res.set("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
         res.set("Access-Control-Allow-Headers", "Content-Type, Depth, User-Agent, X-File-Size, X-Requested-With, If-Modified-Since, X-File-Name, Cache-Control");
         res.json({
             login : true,
             discordId: req.session.userdata.id,
-            username : username,
+            username : req.session.userdata.username,
             avatar: req.session.userdata.avatar
         })
     }
