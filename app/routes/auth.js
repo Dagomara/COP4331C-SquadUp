@@ -135,6 +135,7 @@ router.get("/callback", async (req, res) => {
 
 // GET userData router from **ComponentDidMount** 
 router.get("/getUserData",(req, res)=>{
+    
     console.log("tryna get userdata\nreq.session:");
     console.log(req.session);
     if(!req.session.userdata){
@@ -142,8 +143,10 @@ router.get("/getUserData",(req, res)=>{
         res.json({
             login : false,
         })
+        res.redirect('/error');
     }
     else{
+        console.log(req);
         res.set("Access-Control-Allow-Origin", "http://localhost:3000"); 
         res.set("Access-Control-Allow-Credentials", "true");
         res.set("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
@@ -155,7 +158,20 @@ router.get("/getUserData",(req, res)=>{
             avatar: req.session.userdata.avatar
         })
     }
-  })
+});
 
+// Log out
+router.get('/logout', (req, res) => {
+    if (req.session.userdata) {
+        res.set("Access-Control-Allow-Origin", "http://localhost:3000"); 
+        console.log(`Logging out ${req.session.userdata.username}...`);
+        delete req.session.userdata;
+        //delete req.session.cookie;
+        res.json({
+            login : false
+        });
+        console.log("req.session: \n", req.session);
+    }
+});
 
 module.exports = router;
