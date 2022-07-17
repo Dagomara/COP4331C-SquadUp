@@ -4,8 +4,6 @@ const path = require('path');
 const User = require('../db/UserSchema');
 require('dotenv').config();
 
-
-
 // const db = client.db("api-testing");
 
 router.patch('/editProfile', async (req, res) => 
@@ -14,33 +12,38 @@ router.patch('/editProfile', async (req, res) =>
   // incoming: discordID, username, gender, school
   // outgoing: edited profile
 
-  let error = '';
-
   const discordID = req.body.discordID;
 
-  const edit = await User.findOneAndUpdate({discordID:discordID}, 
+  await User.findOneAndUpdate({discordID:discordID},
     { $set:{
       username:req.body.username,
       gender:req.body.gender,
       school:req.body.school,}}
-      );
+  );
 
   // Returning the edited profile
-  const results = await User.find({discordID:discordID}).toArray();
-  usr = results[0].username;
-  gen = results[0].gender;
-  sch = results[0].school;
-
-  let ret = {discordID:discordID,username:usr,gender:gen,school:sch};
-  res.status(200).json(ret);
+  await User.find({discordID:discordID})
+  .then( (users, err) => {
+    if (!err) {
+      if (users.length > 0) {
+        let ret = {discordID:users[0].discordID,username:users[0].username,gender:users[0].gender,school:users[0].school};
+        res.status(200).json(ret);
+      }
+      else
+        console.log("issue found", users);
+    }
+    else {
+      throw err;
+    }
+  }).catch(function(err) {
+    res.status(400).json({"error": err});
+  });
 });
 
 router.post('/viewProfile', async (req, res, next) => 
 {
   // incoming: discordID
   // outgoing: discordID, games, gender, school, status
-
-  let error = '';
 
   const {discordID} = req.body;
   console.log(`Finding ${discordID}...`);
@@ -68,71 +71,106 @@ router.post('/viewProfile', async (req, res, next) =>
 router.post('/addGame', async (req, res, next) => 
 {
   // incoming: discordID, game
-  // outgoing: game
-
-  let error = '';
+  // outgoing: updated games
 
   const {discordID, games} = req.body;
 
-  const addition = await User.findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
+  // Push new game to the "games" array
+  await User.findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
 
   // Return updated games
-  const results = await User.find({discordID:discordID}).toArray();
-  let updatedGames = results[0].games;
-  res.status(200).json(updatedGames);
+  await User.find({discordID:discordID})
+  .then( (users, err) => {
+    if (!err) {
+      if (users.length > 0) {
+        res.status(200).json(users[0].games);  
+      }
+      else
+        console.log("issue found", users);
+    }
+    else {
+      throw err;
+    }
+  }).catch(function(err) {
+    res.status(400).json({"error": err});
+  });
 });
 
 router.post('/deleteGame', async (req, res, next) => 
 {
   // incoming: discordID, gameID
-  // outgoing: game
-
-  let error = '';
+  // outgoing: updated games
 
   const {discordID, gameID} = req.body;
   
-  const deletion = await User.findOneAndUpdate({discordID:discordID}, { $pull: { 'games': {gameID:gameID} } });
+  // Delete game by gameID
+  await User.findOneAndUpdate({discordID:discordID}, { $pull: { 'games': {gameID:gameID} } });
   
   // Return updated games
-  const results = await User.find({discordID:discordID}).toArray();
-  let updatedGames = results[0].games;
-  res.status(200).json(updatedGames);
-  res.status(200).json(results);
+  await User.find({discordID:discordID})
+  .then( (users, err) => {
+    if (!err) {
+      if (users.length > 0)
+        res.status(200).json(users[0].games);  
+      else
+        console.log("issue found", users);
+    }
+    else
+      throw err;
+  }).catch(function(err) {
+    res.status(400).json({"error": err});
+  });
 });
 
 router.post('/editGame', async (req, res, next) => 
 {
   // incoming: discordID, game
-  // outgoing: games
-
-  let error = '';
+  // outgoing: updated games
 
   const {discordID, games} = req.body;
   const gameID = games.gameID;
 
-  const deletion = await User.findOneAndUpdate({discordID:discordID}, { $pull: { 'games': {gameID:gameID} } });
-  const reinsertion = await User.findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
+  // Deleting old game filters
+  await User.findOneAndUpdate({discordID:discordID}, { $pull: { 'games': {gameID:gameID} } });
+  // Reinserting new game filters
+  await User.findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
 
   // Return updated games
-  const results = await User.find({discordID:discordID}).toArray();
-  let updatedGames = results[0].games;
-  res.status(200).json(updatedGames);
+  await User.find({discordID:discordID})
+  .then( (users, err) => {
+    if (!err) {
+      if (users.length > 0)
+        res.status(200).json(users[0].games);  
+      else
+        console.log("issue found", users);
+    }
+    else
+      throw err;
+  }).catch(function(err) {
+    res.status(400).json({"error": err});
+  });
 });
 
 router.post('/viewGames', async (req, res, next) => 
 {
   // incoming: discordID
   // outgoing: games
-
-  let error = '';
-
-  const {discordID} = req.body;
   
-  const results = await User.find({discordID:discordID}).toArray();
-
-  let games = results[0].games;
-
-  res.status(200).json(games);
+  const discordID = req.body;
+  
+  await User.find({discordID:discordID})
+  .then( (users, err) => {
+    if (!err) {
+      if (users.length > 0)
+        res.status(200).json(users[0].games);  
+      else
+        console.log("issue found", users);
+    }
+    else
+      throw err;
+  }).catch(function(err) {
+    res.status(400).json({"error": err});
+  });
 });
 
 router.post('/goOnline', async (req, res, next) => 
@@ -145,13 +183,22 @@ router.post('/goOnline', async (req, res, next) =>
   const {discordID} = req.body;
   const st = 'online';
   
-  const goOnline = await User.findOneAndUpdate({discordID:discordID}, 
+  await User.findOneAndUpdate({discordID:discordID}, 
     { $set:{ status:st,}});
 
-  const results = await User.find({discordID:discordID}).toArray();
-  let status = results[0].status;
-
-  res.status(200).json(status);
+  await User.find({discordID:discordID})
+  .then( (users, err) => {
+    if (!err) {
+      if (users.length > 0)
+        res.status(200).json(users[0].status);  
+      else
+        console.log("issue found", users);
+    }
+    else
+      throw err;
+  }).catch(function(err) {
+    res.status(400).json({"error": err});
+  });
 });
 
 router.post('/goOffline', async (req, res, next) => 
@@ -159,18 +206,25 @@ router.post('/goOffline', async (req, res, next) =>
   // incoming: discordID
   // outgoing: updated status
 
-  let error = '';
-
   const {discordID} = req.body;
   const st = 'offline';
   
-  const goOffline = await User.findOneAndUpdate({discordID:discordID}, 
+  await User.findOneAndUpdate({discordID:discordID}, 
     { $set:{ status:st,}});
 
-  const results = await User.find({discordID:discordID}).toArray();
-  let status = results[0].status;
-
-  res.status(200).json(status);
+  await User.find({discordID:discordID})
+  .then( (users, err) => {
+    if (!err) {
+      if (users.length > 0)
+        res.status(200).json(users[0].status);  
+      else
+        console.log("issue found", users);
+    }
+    else
+      throw err;
+  }).catch(function(err) {
+    res.status(400).json({"error": err});
+  });
 });
 
 router.post('/addFriend', async (req, res, next) => 
@@ -185,9 +239,19 @@ router.post('/addFriend', async (req, res, next) =>
   const addition = await User.findOneAndUpdate({discordID:discordID}, { $push:{friends:friends}});
 
   // Return updated friends
-  const results = await User.find({discordID:discordID}).toArray();
-  let ret = {friends:results[0].friends};
-  res.status(200).json(ret);
+  await User.find({discordID:discordID})
+  .then( (users, err) => {
+    if (!err) {
+      if (users.length > 0)
+        res.status(200).json(users[0].friends);  
+      else
+        console.log("issue found", users);
+    }
+    else
+      throw err;
+  }).catch(function(err) {
+    res.status(400).json({"error": err});
+  });
 });
 
 router.post('/deleteFriend', async (req, res, next) => 
@@ -199,12 +263,22 @@ router.post('/deleteFriend', async (req, res, next) =>
 
   const {discordID, friends} = req.body;
 
-  const deletion = await User.findOneAndUpdate({discordID:discordID}, { $pull:{friends:friends}});
+  await User.findOneAndUpdate({discordID:discordID}, { $pull:{friends:friends}});
 
   // Return updated friends
-  const results = await User.find({discordID:discordID}).toArray();
-  let ret = {friends:results[0].friends};
-  res.status(200).json(ret);
+  await User.find({discordID:discordID})
+  .then( (users, err) => {
+    if (!err) {
+      if (users.length > 0)
+        res.status(200).json(users[0].friends);  
+      else
+        console.log("issue found", users);
+    }
+    else
+      throw err;
+  }).catch(function(err) {
+    res.status(400).json({"error": err});
+  });
 });
 
 router.post('/viewFriends', async (req, res, next) => 
@@ -212,14 +286,89 @@ router.post('/viewFriends', async (req, res, next) =>
   // incoming: discordID
   // outgoing: friends
 
-  let error = '';
+  await User.find({discordID:discordID})
+  .then( (users, err) => {
+    if (!err) {
+      if (users.length > 0)
+        res.status(200).json(users[0].friends);  
+      else
+        console.log("issue found", users);
+    }
+    else
+      throw err;
+  }).catch(function(err) {
+    res.status(400).json({"error": err});
+  });
+});
 
-  const {discordID} = req.body;
-  
-  const results = await User.find({discordID:discordID}).toArray();
+router.post('/addBlocked', async (req, res, next) => 
+{
+  // incoming: discordID, blockedDiscordID
+  // outgoing: updated blocked list
 
-  let ret = {friends:results[0].friends};
-  res.status(200).json(ret);
+  const {discordID, blocked} = req.body;
+
+  await User.findOneAndUpdate({discordID:discordID}, { $push:{blocked:blocked}});
+
+  // Return updated blocked
+  await User.find({discordID:discordID})
+  .then( (users, err) => {
+    if (!err) {
+      if (users.length > 0)
+        res.status(200).json(users[0].blocked);  
+      else
+        console.log("issue found", users);
+    }
+    else
+      throw err;
+  }).catch(function(err) {
+    res.status(400).json({"error": err});
+  });
+});
+
+router.post('/deleteBlocked', async (req, res, next) => 
+{
+  // incoming: discordID, blockedDiscordID
+  // outgoing: updated blocked list
+
+  const {discordID, blocked} = req.body;
+
+  await User.findOneAndUpdate({discordID:discordID}, { $pull:{blocked:blocked}});
+
+  // Return updated blocked
+  await User.find({discordID:discordID})
+  .then( (users, err) => {
+    if (!err) {
+      if (users.length > 0)
+        res.status(200).json(users[0].blocked);  
+      else
+        console.log("issue found", users);
+    }
+    else
+      throw err;
+  }).catch(function(err) {
+    res.status(400).json({"error": err});
+  });
+});
+
+router.post('/viewBlocked', async (req, res, next) => 
+{
+  // incoming: discordID
+  // outgoing: blocked
+
+  await User.find({discordID:discordID})
+  .then( (users, err) => {
+    if (!err) {
+      if (users.length > 0)
+        res.status(200).json(users[0].blocked);  
+      else
+        console.log("issue found", users);
+    }
+    else
+      throw err;
+  }).catch(function(err) {
+    res.status(400).json({"error": err});
+  });
 });
 
 router.post('/test', async (req, res, next) => 
