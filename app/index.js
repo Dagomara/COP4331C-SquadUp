@@ -10,12 +10,12 @@ const MongoStore = require('connect-mongo')(session);
 const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const db = require('./db/connect');
+const database = require('./db/connect');
 
 app.use(cors());
 app.use(bodyParser.json());
 
-db.then(() => console.log('Connected to MongoDB.')).catch(err => console.log(err));
+database.then(() => console.log('Connected to MongoDB.')).catch(err => console.log(err));
 
 app.use(session({
     secret: 'some random secret',

@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-
 const path = require('path');
-
+const User = require('../db/UserSchema');
 require('dotenv').config();
+
+
 
 // const db = client.db("api-testing");
 
@@ -17,7 +18,7 @@ router.patch('/editProfile', async (req, res) =>
 
   const discordID = req.body.discordID;
 
-  const edit = await db.collection('Users').findOneAndUpdate({discordID:discordID}, 
+  const edit = await User.findOneAndUpdate({discordID:discordID}, 
     { $set:{
       username:req.body.username,
       gender:req.body.gender,
@@ -25,7 +26,7 @@ router.patch('/editProfile', async (req, res) =>
       );
 
   // Returning the edited profile
-  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  const results = await User.find({discordID:discordID}).toArray();
   usr = results[0].username;
   gen = results[0].gender;
   sch = results[0].school;
@@ -43,7 +44,7 @@ router.post('/viewProfile', async (req, res, next) =>
 
   const {discordID} = req.body;
 
-  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  const results = await User.find({discordID:discordID}).toArray();
 
   let gm = [];
   let gen = '';
@@ -72,10 +73,10 @@ router.post('/addGame', async (req, res, next) =>
 
   const {discordID, games} = req.body;
 
-  const addition = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
+  const addition = await User.findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
 
   // Return updated games
-  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  const results = await User.find({discordID:discordID}).toArray();
   let updatedGames = results[0].games;
   res.status(200).json(updatedGames);
 });
@@ -89,10 +90,10 @@ router.post('/deleteGame', async (req, res, next) =>
 
   const {discordID, gameID} = req.body;
   
-  const deletion = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $pull: { 'games': {gameID:gameID} } });
+  const deletion = await User.findOneAndUpdate({discordID:discordID}, { $pull: { 'games': {gameID:gameID} } });
   
   // Return updated games
-  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  const results = await User.find({discordID:discordID}).toArray();
   let updatedGames = results[0].games;
   res.status(200).json(updatedGames);
   res.status(200).json(results);
@@ -108,11 +109,11 @@ router.post('/editGame', async (req, res, next) =>
   const {discordID, games} = req.body;
   const gameID = games.gameID;
 
-  const deletion = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $pull: { 'games': {gameID:gameID} } });
-  const reinsertion = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
+  const deletion = await User.findOneAndUpdate({discordID:discordID}, { $pull: { 'games': {gameID:gameID} } });
+  const reinsertion = await User.findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
 
   // Return updated games
-  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  const results = await User.find({discordID:discordID}).toArray();
   let updatedGames = results[0].games;
   res.status(200).json(updatedGames);
 });
@@ -126,7 +127,7 @@ router.post('/viewGames', async (req, res, next) =>
 
   const {discordID} = req.body;
   
-  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  const results = await User.find({discordID:discordID}).toArray();
 
   let games = results[0].games;
 
@@ -143,10 +144,10 @@ router.post('/goOnline', async (req, res, next) =>
   const {discordID} = req.body;
   const st = 'online';
   
-  const goOnline = await db.collection('Users').findOneAndUpdate({discordID:discordID}, 
+  const goOnline = await User.findOneAndUpdate({discordID:discordID}, 
     { $set:{ status:st,}});
 
-  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  const results = await User.find({discordID:discordID}).toArray();
   let status = results[0].status;
 
   res.status(200).json(status);
@@ -162,10 +163,10 @@ router.post('/goOffline', async (req, res, next) =>
   const {discordID} = req.body;
   const st = 'offline';
   
-  const goOffline = await db.collection('Users').findOneAndUpdate({discordID:discordID}, 
+  const goOffline = await User.findOneAndUpdate({discordID:discordID}, 
     { $set:{ status:st,}});
 
-  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  const results = await User.find({discordID:discordID}).toArray();
   let status = results[0].status;
 
   res.status(200).json(status);
@@ -180,10 +181,10 @@ router.post('/addFriend', async (req, res, next) =>
 
   const {discordID, friends} = req.body;
 
-  const addition = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $push:{friends:friends}});
+  const addition = await User.findOneAndUpdate({discordID:discordID}, { $push:{friends:friends}});
 
   // Return updated friends
-  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  const results = await User.find({discordID:discordID}).toArray();
   let ret = {friends:results[0].friends};
   res.status(200).json(ret);
 });
@@ -197,10 +198,10 @@ router.post('/deleteFriend', async (req, res, next) =>
 
   const {discordID, friends} = req.body;
 
-  const deletion = await db.collection('Users').findOneAndUpdate({discordID:discordID}, { $pull:{friends:friends}});
+  const deletion = await User.findOneAndUpdate({discordID:discordID}, { $pull:{friends:friends}});
 
   // Return updated friends
-  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  const results = await User.find({discordID:discordID}).toArray();
   let ret = {friends:results[0].friends};
   res.status(200).json(ret);
 });
@@ -214,7 +215,7 @@ router.post('/viewFriends', async (req, res, next) =>
 
   const {discordID} = req.body;
   
-  const results = await db.collection('Users').find({discordID:discordID}).toArray();
+  const results = await User.find({discordID:discordID}).toArray();
 
   let ret = {friends:results[0].friends};
   res.status(200).json(ret);
