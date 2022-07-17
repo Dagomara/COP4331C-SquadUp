@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+//mongoose.set('debug', true);
 
 const gameSchema = new mongoose.Schema({
     gameID: {type: Number, required:true},
@@ -12,10 +13,10 @@ const UserSchema = new mongoose.Schema({
 	status: String,
 	gender: {type: String, lowercase: true},
 	school: String,
-	games: [mongoose.Mixed],
+	games: [gameSchema],
 	//reputation: {type: Number, required: true},
 	friends: [String],
 	blocked: [String]
-});
+}, { collection: 'Users' });
 
 module.exports = mongoose.model('User', UserSchema);

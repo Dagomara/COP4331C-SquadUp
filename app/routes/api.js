@@ -50,32 +50,19 @@ router.post('/viewProfile', async (req, res, next) =>
     if (!err) {
       if (users.length > 0) {
         console.log("Cool dude found:");
-        console.log(users[0]);  
-        console.log(`username: ${users[0].username}`);
+        console.log(users[0]);
         res.status(200).json(users[0]);  
       }
+      else
+        console.log("issue found", users);
     }
     else {
       throw err;
     }
-  }).catch(function(err) { console.log("Error: ", err) });
-
-  // let gm = [];
-  // let gen = '';
-  // let sch = '';
-  // let st = '';
-
-  // if( results.length > 0 )
-  // {
-  //   gm = results[0].games;
-  //   gen = results[0].gender;
-  //   sch = results[0].school;
-  //   st = results[0].status;
-  // }
-
-  // let ret = {discordID:discordID,games:gm,gender:gen,school:sch,status:st};
-  res.status(404);
-
+  }).catch(function(err) {
+    console.log("Error: ", err);
+    res.status(400).json({"error": err});
+  });
 });
 
 router.post('/addGame', async (req, res, next) => 
