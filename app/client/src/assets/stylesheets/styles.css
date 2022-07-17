@@ -18,6 +18,15 @@ body {
   width: 95%;
 }
 
+.navbar-background {
+  background-color: #18191c;
+}
+
+.span-test {
+  font-family: 'Uni Sans Heavy Italic', sans-serif;
+  font-weight: 800;
+}
+
 a.active {
   background-color: #42464D;
   /*width: inherit;*/
