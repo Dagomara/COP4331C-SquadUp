@@ -17,7 +17,7 @@ const corsOptions = {
     credentials: true,
 };
 app.use(cors(corsOptions));
-//app.use(bodyParser.json());
+app.use(bodyParser.json());
 
 database.then(() => console.log('Connected to MongoDB.')).catch(err => console.log(err));
 

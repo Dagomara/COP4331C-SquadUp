@@ -95,7 +95,7 @@ router.get("/callback", async (req, res) => {
             })
             .then(async (gResponse) => {
               console.log("got to gResponse section");
-              req.session.guilds = gResponse;
+              //req.session.guilds = gResponse;
               console.log(req.session.userdata);
               //console.log(req.session.guilds);
 
