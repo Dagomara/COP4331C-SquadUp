@@ -43,13 +43,17 @@ router.post('/viewProfile', async (req, res, next) =>
   let error = '';
 
   const {discordID} = req.body;
+  console.log(`Finding ${discordID}...`);
 
-  const results = await User.find({discordID:discordID})
-  .then( (foundUser, err) => {
+  await User.find({discordID:discordID})
+  .then( (users, err) => {
     if (!err) {
-      console.log("Cool dude found:");
-      console.log(foundUser);  
-      res.status(200).json(foundUser);
+      if (users.length > 0) {
+        console.log("Cool dude found:");
+        console.log(users[0]);  
+        console.log(`username: ${users[0].username}`);
+        res.status(200).json(users[0]);  
+      }
     }
     else {
       throw err;
@@ -70,7 +74,7 @@ router.post('/viewProfile', async (req, res, next) =>
   // }
 
   // let ret = {discordID:discordID,games:gm,gender:gen,school:sch,status:st};
-  // res.status(200).json(ret);
+  res.status(404);
 
 });
 

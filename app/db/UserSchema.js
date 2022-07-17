@@ -12,10 +12,10 @@ const UserSchema = new mongoose.Schema({
 	status: String,
 	gender: {type: String, lowercase: true},
 	school: String,
-	games: [gameSchema],
+	games: [mongoose.Mixed],
 	//reputation: {type: Number, required: true},
-	friends: [Number],
-	blocked: [Number]
+	friends: [String],
+	blocked: [String]
 });
 
 module.exports = mongoose.model('User', UserSchema);
