@@ -44,23 +44,33 @@ router.post('/viewProfile', async (req, res, next) =>
 
   const {discordID} = req.body;
 
-  const results = await User.find({discordID:discordID}).toArray();
+  const results = await User.find({discordID:discordID})
+  .then( (foundUser, err) => {
+    if (!err) {
+      console.log("Cool dude found:");
+      console.log(foundUser);  
+      res.status(200).json(foundUser);
+    }
+    else {
+      throw err;
+    }
+  }).catch(function(err) { console.log("Error: ", err) });
 
-  let gm = [];
-  let gen = '';
-  let sch = '';
-  let st = '';
+  // let gm = [];
+  // let gen = '';
+  // let sch = '';
+  // let st = '';
 
-  if( results.length > 0 )
-  {
-    gm = results[0].games;
-    gen = results[0].gender;
-    sch = results[0].school;
-    st = results[0].status;
-  }
+  // if( results.length > 0 )
+  // {
+  //   gm = results[0].games;
+  //   gen = results[0].gender;
+  //   sch = results[0].school;
+  //   st = results[0].status;
+  // }
 
-  let ret = {discordID:discordID,games:gm,gender:gen,school:sch,status:st};
-  res.status(200).json(ret);
+  // let ret = {discordID:discordID,games:gm,gender:gen,school:sch,status:st};
+  // res.status(200).json(ret);
 
 });
 
