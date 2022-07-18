@@ -1,9 +1,9 @@
 {
   "gameID": 3,
   "name": "League of Legends",
-  "level": "i1-2500",
-  "rank": ["Unranked","Iron", "Bronze", "Silver","Gold","Platinum","Diamond","Master","Grandmaster","Challenger"],
-  "positions": ["Top", "Jungle", "Mid","Bottom","Support"],
-  "wins": "i",
-  "losses": "i"
+  "filters": {
+    "level": "i1-2500",
+    "rank": ["Unranked","Iron", "Bronze", "Silver","Gold","Platinum","Diamond","Master","Grandmaster","Challenger"],
+    "positions": ["Top", "Jungle", "Mid","Bottom","Support"]
+  }
 }

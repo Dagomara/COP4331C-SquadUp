@@ -1,7 +1,7 @@
 {
   "gameID": 5,
   "name": "Among Us",
-  "level": "i1-99",
-  "wins": "i",
-  "losses": "i"
+  "filters" : {
+    "level": "i1-99"
+  }
 }

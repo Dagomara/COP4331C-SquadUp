@@ -4,8 +4,6 @@
 	"filters": {
 		"level": "i1-500",
 		"rank": ["Unranked", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Apex Predator"],
-		"characters": ["Ash", "Bangalore", "Bloodhound", "Caustic", "Crypto", "Fuse", "Gibraltar", "Horizon", "Lifeline", "Loba", "Mad Maggie", "Mirage", "Newcastle", "Octane", "Pathfinder", "Rampart", "Revenant", "Seer", "Valkyrie", "Wattson", "Wraith"],
-		"wins": "i",
-		"losses": "i"
+		"characters": ["Ash", "Bangalore", "Bloodhound", "Caustic", "Crypto", "Fuse", "Gibraltar", "Horizon", "Lifeline", "Loba", "Mad Maggie", "Mirage", "Newcastle", "Octane", "Pathfinder", "Rampart", "Revenant", "Seer", "Valkyrie", "Wattson", "Wraith"]
 	}
 }
