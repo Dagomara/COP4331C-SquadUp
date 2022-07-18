@@ -13,7 +13,7 @@ API Endpoints:
 
 - View Profile
     Input:
-    + Username + Tag
+    + User discordID
 
     Output:
     + Games

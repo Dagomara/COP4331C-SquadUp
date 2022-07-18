@@ -13,10 +13,12 @@ const cors = require('cors');
 const database = require('./db/connect');
 
 const corsOptions = {
-    origin: 'http://localhost:3001', // do not write '*'
+    methods: 'GET,POST,PATCH,DELETE,OPTIONS',
+    optionsSuccessStatus: 200,
+    origin: 'http://localhost:3000', // do not write '*'
     credentials: true,
 };
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(bodyParser.json());
 
 database.then(() => console.log('Connected to MongoDB.')).catch(err => console.log(err));

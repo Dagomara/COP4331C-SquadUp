@@ -40,7 +40,7 @@ router.patch('/editProfile', async (req, res) =>
   });
 });
 
-router.post('/viewProfile', async (req, res, next) => 
+router.get('/viewProfile', async (req, res, next) => 
 {
   // incoming: discordID
   // outgoing: discordID, games, gender, school, status

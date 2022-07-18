@@ -18,7 +18,12 @@ class Profile extends React.Component {
             username : "Loading User",
             discordId: 0,
             avatar: undefined,
-            avatarURL: undefined
+            avatarURL: undefined,
+            tag: undefined,
+            gender: undefined,
+            school: undefined,
+            status: "offline",
+            games: undefined
         };
       }
 
@@ -26,7 +31,7 @@ class Profile extends React.Component {
     // GETTING THE USER DATA
     componentDidMount = async () => {
       await axios.get(`http://localhost:${port}/auth/getUserData`, {withCredentials: true})
-      .then(res => {
+      .then(async res => {
         console.log("res" + res.data.login);
         if(res.data.login) {
           this.setState({
@@ -34,8 +39,22 @@ class Profile extends React.Component {
             username : res.data.username,
             discordId: res.data.discordId,
             avatar: res.data.avatar,
-            avatarURL: `https://cdn.discordapp.com/avatars/${res.data.discordId}/${res.data.avatar}.png`
+            avatarURL: `https://cdn.discordapp.com/avatars/${res.data.discordId}/${res.data.avatar}.png`,
+            tag: res.data.tag,
+            status: "online",
+            games: []
           });
+          await axios.get(`http://localhost:${port}/auth/viewProfile`, {discordID: this.state.discordId})
+        .then(res2 => {
+            if (res2.data) {
+                this.setState({
+                    games: res2.data.games,
+                    gender: res2.data.gender,
+                    school: res2.data.school,
+                });
+                console.log(this.state);
+            }
+        })
         }
         else {
           res.redirect("/");
@@ -140,7 +159,7 @@ class Profile extends React.Component {
                                                 <div class="row gameRow">
                                                     <div class="col-lg-3"><img class="img-fluid rounded-circle gameIcon" src="assets/img/avatars/avatar2.jpeg" /></div>
                                                     <div class="col align-self-center">
-                                                        <p class="gameName">League of Legends</p>
+                                                        <p class="gameName">{this.state.games}</p>
                                                     </div>
                                                 </div>
                                                 <div class="row gameRow">

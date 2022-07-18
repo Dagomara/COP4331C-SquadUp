@@ -58,10 +58,13 @@ router.get("/callback", async (req, res) => {
                 const user = await User.findOne({ discordID: userResponse.id });
                 if (user) {
                     console.log("User exists.");
+                    req.session.userdata.username = user.username;
+                    req.session.userdata.discriminator = user.tag;
                     // session save this user
                 }
                 else {
                     console.log(`Adding new user ${userResponse.username}`);
+                    isUserNew = true;
                     let newUser = await User.create({
                         discordID: userResponse.id,
                         username: userResponse.username,
@@ -100,6 +103,7 @@ router.get("/callback", async (req, res) => {
               //console.log(req.session.guilds);
 
               // add user to SquadUP server if they're not already there
+              // this is turned off for now TODO: Fix server joining
               let svr = gResponse.find(obj => obj.id == guildID);
               if (!svr && false) {
                 console.log(`PUTting ${req.session.userdata.username} into the SquadUP guild:`);
@@ -122,7 +126,10 @@ router.get("/callback", async (req, res) => {
               
               //req.session.cookie.discordID = req.session.userdata.id;
               console.log("redirect!");
-              res.redirect("http://localhost:3000/queue");
+              if (isUserNew)
+                res.redirect("http://localhost:3000/welcome");
+              else 
+                res.redirect("http://localhost:3000/queue");
               }).catch((error) => {
                 console.log(error);
             });
@@ -147,23 +154,25 @@ router.get("/getUserData",(req, res)=>{
     }
     else{
         console.log(req);
-        res.set("Access-Control-Allow-Origin", "http://localhost:3000"); 
-        res.set("Access-Control-Allow-Credentials", "true");
-        res.set("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
-        res.set("Access-Control-Allow-Headers", "Content-Type, Depth, User-Agent, X-File-Size, X-Requested-With, If-Modified-Since, X-File-Name, Cache-Control");
+        // res.set("Access-Control-Allow-Origin", "http://localhost:3000"); 
+        // res.set("Access-Control-Allow-Credentials", "true");
+        // res.set("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
+        // res.set("Access-Control-Allow-Headers", "Content-Type, Depth, User-Agent, X-File-Size, X-Requested-With, If-Modified-Since, X-File-Name, Cache-Control");
         res.json({
             login : true,
             discordId: req.session.userdata.id,
+            tag: req.session.userdata.discriminator,
             username : req.session.userdata.username,
             avatar: req.session.userdata.avatar
         })
     }
 });
 
+// TODO: fix logout 
 // Log out
 router.get('/logout', (req, res) => {
     if (req.session.userdata) {
-        res.set("Access-Control-Allow-Origin", "http://localhost:3000"); 
+        // res.set("Access-Control-Allow-Origin", "http://localhost:3001"); 
         console.log(`Logging out ${req.session.userdata.username}...`);
         delete req.session.userdata;
         //delete req.session.cookie;
