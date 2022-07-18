@@ -6,7 +6,7 @@ import { withRouter } from "react-router-dom";
 import BrandIcon from '../assets/img/SquadUp Logo with gradient.png';
 import BrandText from '../assets/img/SquadUP Text Only.png';
 import Navbar from '../components/Navbar';
-import GameRow from '../components/GameRow';
+import FriendRow from '../components/FriendRow';
 const port = require("../config.json").PORT;
 
 
@@ -25,9 +25,13 @@ class Profile extends React.Component {
             gender: undefined,
             school: undefined,
             status: "offline",
-            games: undefined
+            games: undefined,
+            friendIDs: undefined,
+            friends: []
         };
+        // const [friendsList, setFriendsList] = React.useState([]);
       }
+      
 
     // detects user login status, kicks them away if not logged in
     // GETTING THE USER DATA
@@ -44,20 +48,38 @@ class Profile extends React.Component {
             avatarURL: `https://cdn.discordapp.com/avatars/${res.data.discordId}/${res.data.avatar}.png`,
             tag: res.data.tag,
             status: "online",
-            games: []
+            friendIDs: undefined,
+            friends: []
           });
-          await axios.post(`http://localhost:${port}/api/viewProfile`, {discordID: this.state.discordId})
-        .then(res2 => {
+
+          await axios.post(`http://localhost:${port}/api/viewFriends`, {discordID: this.state.discordId})
+          .then(res2 => {
             if (res2.data) {
-                console.log("res.data: ", res2.data);
-                this.setState({
-                    games: res2.data.games,
-                    gender: res2.data.gender,
-                    school: res2.data.school,
-                });
-                console.log("updated state w/ new games: ", this.state);
+              console.log("viewFriends data: ", res2.data);
+              this.state.friendIDs = res2.data;
             }
-        })
+          })
+
+          console.log(this.state.friendIDs);
+          this.state.friendIDs.forEach(async (id) => {
+            await axios.post(`http://localhost:${port}/api/viewProfile`, {discordID: id})
+            .then(res2 => {
+                if (res2.data) {
+                    console.log("res2.data: ", res2.data);
+                    this.setState({
+                      friends: this.state.friends.concat([{
+                        name: res2.data.username,
+                        avatar: `https://cdn.discordapp.com/avatars/${id}/${res2.data.avatar}.png`,
+                        status: res2.data.status
+                    }])});
+                    console.log("updated state w/ new friends: ", this.state.friends);
+                }
+            })
+            .catch((err)=>{
+              console.log(err);
+            });
+          });
+
         }
         else {
           res.redirect("/");
@@ -103,12 +125,17 @@ class Profile extends React.Component {
                                               <h6 class="fs-4 fw-bold m-0">Friends</h6>
                                           </div>
                                           <div class="card-body">
-                                              <div class="row gameRow">
-                                                  <div class="col-lg-3"><img class="img-fluid rounded-circle gameIcon" src="assets/img/avatars/avatar3.jpeg" /></div>
-                                                  <div class="col align-self-center">
-                                                      <p class="gameName">Team Fortress 2</p>
-                                                  </div>
-                                              </div>
+                                            {(() => {
+                                              if (this.state.friends != undefined && this.state.friends.length > 0) {
+                                                  return (
+                                                  this.state.friends.map((f, index) => (
+                                                  <FriendRow friend={ f } />
+                                                  )));
+                                              }
+                                              else {
+                                                  return (<p class="away">no friends lol</p>);
+                                              }
+                                            })()}
                                           </div>
                                       </div>
                                   </div>

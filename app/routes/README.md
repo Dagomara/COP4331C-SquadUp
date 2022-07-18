@@ -20,6 +20,7 @@ API Endpoints:
     + Gender
     + School
     + Status
+    + Avatar
 
 - Add games
     Input:

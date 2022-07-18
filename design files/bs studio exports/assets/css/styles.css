@@ -316,3 +316,54 @@ body {
   overflow-y: auto;
 }
 
+.friendRow {
+  background-color: var(--right-bg);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: large;
+}
+
+.friendRow span {
+  color: white;
+  display: inline-block;
+  margin-left: 3vw;
+}
+
+@media (max-width: 500px) {
+  .friendRow span {
+    color: white;
+    padding-left: 0px;
+  }
+}
+
+@media (max-width: 480px) {
+  .friendRow {
+    font-size: small;
+  }
+}
+
+.friendRow i {
+  font-size: 12px;
+}
+
+.friendStatus {
+  text-align: right;
+  flex-grow: 1;
+}
+
+.friendIcon {
+  height: 3em;
+}
+
+.online {
+  color: #65DE31 !important;
+}
+
+.away {
+  color: #FF9933 !important;
+}
+
+.offline {
+  color: #808080 !important;
+}
+

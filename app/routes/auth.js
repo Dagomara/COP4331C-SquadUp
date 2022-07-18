@@ -78,7 +78,13 @@ router.get("/callback", cors(corsOptionsDelegate), async (req, res) => {
                     console.log("User exists.");
                     req.session.userdata.username = user.username;
                     req.session.userdata.discriminator = user.tag;
-                    // session save this user
+                    // make sure to update users's avatar information!
+                    console.log(`userResponse.avatar: ${userResponse.avatar}`)
+                    user.avatar = userResponse.avatar;
+                    console.log(`user.avatar: ${user.avatar}`)
+                    let updatedUser = await user.save();
+                    console.log("user avatar updated");
+                    console.log(updatedUser);
                 }
                 else {
                     console.log(`Adding new user ${userResponse.username}`);
@@ -87,6 +93,7 @@ router.get("/callback", cors(corsOptionsDelegate), async (req, res) => {
                         discordID: userResponse.id,
                         username: userResponse.username,
                         tag: parseInt(userResponse.discriminator),
+                        avatar: userResponse.avatar,
                         status: "online",
                         gender: "",
                         school: "",
@@ -95,7 +102,7 @@ router.get("/callback", cors(corsOptionsDelegate), async (req, res) => {
                         blocked: []
                     });
                     let savedUser = await newUser.save();
-                    console.log(savedUser);
+                    console.log(`savedUser: ${savedUser}`);
                     // session save this user
                 }
 
@@ -161,8 +168,8 @@ router.get("/callback", cors(corsOptionsDelegate), async (req, res) => {
 // GET userData router from **ComponentDidMount** 
 router.get("/getUserData", cors(corsOptionsDelegate), (req, res)=>{
     
-    console.log("tryna get userdata\nreq.session:");
-    console.log(req.session);
+    console.log("tryna get userdata");
+    //console.log("req.session:", req.session);
     if(!req.session.userdata){
         console.log("no data");
         res.json({
@@ -171,7 +178,7 @@ router.get("/getUserData", cors(corsOptionsDelegate), (req, res)=>{
         res.redirect('/error');
     }
     else{
-        console.log(req);
+        //console.log(req);
         // res.set("Access-Control-Allow-Origin", "http://localhost:3000"); 
         // res.set("Access-Control-Allow-Credentials", "true");
         // res.set("Access-Control-Allow-Methods", "OPTIONS, GET, POST");

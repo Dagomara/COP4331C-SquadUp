@@ -64,7 +64,7 @@ router.patch('/editProfile', cors(corsOptionsDelegate), async (req, res) =>
 router.post('/viewProfile', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID
-  // outgoing: discordID, games, gender, school, status
+  // outgoing: discordID, games, gender, school, status, avatar
 
   let {discordID} = req.body;
   console.log(`Finding ${discordID}...`);

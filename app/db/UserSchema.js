@@ -10,6 +10,7 @@ const UserSchema = new mongoose.Schema({
 	discordID: {type: String, required: true},
 	tag: {type: Number, required: true},
 	username: {type: String, required: true},
+	avatar: String,
 	status: String,
 	gender: String,
 	school: String,
