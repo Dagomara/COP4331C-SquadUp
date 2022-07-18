@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema({
 	tag: {type: Number, required: true},
 	username: {type: String, required: true},
 	status: String,
-	gender: {type: String, lowercase: true},
+	gender: String,
 	school: String,
 	games: [gameSchema],
 	//reputation: {type: Number, required: true},

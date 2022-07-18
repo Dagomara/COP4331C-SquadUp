@@ -1,11 +1,21 @@
 // (MOTL): "More On That Later"
 
 // user sends this first
-"queue-request", {discordId: 321321,
+socket.on("queue-request", {discordId: 321321,
   gameID: 13,
   players_needed: 5,
   filters: {}
-}
+}, () => {
+  for item in searchingQueues:
+    if item matches filters:
+      make proper queue-request-response;
+      send the q-r-r;
+      return;
+    else:
+      start a new, empty queue;
+      send the q-r-r;
+      return;
+})
 
 // server sees if this player can be fit into any existing queues (MOTL).
 // IF not, make them a new queue object (MOTL).
@@ -28,12 +38,28 @@
 
 // At this point, everyone in the Queue is up-to-date on who's there.
 
+socket.on("queue-abandon-request", {
+  queueId: 24,
+  discordId: 321321
+}, () => {
+  if discordId == Queue.ownerID {
+    send queue-quit-announcement;
+  }
+  return;
+})
+
 // Queue owners can start the game whenever they're ready:
-"queue-play-request", {
+socket.on("queue-play-request", {
   queueId: 24,
   ownerId: 190273098 // will just be the id of the player who sent the request,
                      // for validation purposes
-}
+}, () => {
+  if (ownerId == searchingQueues.map(o for o.queueId = queueId))
+    send webhook signal to squadup discord to start game;
+    move Queue to playingQueues [];
+    send queue-play-announcement;
+  return;
+})
 
 // server validates, moves the Queue into playingQueues[] (MOTL)
 // server sends to all users:
@@ -46,10 +72,15 @@
 // The game has begun.
 
 // From here, anyone can send:
-"queue-quit-request", {
+socket.on("queue-quit-request", {
   queueId: 24,
   discordId: 6424234 // id of person who requested
-}
+} () => {
+  if discordID is in Queue.players:
+    send webhook to discord to end game;
+    send queue-quit-announcemnt;
+  return;
+})
 
 // server validates, and sends to all connected users:
 "queue-quit-announcement", {

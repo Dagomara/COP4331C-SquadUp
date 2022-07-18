@@ -5,6 +5,8 @@ import axios from "axios";
 import { withRouter } from "react-router-dom";
 import BrandIcon from '../assets/img/SquadUp Logo with gradient.png';
 import BrandText from '../assets/img/SquadUP Text Only.png';
+import Navbar from '../components/Navbar';
+import GameRow from '../components/GameRow';
 const port = require("../config.json").PORT;
 
 
@@ -44,15 +46,16 @@ class Profile extends React.Component {
             status: "online",
             games: []
           });
-          await axios.get(`http://localhost:${port}/api/viewProfile`, {discordID: this.state.discordId})
+          await axios.post(`http://localhost:${port}/api/viewProfile`, {discordID: this.state.discordId})
         .then(res2 => {
             if (res2.data) {
+                console.log("res2.data: ", res2.data);
                 this.setState({
                     games: res2.data.games,
                     gender: res2.data.gender,
                     school: res2.data.school,
                 });
-                console.log(this.state);
+                console.log("updated state w/ new games: ", this.state);
             }
         })
         }
@@ -85,21 +88,7 @@ class Profile extends React.Component {
         <div className='Profile' id='page-top'>
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
             <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0 navbar-background">
-            <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon"><img class="img-fluid" src={BrandIcon} alt="SquadUP Logo" /></div>
-                    <div class="sidebar-brand-text mx-3"><span class="span-test"><img class="img-fluid" src={BrandText} /></span></div>
-                </a>
-                <hr class="sidebar-divider my-0" />
-                <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" href="/profile"><i class="fas fa-user"></i><span>My Profile</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/index"><i class="fas fa-tachometer-alt"></i><span>Queue</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/friends"><i class="fas fa-table"></i><span>Friends</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/settings"><i class="far fa-user-circle"></i><span>Settings</span></a></li>
-                </ul>
-                <div class="align-bottom sidebar-profile"><img class="img-fluid rounded-circle" src={this.state.avatarURL} /><span>{this.state.username}</span><a href="welcome.html"></a></div>
-            </div>
-        </nav>
+            <Navbar username={this.state.username} avatarURL={this.state.avatarURL} page="profile"/>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
                 <div class="non-semantic-protector">
@@ -112,8 +101,8 @@ class Profile extends React.Component {
                                 <div class="card mb-3">
                                     <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" src={this.state.avatarURL} width="160" height="160" />
                                         <div>
-                                            <p class="profile-username"><span>@</span>{this.state.username}<span>#1234</span></p>
-                                            <p class="profile-subheading">UCF, Male<br/></p>
+                                            <p class="profile-username"><span>@</span>{this.state.username}<span>#{this.state.tag}</span></p>
+                                            <p class="profile-subheading">{this.state.school || "No School"}, {this.state.gender || "No Gender"}<br/></p>
                                         </div>
                                     </div>
                                 </div>
@@ -156,18 +145,17 @@ class Profile extends React.Component {
                                                 <h6 class="fs-4 fw-bold m-0">Games</h6>
                                             </div>
                                             <div class="card-body">
-                                                <div class="row gameRow">
-                                                    <div class="col-lg-3"><img class="img-fluid rounded-circle gameIcon" src="assets/img/avatars/avatar2.jpeg" /></div>
-                                                    <div class="col align-self-center">
-                                                        <p class="gameName">{this.state.games}</p>
-                                                    </div>
-                                                </div>
-                                                <div class="row gameRow">
-                                                    <div class="col-lg-3"><img class="img-fluid rounded-circle gameIcon" src="assets/img/avatars/avatar1.jpeg" /></div>
-                                                    <div class="col align-self-center">
-                                                        <p class="gameName">Team Fortress 2</p>
-                                                    </div>
-                                                </div>
+                                                {(() => {
+                                                    if (this.state.games != undefined && this.state.games.length > 0) {
+                                                        return (
+                                                        this.state.games.map((game, index) => (
+                                                        <GameRow gameID={game.gameID} />
+                                                        )));
+                                                    }
+                                                    else {
+                                                        return (<p class="color-primary">no games lol</p>);
+                                                    }
+                                                })()}
                                             </div>
                                         </div>
                                     </div>
