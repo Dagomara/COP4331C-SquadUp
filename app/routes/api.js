@@ -2,11 +2,32 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const User = require('../db/UserSchema');
+const cors = require('cors')
 require('dotenv').config();
 
 // const db = client.db("api-testing");
 
-router.patch('/editProfile', async (req, res) => 
+// CORS middlewares for /api
+var allowlist = ['http://localhost:3000', 'http://localhost:3001']
+var corsOptionsDelegate = function (req, callback) {
+  var corsOptions;
+  if (allowlist.indexOf(req.header('Origin')) !== -1) {
+    corsOptions = {
+        origin: true, // reflect (enable) the requested origin in the CORS response
+        methods: 'GET,POST,PATCH,DELETE,OPTIONS',
+        optionsSuccessStatus: 200,
+        credentials: true
+    } 
+  } else {
+    corsOptions = {
+        origin: false // disable CORS for this request
+    }
+  }
+  callback(null, corsOptions) // callback expects two parameters: error and options
+}
+
+
+router.patch('/editProfile', cors(corsOptionsDelegate), async (req, res) => 
 {
   // Will be used when the user first signs in OR wants to change profile
   // incoming: discordID, username, gender, school
@@ -40,7 +61,7 @@ router.patch('/editProfile', async (req, res) =>
   });
 });
 
-router.get('/viewProfile', async (req, res, next) => 
+router.get('/viewProfile', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID
   // outgoing: discordID, games, gender, school, status
@@ -68,7 +89,7 @@ router.get('/viewProfile', async (req, res, next) =>
   });
 });
 
-router.post('/addGame', async (req, res, next) => 
+router.post('/addGame', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID, game
   // outgoing: updated games
@@ -96,7 +117,7 @@ router.post('/addGame', async (req, res, next) =>
   });
 });
 
-router.post('/deleteGame', async (req, res, next) => 
+router.post('/deleteGame', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID, gameID
   // outgoing: updated games
@@ -122,7 +143,7 @@ router.post('/deleteGame', async (req, res, next) =>
   });
 });
 
-router.post('/editGame', async (req, res, next) => 
+router.post('/editGame', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID, game
   // outgoing: updated games
@@ -151,7 +172,7 @@ router.post('/editGame', async (req, res, next) =>
   });
 });
 
-router.post('/viewGames', async (req, res, next) => 
+router.post('/viewGames', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID
   // outgoing: games
@@ -173,7 +194,7 @@ router.post('/viewGames', async (req, res, next) =>
   });
 });
 
-router.post('/goOnline', async (req, res, next) => 
+router.post('/goOnline', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID
   // outgoing: updated status
@@ -201,7 +222,7 @@ router.post('/goOnline', async (req, res, next) =>
   });
 });
 
-router.post('/goOffline', async (req, res, next) => 
+router.post('/goOffline', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID
   // outgoing: updated status
@@ -227,7 +248,7 @@ router.post('/goOffline', async (req, res, next) =>
   });
 });
 
-router.post('/addFriend', async (req, res, next) => 
+router.post('/addFriend', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID, friendDiscordID
   // outgoing: updated friend list
@@ -254,7 +275,7 @@ router.post('/addFriend', async (req, res, next) =>
   });
 });
 
-router.post('/deleteFriend', async (req, res, next) => 
+router.post('/deleteFriend', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID, friendDiscordID
   // outgoing: updated friend list
@@ -281,7 +302,7 @@ router.post('/deleteFriend', async (req, res, next) =>
   });
 });
 
-router.post('/viewFriends', async (req, res, next) => 
+router.post('/viewFriends', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID
   // outgoing: friends
@@ -301,7 +322,7 @@ router.post('/viewFriends', async (req, res, next) =>
   });
 });
 
-router.post('/addBlocked', async (req, res, next) => 
+router.post('/addBlocked', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID, blockedDiscordID
   // outgoing: updated blocked list
@@ -326,7 +347,7 @@ router.post('/addBlocked', async (req, res, next) =>
   });
 });
 
-router.post('/deleteBlocked', async (req, res, next) => 
+router.post('/deleteBlocked', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID, blockedDiscordID
   // outgoing: updated blocked list
@@ -351,7 +372,7 @@ router.post('/deleteBlocked', async (req, res, next) =>
   });
 });
 
-router.post('/viewBlocked', async (req, res, next) => 
+router.post('/viewBlocked', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID
   // outgoing: blocked
@@ -371,7 +392,7 @@ router.post('/viewBlocked', async (req, res, next) =>
   });
 });
 
-router.post('/test', async (req, res, next) => 
+router.post('/test', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID, game
   // outgoing: game, error
@@ -383,19 +404,19 @@ router.post('/test', async (req, res, next) =>
   res.status(200).json(results);
 });
 
-router.use((req, res, next) =>
-{
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET, POST, PATCH, DELETE, OPTIONS'
-  );
-  next();
-});
+// router.use((req, res, next) =>
+// {
+//   res.setHeader('Access-Control-Allow-Origin', '*');
+//   res.setHeader(
+//     'Access-Control-Allow-Headers',
+//     'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+//   );
+//   res.setHeader(
+//     'Access-Control-Allow-Methods',
+//     'GET, POST, PATCH, DELETE, OPTIONS'
+//   );
+//   next();
+// });
 
 // client.connect();
 

@@ -44,7 +44,7 @@ class Profile extends React.Component {
             status: "online",
             games: []
           });
-          await axios.get(`http://localhost:${port}/auth/viewProfile`, {discordID: this.state.discordId})
+          await axios.get(`http://localhost:${port}/api/viewProfile`, {discordID: this.state.discordId})
         .then(res2 => {
             if (res2.data) {
                 this.setState({

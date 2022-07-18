@@ -18,7 +18,10 @@ const corsOptions = {
     origin: 'http://localhost:3000', // do not write '*'
     credentials: true,
 };
-app.use(cors());
+
+
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 database.then(() => console.log('Connected to MongoDB.')).catch(err => console.log(err));
@@ -36,9 +39,6 @@ app.use(session({
     // Session Store for users to stay logged in
     store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
-
-
-
 
 
 app.use(express.static(path.join(__dirname, 'public')));

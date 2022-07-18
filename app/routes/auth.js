@@ -3,10 +3,28 @@ const axios = require("axios");
 const url = require('url');
 const guildID = process.env.GUILD_ID;
 const User = require('../db/UserSchema');
+const cors = require('cors');
 
+var allowlist = ['http://localhost:3000', 'http://localhost:3001']
+var corsOptionsDelegate = function (req, callback) {
+  var corsOptions;
+  if (allowlist.indexOf(req.header('Origin')) !== -1) {
+    corsOptions = {
+        origin: true, // reflect (enable) the requested origin in the CORS response
+        methods: 'GET,POST,PATCH,DELETE,OPTIONS',
+        optionsSuccessStatus: 200,
+        credentials: true
+    } 
+  } else {
+    corsOptions = {
+        origin: false // disable CORS for this request
+    }
+  }
+  callback(null, corsOptions) // callback expects two parameters: error and options
+}
 
 // Provide oAuth2 authentication, prepare new users into db 
-router.get("/callback", async (req, res) => {
+router.get("/callback", cors(corsOptionsDelegate), async (req, res) => {
     const accessCode = req.query.code; 
     let username;
     let isUserNew = false;
@@ -141,7 +159,7 @@ router.get("/callback", async (req, res) => {
 });
 
 // GET userData router from **ComponentDidMount** 
-router.get("/getUserData",(req, res)=>{
+router.get("/getUserData", cors(corsOptionsDelegate), (req, res)=>{
     
     console.log("tryna get userdata\nreq.session:");
     console.log(req.session);
@@ -170,7 +188,7 @@ router.get("/getUserData",(req, res)=>{
 
 // TODO: fix logout 
 // Log out
-router.get('/logout', (req, res) => {
+router.get('/logout', cors(corsOptionsDelegate), (req, res) => {
     if (req.session.userdata) {
         // res.set("Access-Control-Allow-Origin", "http://localhost:3001"); 
         console.log(`Logging out ${req.session.userdata.username}...`);
