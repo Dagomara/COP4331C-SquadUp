@@ -33,7 +33,7 @@ router.patch('/editProfile', cors(corsOptionsDelegate), async (req, res) =>
   // incoming: discordID, username, gender, school
   // outgoing: edited profile
 
-  const discordID = req.body.discordID;
+  let discordID = req.body.discordID;
 
   await User.findOneAndUpdate({discordID:discordID},
     { $set:{
@@ -66,7 +66,7 @@ router.post('/viewProfile', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID
   // outgoing: discordID, games, gender, school, status
 
-  const {discordID} = req.body;
+  let {discordID} = req.body;
   console.log(`Finding ${discordID}...`);
 
   await User.find({discordID:discordID})
@@ -94,7 +94,7 @@ router.post('/addGame', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID, game
   // outgoing: updated games
 
-  const {discordID, games} = req.body;
+  let {discordID, games} = req.body;
 
   // Push new game to the "games" array
   await User.findOneAndUpdate({discordID:discordID}, { $push:{games:games}});
@@ -122,7 +122,7 @@ router.post('/deleteGame', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID, gameID
   // outgoing: updated games
 
-  const {discordID, gameID} = req.body;
+  let {discordID, gameID} = req.body;
   
   // Delete game by gameID
   await User.findOneAndUpdate({discordID:discordID}, { $pull: { 'games': {gameID:gameID} } });
@@ -148,8 +148,8 @@ router.post('/editGame', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID, game
   // outgoing: updated games
 
-  const {discordID, games} = req.body;
-  const gameID = games.gameID;
+  let {discordID, games} = req.body;
+  let gameID = games.gameID;
 
   // Deleting old game filters
   await User.findOneAndUpdate({discordID:discordID}, { $pull: { 'games': {gameID:gameID} } });
@@ -177,7 +177,7 @@ router.post('/viewGames', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID
   // outgoing: games
   
-  const discordID = req.body;
+  let discordID = req.body;
   
   await User.find({discordID:discordID})
   .then( (users, err) => {
@@ -201,8 +201,8 @@ router.post('/goOnline', cors(corsOptionsDelegate), async (req, res, next) =>
 
   let error = '';
 
-  const {discordID} = req.body;
-  const st = 'online';
+  let {discordID} = req.body;
+  let st = 'online';
   
   await User.findOneAndUpdate({discordID:discordID}, 
     { $set:{ status:st,}});
@@ -227,8 +227,8 @@ router.post('/goOffline', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID
   // outgoing: updated status
 
-  const {discordID} = req.body;
-  const st = 'offline';
+  let {discordID} = req.body;
+  let st = 'offline';
   
   await User.findOneAndUpdate({discordID:discordID}, 
     { $set:{ status:st,}});
@@ -255,9 +255,9 @@ router.post('/addFriend', cors(corsOptionsDelegate), async (req, res, next) =>
 
   let error = '';
 
-  const {discordID, friends} = req.body;
+  let {discordID, friends} = req.body;
 
-  const addition = await User.findOneAndUpdate({discordID:discordID}, { $push:{friends:friends}});
+  let addition = await User.findOneAndUpdate({discordID:discordID}, { $push:{friends:friends}});
 
   // Return updated friends
   await User.find({discordID:discordID})
@@ -282,7 +282,7 @@ router.post('/deleteFriend', cors(corsOptionsDelegate), async (req, res, next) =
 
   let error = '';
 
-  const {discordID, friends} = req.body;
+  let {discordID, friends} = req.body;
 
   await User.findOneAndUpdate({discordID:discordID}, { $pull:{friends:friends}});
 
@@ -307,6 +307,8 @@ router.post('/viewFriends', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID
   // outgoing: friends
 
+  let discordID = req.body;
+
   await User.find({discordID:discordID})
   .then( (users, err) => {
     if (!err) {
@@ -327,7 +329,7 @@ router.post('/addBlocked', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID, blockedDiscordID
   // outgoing: updated blocked list
 
-  const {discordID, blocked} = req.body;
+  let {discordID, blocked} = req.body;
 
   await User.findOneAndUpdate({discordID:discordID}, { $push:{blocked:blocked}});
 
@@ -352,7 +354,7 @@ router.post('/deleteBlocked', cors(corsOptionsDelegate), async (req, res, next) 
   // incoming: discordID, blockedDiscordID
   // outgoing: updated blocked list
 
-  const {discordID, blocked} = req.body;
+  let {discordID, blocked} = req.body;
 
   await User.findOneAndUpdate({discordID:discordID}, { $pull:{blocked:blocked}});
 
@@ -377,6 +379,8 @@ router.post('/viewBlocked', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID
   // outgoing: blocked
 
+  let discordID = req.body;
+
   await User.find({discordID:discordID})
   .then( (users, err) => {
     if (!err) {
@@ -397,9 +401,9 @@ router.post('/test', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID, game
   // outgoing: game, error
 
-  const {discordID, games} = req.body;
+  let {discordID, games} = req.body;
 
-  const results = games.gameID;
+  let results = games.gameID;
 
   res.status(200).json(results);
 });
