@@ -177,7 +177,7 @@ router.post('/viewGames', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID
   // outgoing: games
   
-  let discordID = req.body;
+  let {discordID} = req.body;
   
   await User.find({discordID:discordID})
   .then( (users, err) => {
@@ -198,8 +198,6 @@ router.post('/goOnline', cors(corsOptionsDelegate), async (req, res, next) =>
 {
   // incoming: discordID
   // outgoing: updated status
-
-  let error = '';
 
   let {discordID} = req.body;
   let st = 'online';
@@ -253,8 +251,6 @@ router.post('/addFriend', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID, friendDiscordID
   // outgoing: updated friend list
 
-  let error = '';
-
   let {discordID, friends} = req.body;
 
   let addition = await User.findOneAndUpdate({discordID:discordID}, { $push:{friends:friends}});
@@ -279,8 +275,6 @@ router.post('/deleteFriend', cors(corsOptionsDelegate), async (req, res, next) =
 {
   // incoming: discordID, friendDiscordID
   // outgoing: updated friend list
-
-  let error = '';
 
   let {discordID, friends} = req.body;
 
@@ -379,7 +373,7 @@ router.post('/viewBlocked', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID
   // outgoing: blocked
 
-  let discordID = req.body;
+  let {discordID} = req.body;
 
   await User.find({discordID:discordID})
   .then( (users, err) => {
