@@ -12,7 +12,7 @@ const port = require("../config.json").PORT;
 
 //axios.method('url', data(if needed), {withCredentials: true})
 
-class Profile extends React.Component {
+class Friends extends React.Component {
     constructor(props){
         super(props);
         this.state = {
@@ -152,7 +152,7 @@ class Profile extends React.Component {
     }
 }
 
-export default Profile;
+export default Friends;
 
 
 {/* <p>queue screen</p>

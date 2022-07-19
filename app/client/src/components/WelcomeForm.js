@@ -94,18 +94,40 @@ const Checkbox = ({ label, visited, valid, onChange, value,
   );
 };
 
-const GameBox = ({ gameName }) => {
+// takes the GameName and the setGameFilters from the KendoUI Form inside of WelcomeForm
+const GameBox = ({ gameName, updateGame}) => {
   console.log(`${gameName}'s stuff:`);
+  let template = gameTemplates[gameName];
+  const [fields, setFields] = React.useState({});
   console.log(gameTemplates[gameName]);
   return (
     <div className="col-sm-12 col-xl-12 align-self-center mb-3 mb-sm-0 splash-box py-4">
       <p className="text-white">{gameName}</p>
-      <div className="row splash-option">
-        <div className="col-sm-12 col-md-3 text-start align-self-center">
-          <p className="w-100">Level</p>
-        </div>
-        <div className="col align-self-center"><input className="form-control" type="text" /></div>
-      </div>
+      {() => {
+        template.map((field, index) => {
+          <div className="row splash-option">
+            <div className="col-sm-12 col-md-3 text-start align-self-center">
+              <p className="w-100">{field}</p>
+            </div>
+            <div className="col align-self-center">
+              <Field 
+                name="games"
+                options={games}
+                component={SearchSelector}
+                validator={[requiredValidator]} 
+                onChange={ e => {
+                  // fields is used to just store the settings of this game.
+                  // updateFields is provided by the carrying WelcomeForm, which updates
+                  // the `games` [] with an updated version of this game. 
+                  setFields(Object.assign(fields, {{field}: {e.target.value}}));
+                  updateGame(gameName, fields);
+                }}
+                classNames="form-control form-control-user w-100" />
+              <input className="form-control" type="text" />
+            </div>
+          </div>
+        })
+      }()}
       <div className="row splash-option">
         <div className="col-sm-12 col-md-3 align-self-center">
           <p>Positions</p>
@@ -132,16 +154,25 @@ export default function WelcomeForm(props) {
       setFormStep(cur => cur - 1);
   }
 
+  const [gameFilters, setGameFilters] = React.useState([]);
+  console.log("Default gameFilters: ", gameFilters);
+
   const handleSubmit = (data, event) => {
+
     console.log(`
       Username: ${data.username}
       Schools: ${data.schools}
       Gender: ${data.gender}
       Games: ${data.games}
       Accepted Terms: ${data.acceptedTerms}
+      Game Filters: ${gameFilters}
     `);
     
     event.preventDefault();
+  }
+
+  const updateGame = (name, filts) => {
+    //todo
   }
 
   return (
@@ -165,7 +196,7 @@ export default function WelcomeForm(props) {
                           fieldType="text"
                           component={Input}
                           validator={[requiredValidator]} 
-                          placeholder={`@${props.username}`} 
+                          placeholder={`${props.username}`} 
                           value={`@${props.username}`} 
                           classNames="form-control form-control-user text-black"/>
                     </div>

@@ -15,6 +15,7 @@ import Settings from './pages/Settings.js';
 import Friends from './pages/Friends.js';
 import Profile from './pages/Profile.js';
 import Welcome from './pages/Welcome.js';
+import Blocked from './pages/Blocked.js'
 console.log("Hello!");
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
       <Route path="/profile" index element={<Profile />} />
       <Route path="/friends" index element={<Friends />} />
       <Route path="/welcome" index element={<Welcome />} />
+      <Route path="/blocked" index element={<Blocked />} />
     </Routes>
   </BrowserRouter>
   );
