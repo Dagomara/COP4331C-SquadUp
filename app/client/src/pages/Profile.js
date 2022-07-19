@@ -153,7 +153,7 @@ class Profile extends React.Component {
                                                         )));
                                                     }
                                                     else {
-                                                        return (<p class="color-primary">no games lol</p>);
+                                                        return (<p class="away">no games lol</p>);
                                                     }
                                                 })()}
                                             </div>

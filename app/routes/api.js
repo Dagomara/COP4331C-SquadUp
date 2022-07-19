@@ -66,7 +66,7 @@ router.post('/viewProfile', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID
   // outgoing: discordID, games, gender, school, status, avatar
 
-  let {discordID} = req.body;
+  let discordID = req.body.discordID;
   console.log(`Finding ${discordID}...`);
 
   await User.find({discordID:discordID})
@@ -307,8 +307,8 @@ router.post('/viewFriends', cors(corsOptionsDelegate), async (req, res, next) =>
   // incoming: discordID
   // outgoing: friends
 
-  let discordID = req.body;
-
+  let {discordID} = req.body;
+  console.log(discordID);
   await User.find({discordID:discordID})
   .then( (users, err) => {
     if (!err) {
