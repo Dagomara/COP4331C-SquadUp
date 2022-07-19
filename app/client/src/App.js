@@ -14,6 +14,7 @@ import Home from './pages/Home.js';
 import Settings from './pages/Settings.js';
 import Friends from './pages/Friends.js';
 import Profile from './pages/Profile.js';
+import Welcome from './pages/Welcome.js';
 console.log("Hello!");
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
       <Route path="/settings" index element={<Settings />} />
       <Route path="/profile" index element={<Profile />} />
       <Route path="/friends" index element={<Friends />} />
+      <Route path="/welcome" index element={<Welcome />} />
     </Routes>
   </BrowserRouter>
   );
