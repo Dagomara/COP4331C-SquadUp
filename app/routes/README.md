@@ -8,7 +8,7 @@ API Endpoints:
     + School
 
     Output:
-    + User discordID
+    + updated profile
     + Success/Error
 
 - View Profile
@@ -28,16 +28,14 @@ API Endpoints:
     + Game parameters
 
     Output:
-    + GameID
+    + Updated games list
     + Success/Error
 
 - Matchmaking
     Input:
     + User discordID *
-    + Game
-    + Rank
-    + School
-    + Gender
+    + GameID
+    + Filters
 
     Output:
     + Matching User discordID through FuzzySearch
@@ -49,10 +47,10 @@ API Endpoints:
     + Friend username
 
     Output:
-    + Friend username
+    + Updated friends list
     + Success/Error message
 
-- Get Friends
+- View Friends
     Input:
     + User discordID
 
@@ -62,11 +60,10 @@ API Endpoints:
 - Block User
     Input:
     + User discordID
-    + Friend username
+    + Blocked username
 
     Output:
-    + Blocked discordID
-    + username
+    + Blocked list
     + Success/Error message
 
 - Get Blocked List
@@ -74,6 +71,5 @@ API Endpoints:
     + User discordID
 
     Output:
-    + Blocked discordID
-    + Blocked username
+    + Blocked list
     + Success/Error message
