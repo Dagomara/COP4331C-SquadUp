@@ -5,8 +5,6 @@ const User = require('../db/UserSchema');
 const cors = require('cors')
 require('dotenv').config();
 
-// const db = client.db("api-testing");
-
 // CORS middlewares for /api
 var allowlist = ['http://localhost:3000', 'http://localhost:3001']
 var corsOptionsDelegate = function (req, callback) {
@@ -25,7 +23,6 @@ var corsOptionsDelegate = function (req, callback) {
   }
   callback(null, corsOptions) // callback expects two parameters: error and options
 }
-
 
 router.patch('/editProfile', cors(corsOptionsDelegate), async (req, res) => 
 {
@@ -401,21 +398,5 @@ router.post('/test', cors(corsOptionsDelegate), async (req, res, next) =>
 
   res.status(200).json(results);
 });
-
-// router.use((req, res, next) =>
-// {
-//   res.setHeader('Access-Control-Allow-Origin', '*');
-//   res.setHeader(
-//     'Access-Control-Allow-Headers',
-//     'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-//   );
-//   res.setHeader(
-//     'Access-Control-Allow-Methods',
-//     'GET, POST, PATCH, DELETE, OPTIONS'
-//   );
-//   next();
-// });
-
-// client.connect();
 
 module.exports = router;
