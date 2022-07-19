@@ -8,7 +8,7 @@ import BrandText from '../assets/img/SquadUP Text Only.png';
 import Navbar from '../components/Navbar';
 import GameRow from '../components/GameRow';
 import WelcomeForm from '../components/WelcomeForm';
-import TestForm from '../components/TestForm';
+//import TestForm from '../components/TestForm';
 const port = require("../config.json").PORT;
 
 
@@ -93,8 +93,7 @@ class Welcome extends React.Component {
           <div className="container" id="splashContainer">
               <div className="card shadow-lg o-hidden border-0 my-5">
                   <div className="card-body p-0 scroll-fit">
-                    <TestForm />
-                    {/* <WelcomeForm username={this.state.username} avatarURL={this.state.avatarURL} tag={this.state.tag}/> */}
+                    <WelcomeForm username={this.state.username} avatarURL={this.state.avatarURL} tag={this.state.tag}/>
                   </div>
               </div>
           </div>
