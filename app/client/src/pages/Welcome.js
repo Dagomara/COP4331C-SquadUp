@@ -88,7 +88,7 @@ class Welcome extends React.Component {
 
     render() {
       return (
-        <body className='splash' id='page-top'>
+        <div className='splash' id='page-top'>
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
           <div className="container" id="splashContainer">
               <div className="card shadow-lg o-hidden border-0 my-5">
@@ -99,7 +99,7 @@ class Welcome extends React.Component {
           </div>
           <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
           <script src="../assets/js/theme.js"></script>
-        </body>
+        </div>
       );
     }
 }

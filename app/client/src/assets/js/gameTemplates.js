@@ -27,11 +27,13 @@ export const gameTemplates = {
     "Overwatch": {
         "gameID": 6,
         "name": "Overwatch",
-        "level": "i1-3000",
-        "rank": ["Unranked","Bronze", "Silver","Gold","Platinum","Diamond","Master","Grandmaster"],
-        "positions": ["Tank", "Damage", "Support"],
-        "wins": "i",
-        "losses": "i"
+        "filters": {
+            "level": "i1-3000",
+            "rank": ["Unranked","Bronze", "Silver","Gold","Platinum","Diamond","Master","Grandmaster"],
+            "positions": ["Tank", "Damage", "Support"],
+            "wins": "i",
+            "losses": "i"
+        }
     },
     "Rocket League": {
         "gameID": 4,
