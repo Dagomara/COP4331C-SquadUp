@@ -109,7 +109,7 @@ class Blocked extends React.Component {
         <div className='Profile' id='page-top'>
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
             <div id="wrapper">
-              <Navbar username={this.state.username} avatarURL={this.state.avatarURL} page="blocked"/>
+              <Navbar username={this.state.username} avatarURL={this.state.avatarURL} page="profile"/>
               <div class="d-flex flex-column" id="content-wrapper">
                   <div id="content">
                       <div class="non-semantic-protector">

@@ -420,6 +420,10 @@ body {
   color: #808080 !important;
 }
 
+.blocked {
+  color: #000000 !important;
+}
+
 html, body {
   margin: 0;
   padding: 0;
