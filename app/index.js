@@ -42,7 +42,7 @@ app.use(session({
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Have Node serve the files for our built React app
-app.use(express.static(path.resolve(__dirname, '../client/build')));
+app.use(express.static(path.resolve(__dirname, 'client/build')));
 app.use("/api", require("./routes/api"));
 app.use("/auth", require("./routes/auth"));
 
