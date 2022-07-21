@@ -6,7 +6,10 @@ const cors = require('cors')
 require('dotenv').config();
 
 // CORS middlewares for /api
-var allowlist = ['http://localhost:3000', 'http://localhost:3001']
+if (process.env.NODE_ENV === "production")
+  var allowlist = ['https://cop4331-squadup.herokuapp.com:3000', 'https://cop4331-squadup.herokuapp.com:3000'];
+else
+  var allowlist = ['http://localhost:3000', 'http://localhost:3001'];
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (allowlist.indexOf(req.header('Origin')) !== -1) {

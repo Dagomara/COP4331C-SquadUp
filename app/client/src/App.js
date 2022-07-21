@@ -13,8 +13,8 @@ import Friends from './pages/Friends.js';
 import Profile from './pages/Profile.js';
 import Welcome from './pages/Welcome.js';
 import Blocked from './pages/Blocked.js';
-if (!(process.env.NODE_ENV === "production"))
-  require('dotenv').config();
+// if (!(process.env.NODE_ENV === "production"))
+//   require('dotenv').config();
 console.log("Hello!");
 
 function App() {
