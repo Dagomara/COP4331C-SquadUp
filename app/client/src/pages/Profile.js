@@ -1,13 +1,9 @@
 import React from 'react';
-import { useState } from 'react';
-import Sidebar from '../components/Sidebar';
 import axios from "axios";
-import { withRouter } from "react-router-dom";
-import BrandIcon from '../assets/img/SquadUp Logo with gradient.png';
-import BrandText from '../assets/img/SquadUP Text Only.png';
 import Navbar from '../components/Navbar';
 import GameRow from '../components/GameRow';
-const port = require("../config.json").PORT;
+const port = process.env.PORT || 3001;
+const urlRoot = process.env.URL_ROOT || "http://localhost:";
 
 
 //axios.method('url', data(if needed), {withCredentials: true})
@@ -32,7 +28,7 @@ class Profile extends React.Component {
     // detects user login status, kicks them away if not logged in
     // GETTING THE USER DATA
     componentDidMount = async () => {
-      await axios.get(`http://localhost:${port}/auth/getUserData`, {withCredentials: true})
+      await axios.get(`${urlRoot}${port}/auth/getUserData`, {withCredentials: true})
       .then(async res => {
         console.log("res" + res.data.login);
         if(res.data.login) {
@@ -46,7 +42,7 @@ class Profile extends React.Component {
             status: "online",
             games: undefined
           });
-          await axios.post(`http://localhost:${port}/api/viewProfile`, {discordID: this.state.discordId})
+          await axios.post(`${urlRoot}${port}/api/viewProfile`, {discordID: this.state.discordId})
         .then(res2 => {
             if (res2.data) {
                 console.log("res2.data: ", res2.data);
@@ -71,7 +67,7 @@ class Profile extends React.Component {
 
     doLogout = async (e) => {
       e.preventDefault();
-      await axios.get(`http://localhost:${port}/auth/logout`, {withCredentials: true})
+      await axios.get(`${urlRoot}${port}/auth/logout`, {withCredentials: true})
       .then(res => {
         if (!res.data.login) {
           console.log("logout success!");
@@ -180,13 +176,3 @@ class Profile extends React.Component {
 }
 
 export default Profile;
-
-
-{/* <p>queue screen</p>
-            <strong>
-              Hey {this.state.username}, welcome to Queue!
-            </strong>
-            <img src={this.state.avatarURL}></img>
-            <button onClick={this.doLogout}>
-                Log out
-            </button> */}

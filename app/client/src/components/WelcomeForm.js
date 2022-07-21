@@ -1,12 +1,13 @@
-import React, { Component } from "react";
+import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Form, Field } from "@progress/kendo-react-form";
 import { MultiSelect } from "@progress/kendo-react-dropdowns";
-import { Slider, SliderLabel } from "@progress/kendo-react-inputs";
-import { countries, schools, games } from "./templates";
+import { schools, games } from "./templates";
 import { gameTemplates } from "../assets/js/gameTemplates";
 import '@progress/kendo-theme-default/dist/all.css';
+const port = process.env.PORT || 3001;
+const urlRoot = process.env.URL_ROOT || "http://localhost:";
 
 
 // USING KendoUI trial: https://www.telerik.com/kendo-react-ui/my-license/
@@ -158,7 +159,7 @@ const GameBox = ({ gameName, finalCommand}) => {
                   if (splits[0].charAt(0) == 'i') {
                     let lower = parseInt(splits[0].substr(1)); // 1
                     let upper = parseInt(splits[1]); // 250
-                    if (lower !=NaN && upper != NaN) {
+                    if (!isNaN(lower) && !isNaN(upper)) {
                       return (
                         <div>
                           <input 
@@ -248,12 +249,12 @@ export default function WelcomeForm(props) {
       games: gameObjects
     }
     console.log(`SENDING EDITITEMS: `, editItems);
-    axios.patch("http://localhost:3001/api/editProfile", editItems, {withCredentials: true})
+    axios.patch(`${urlRoot}${port}/api/editProfile`, editItems, {withCredentials: true})
     .then(async res => {
       console.log("editProfile res: ", res.status);
       if (res.status == 200) {
         console.log(`SENDING GAMES: `, gameItems);
-        axios.post("http://localhost:3001/api/addGame", gameItems, {withCredentials: true})
+        axios.post(`${urlRoot}${port}/api/addGame`, gameItems, {withCredentials: true})
         .then(res2 => {
           console.log("addGame res: ", res2.status);
           navigate("/queue"); // redirect to main page!

@@ -1,10 +1,6 @@
 import React from 'react';
 
 export default function FriendRow(props) {
-    let findImg = (id) => {
-        return `../assets/games/${id}.png`;
-    }
-
     return(
         <div class="row friendRow">
             <div class="col-auto align-self-center"><img class="img-fluid rounded-circle friendIcon" src={props.friend.avatar} /><span>{props.friend.name}<br /></span></div>

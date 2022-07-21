@@ -6,16 +6,15 @@ import './assets/bootstrap/css/bootstrap.min.css';
 import './assets/stylesheets/styles.css';
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-
-import Header from './components/Header.js';
 import Queue from './pages/Queue.js';
 import Home from './pages/Home.js';
 import Settings from './pages/Settings.js';
 import Friends from './pages/Friends.js';
 import Profile from './pages/Profile.js';
 import Welcome from './pages/Welcome.js';
-import Blocked from './pages/Blocked.js'
+import Blocked from './pages/Blocked.js';
+if (!(process.env.NODE_ENV === "production"))
+  require('dotenv').config();
 console.log("Hello!");
 
 function App() {
