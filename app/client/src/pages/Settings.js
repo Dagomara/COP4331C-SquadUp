@@ -99,7 +99,7 @@ class Settings extends React.Component {
                     <div className="row mb-3">
                         <div className="col-lg-4">
                         <div className="card mb-3">
-                            <div className="card-body text-center shadow"><img className="rounded-circle mb-3 mt-4" src="assets/img/avatars/avatar3.jpeg" width={160} height={160} />
+                            <div className="card-body text-center shadow"><img className="rounded-circle mb-3 mt-4" src={this.state.avatarURL} width={160} height={160} />
                             <div>
                                 <p className="profile-username"><span>@</span>{this.state.username}<span>#1234</span></p>
                                 <p className="profile-subheading">{this.state.school || "No School"}, {this.state.gender || "No Gender"}<br /></p>

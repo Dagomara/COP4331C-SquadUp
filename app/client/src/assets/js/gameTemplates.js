@@ -30,9 +30,7 @@ export const gameTemplates = {
         "filters": {
             "level": "i1-3000",
             "rank": ["Unranked","Bronze", "Silver","Gold","Platinum","Diamond","Master","Grandmaster"],
-            "positions": ["Tank", "Damage", "Support"],
-            "wins": "i",
-            "losses": "i"
+            "positions": ["Tank", "Damage", "Support"]
         }
     },
     "Rocket League": {
@@ -58,7 +56,7 @@ export const gameTemplates = {
         "gameID": 2,
         "name": "Valorant",
         "filters": {
-          "level": "iIron1 - Radiant",
+          "level": "i0-20",
           "positions": ["duelist", "initiator", "controller", "sentinel"],
           "characters": ["astra", "brimstone", "omen", "viper", "phoenix", "jett", "yoru", "raze", "reyna", "neon", "breach", "fade", "kay/o", "skye", "sova", "chamber", "cypher", "killjoy", "sage"],
           "gamemodes": ["unrated", "competitive", "spike rush", "deathmatch", "escalation", "replication"]

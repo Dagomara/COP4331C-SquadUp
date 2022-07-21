@@ -1,6 +1,9 @@
 import React, { Component } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { Form, Field } from "@progress/kendo-react-form";
 import { MultiSelect } from "@progress/kendo-react-dropdowns";
+import { Slider, SliderLabel } from "@progress/kendo-react-inputs";
 import { countries, schools, games } from "./templates";
 import { gameTemplates } from "../assets/js/gameTemplates";
 import '@progress/kendo-theme-default/dist/all.css';
@@ -141,16 +144,54 @@ const GameBox = ({ gameName, finalCommand}) => {
             </div>
             <div className="col align-self-center">
               {/* `field` -- the current filter being rendered -- is passed as `name` when updating text in onChange*/}
-              <input
-                className="form-control"
-                onChange={((e) => {
+              {(()=>{
+                let changeFunct = ((e) => {
                   console.log(`Setting ${e.target.name}: ${e.target.value}...`);
                   setField(e.target.name, e.target.value);
                   console.log(`Giving ${gameName} its settings:`, gameSettings);
                   finalCommand(gameName, gameSettings);
-                })}
-                name={field}
-                type="text" />
+                });
+                // see if template field is an iRange :) (ex: level: "i1-250")
+                if (typeof template[field] === 'string' || template[field] instanceof String) {
+                  // ["i1", "250"]
+                  let splits = template[field].split("-");
+                  if (splits[0].charAt(0) == 'i') {
+                    let lower = parseInt(splits[0].substr(1)); // 1
+                    let upper = parseInt(splits[1]); // 250
+                    if (lower !=NaN && upper != NaN) {
+                      return (
+                        <div>
+                          <input 
+                            type="number"
+                            name={field}
+                            min={lower} max={upper}
+                            
+                            onChange={changeFunct}
+                            step="1"/>
+                        </div>
+                        
+                      );
+                    }
+                  }
+                  // should never happen, but just in case!
+                  return (
+                    <input
+                      className="form-control"
+                      onChange={changeFunct}
+                      name={field}
+                      type="text" />
+                  );
+                }
+                else
+                  return (
+                    <MultiSelect
+                      name={field}
+                      className="form-control form-control-user w-100"
+                      data={template[field]}
+                      onChange={changeFunct}/>
+                  );
+              })()}
+              
             </div>
           </div>)
         })
@@ -171,6 +212,8 @@ export default function WelcomeForm(props) {
   const backpedalFormStep = () => {
       setFormStep(cur => cur - 1);
   }
+
+  const navigate = useNavigate();
 
   // will be set up like the `games` object in UserSchema. 
   const [gameObjects, setGameObjects] = React.useState([]);
@@ -193,14 +236,33 @@ export default function WelcomeForm(props) {
         gameObjects.splice(ind, 1);
       }
     });
-    console.log(`
-      Username: ${data.username}
-      Schools: ${data.schools}
-      Gender: ${data.gender}
-      Games: ${data.games}
-      Accepted Terms: ${data.acceptedTerms}
-      Game Objects: `, gameObjects, JSON.stringify(gameObjects, null, 2)
-    );
+    // editProfile call:
+    const editItems = {
+      discordID: props.discID,
+      username: data.username || props.username,
+      gender: data.gender || undefined,
+      school: data.schools || undefined
+    };
+    const gameItems = {
+      discordID: props.discID,
+      games: gameObjects
+    }
+    console.log(`SENDING EDITITEMS: `, editItems);
+    axios.patch("http://localhost:3001/api/editProfile", editItems, {withCredentials: true})
+    .then(async res => {
+      console.log("editProfile res: ", res.status);
+      if (res.status == 200) {
+        console.log(`SENDING GAMES: `, gameItems);
+        axios.post("http://localhost:3001/api/addGame", gameItems, {withCredentials: true})
+        .then(res2 => {
+          console.log("addGame res: ", res2.status);
+          navigate("/queue"); // redirect to main page!
+        }).catch((err)=>{console.log("addGame Error!\n", err);})
+      }
+    })
+    .catch((err)=>{
+      console.log("editProfile Error!\n", err);
+    });
     
     event.preventDefault();
   }
@@ -246,7 +308,6 @@ export default function WelcomeForm(props) {
                           name="username"
                           fieldType="text"
                           component={Input}
-                          validator={[requiredValidator]} 
                           placeholder={`${props.username}`} 
                           value={`@${props.username}`} 
                           classNames="form-control form-control-user text-black"/>

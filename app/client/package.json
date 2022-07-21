@@ -6,6 +6,7 @@
     "@progress/kendo-licensing": "^1.2.2",
     "@progress/kendo-react-dropdowns": "^5.5.0",
     "@progress/kendo-react-form": "^5.5.0",
+    "@progress/kendo-react-inputs": "^5.5.0",
     "@progress/kendo-theme-default": "^5.5.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
