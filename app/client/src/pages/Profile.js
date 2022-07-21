@@ -44,17 +44,19 @@ class Profile extends React.Component {
             avatarURL: `https://cdn.discordapp.com/avatars/${res.data.discordId}/${res.data.avatar}.png`,
             tag: res.data.tag,
             status: "online",
-            games: []
+            games: undefined
           });
           await axios.post(`http://localhost:${port}/api/viewProfile`, {discordID: this.state.discordId})
         .then(res2 => {
             if (res2.data) {
                 console.log("res2.data: ", res2.data);
                 this.setState({
-                    games: res2.data.games,
                     gender: res2.data.gender,
                     school: res2.data.school,
                 });
+                this.setState({
+                    games: res2.data.games
+                })
                 console.log("updated state w/ new games: ", this.state);
             }
         })
@@ -148,12 +150,15 @@ class Profile extends React.Component {
                                                 {(() => {
                                                     if (this.state.games != undefined && this.state.games.length > 0) {
                                                         return (
-                                                        this.state.games.map((game, index) => (
-                                                        <GameRow gameID={game.gameID} />
-                                                        )));
+                                                        this.state.games.map((game, index) => {
+                                                            console.log(game);
+                                                            return (
+                                                                <GameRow gameID={game.gameID} />
+                                                            )
+                                                        }));
                                                     }
                                                     else {
-                                                        return (<p class="away">no games lol</p>);
+                                                        return (<p class="away">No games? Lame.</p>);
                                                     }
                                                 })()}
                                             </div>

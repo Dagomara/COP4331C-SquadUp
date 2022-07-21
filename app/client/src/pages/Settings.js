@@ -88,7 +88,7 @@ class Settings extends React.Component {
         <div className='Profile' id='page-top'>
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
             <div id="wrapper">
-            <Navbar username={this.state.username} avatarURL={this.state.avatarURL} page="profile"/>
+            <Navbar username={this.state.username} avatarURL={this.state.avatarURL} page="settings"/>
             <div className="d-flex flex-column" id="content-wrapper">
                 <div id="content">
                 <div className="non-semantic-protector">
