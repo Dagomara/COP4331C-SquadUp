@@ -6,8 +6,8 @@ import { MultiSelect } from "@progress/kendo-react-dropdowns";
 import { schools, games } from "./templates";
 import { gameTemplates } from "../assets/js/gameTemplates";
 import '@progress/kendo-theme-default/dist/all.css';
-const port = process.env.PORT || 3001;
-const urlRoot = process.env.URL_ROOT || "http://localhost:";
+const clientRoot = process.env.URL_ROOT_CLIENT || "http://localhost:3000";
+const serverRoot = process.env.URL_ROOT_SERVER || "http://localhost:3001";
 
 
 // USING KendoUI trial: https://www.telerik.com/kendo-react-ui/my-license/
@@ -249,12 +249,12 @@ export default function WelcomeForm(props) {
       games: gameObjects
     }
     console.log(`SENDING EDITITEMS: `, editItems);
-    axios.patch(`${urlRoot}${port}/api/editProfile`, editItems, {withCredentials: true})
+    axios.patch(`${serverRoot}/api/editProfile`, editItems, {withCredentials: true})
     .then(async res => {
       console.log("editProfile res: ", res.status);
       if (res.status == 200) {
         console.log(`SENDING GAMES: `, gameItems);
-        axios.post(`${urlRoot}${port}/api/addGame`, gameItems, {withCredentials: true})
+        axios.post(`${serverRoot}/api/addGame`, gameItems, {withCredentials: true})
         .then(res2 => {
           console.log("addGame res: ", res2.status);
           navigate("/queue"); // redirect to main page!

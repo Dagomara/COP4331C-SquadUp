@@ -4,12 +4,11 @@ const path = require('path');
 const User = require('../db/UserSchema');
 const cors = require('cors')
 require('dotenv').config();
+const clientRoot = process.env.URL_ROOT_CLIENT;
+const serverRoot = process.env.URL_ROOT_SERVER;
 
 // CORS middlewares for /api
-if (process.env.NODE_ENV === "production")
-  var allowlist = ['https://cop4331-squadup.herokuapp.com:3000', 'https://cop4331-squadup.herokuapp.com:3000'];
-else
-  var allowlist = ['http://localhost:3000', 'http://localhost:3001'];
+var allowlist = [clientRoot, serverRoot];
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (allowlist.indexOf(req.header('Origin')) !== -1) {

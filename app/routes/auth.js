@@ -4,11 +4,10 @@ const url = require('url');
 const guildID = process.env.GUILD_ID;
 const User = require('../db/UserSchema');
 const cors = require('cors');
+const clientRoot = process.env.URL_ROOT_CLIENT;
+const serverRoot = process.env.URL_ROOT_SERVER;
 
-if (process.env.NODE_ENV === "production")
-  var allowlist = ['https://cop4331-squadup.herokuapp.com:3000', 'https://cop4331-squadup.herokuapp.com:3000'];
-else
-  var allowlist = ['http://localhost:3000', 'http://localhost:3001'];
+var allowlist = [clientRoot, serverRoot];
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (allowlist.indexOf(req.header('Origin')) !== -1) {
@@ -36,7 +35,7 @@ router.get("/callback", cors(corsOptionsDelegate), async (req, res) => {
         res.send("No access code returned from discord")
     }
     else {
-        let redirectUri = process.env.URL_ROOT+process.env.PORT+"/auth/callback";
+        let redirectUri = serverRoot+"/auth/callback";
         // make form for our site
         const data = {
             "client_id": process.env.CLIENT_ID,
@@ -155,9 +154,9 @@ router.get("/callback", cors(corsOptionsDelegate), async (req, res) => {
               //req.session.cookie.discordID = req.session.userdata.id;
               console.log("redirect!");
               if (isUserNew)
-                res.redirect(process.env.URL_ROOT+"3000/welcome");
+                res.redirect(clientRoot+"/welcome");
               else 
-                res.redirect(process.env.URL_ROOT+"3000/queue");
+                res.redirect(clientRoot+"/queue");
               }).catch((error) => {
                 console.log(error);
             });
@@ -182,7 +181,7 @@ router.get("/getUserData", cors(corsOptionsDelegate), (req, res)=>{
     }
     else{
         //console.log(req);
-        // res.set("Access-Control-Allow-Origin", process.env.URL_ROOT+"3000"); 
+        // res.set("Access-Control-Allow-Origin", clientRoot); 
         // res.set("Access-Control-Allow-Credentials", "true");
         // res.set("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
         // res.set("Access-Control-Allow-Headers", "Content-Type, Depth, User-Agent, X-File-Size, X-Requested-With, If-Modified-Since, X-File-Name, Cache-Control");
@@ -200,7 +199,7 @@ router.get("/getUserData", cors(corsOptionsDelegate), (req, res)=>{
 // Log out
 router.get('/logout', cors(corsOptionsDelegate), (req, res) => {
     if (req.session.userdata) {
-        // res.set("Access-Control-Allow-Origin", process.env.URL_ROOT+"3001"); 
+        // res.set("Access-Control-Allow-Origin", serverRoot); 
         console.log(`Logging out ${req.session.userdata.username}...`);
         delete req.session.userdata;
         //delete req.session.cookie;

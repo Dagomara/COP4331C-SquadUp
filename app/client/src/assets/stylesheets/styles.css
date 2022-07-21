@@ -421,8 +421,10 @@ body {
   color: #808080 !important;
 }
 
-.blocked {
-  color: #000000 !important;
+.unblockButton {
+  color: white;
+  text-align: right;
+  margin-left: auto !important;
 }
 
 html, body {

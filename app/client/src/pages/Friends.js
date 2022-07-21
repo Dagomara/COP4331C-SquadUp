@@ -2,8 +2,8 @@ import React from 'react';
 import axios from "axios";
 import Navbar from '../components/Navbar';
 import FriendRow from '../components/FriendRow';
-const port = process.env.PORT || 3001;
-const urlRoot = process.env.URL_ROOT || "http://localhost:";
+const clientRoot = process.env.URL_ROOT_CLIENT || "http://localhost:3000";
+const serverRoot = process.env.URL_ROOT_SERVER || "http://localhost:3001";
 
 
 //axios.method('url', data(if needed), {withCredentials: true})
@@ -32,7 +32,7 @@ class Friends extends React.Component {
     // detects user login status, kicks them away if not logged in
     // GETTING THE USER DATA
     componentDidMount = async () => {
-      await axios.get(`${urlRoot}${port}/auth/getUserData`, {withCredentials: true})
+      await axios.get(`${serverRoot}/auth/getUserData`, {withCredentials: true})
       .then(async res => {
         console.log("res" + res.data.login);
         if(res.data.login) {
@@ -48,7 +48,7 @@ class Friends extends React.Component {
             friends: []
           });
 
-          await axios.post(`${urlRoot}${port}/api/viewFriends`, {discordID: this.state.discordId})
+          await axios.post(`${serverRoot}/api/viewFriends`, {discordID: this.state.discordId})
           .then(res2 => {
             if (res2.data) {
               console.log("viewFriends data: ", res2.data);
@@ -58,7 +58,7 @@ class Friends extends React.Component {
 
           console.log(this.state.friendIDs);
           this.state.friendIDs.forEach(async (id) => {
-            await axios.post(`${urlRoot}${port}/api/viewProfile`, {discordID: id})
+            await axios.post(`${serverRoot}/api/viewProfile`, {discordID: id})
             .then(res2 => {
                 if (res2.data) {
                     console.log("res2.data: ", res2.data);

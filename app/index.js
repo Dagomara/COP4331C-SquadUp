@@ -15,11 +15,9 @@ const database = require('./db/connect');
 const corsOptions = {
     methods: 'GET,POST,PATCH,DELETE,OPTIONS',
     optionsSuccessStatus: 200,
-    origin: 'http://localhost:3000', // do not write '*'
     credentials: true,
+    origin: process.env.URL_ROOT_CLIENT // do not write '*'
 };
-
-
 
 app.use(cors(corsOptions));
 app.use(bodyParser.json());

@@ -2,8 +2,8 @@ import React from 'react';
 import axios from "axios";
 import { withRouter } from "react-router-dom";
 import Navbar from '../components/Navbar';
-const port = process.env.PORT || 3001;
-const urlRoot = process.env.URL_ROOT || "http://localhost:";
+const clientRoot = process.env.URL_ROOT_CLIENT || "http://localhost:3000";
+const serverRoot = process.env.URL_ROOT_SERVER || "http://localhost:3001";
 
 
 //axios.method('url', data(if needed), {withCredentials: true})
@@ -23,7 +23,7 @@ class Queue extends React.Component {
     // detects user login status, kicks them away if not logged in
     // GETTING THE USER DATA
     componentDidMount = async () => {
-      await axios.get(`${urlRoot}${port}/auth/getUserData`, {withCredentials: true})
+      await axios.get(`${serverRoot}/auth/getUserData`, {withCredentials: true})
       .then(res => {
         console.log("res" + res.data.login);
         if(res.data.login) {
@@ -45,7 +45,7 @@ class Queue extends React.Component {
 
     doLogout = async (e) => {
       e.preventDefault();
-      await axios.get(`${urlRoot}${port}/auth/logout`, {withCredentials: true})
+      await axios.get(`${serverRoot}/auth/logout`, {withCredentials: true})
       .then(res => {
         if (!res.data.login) {
           console.log("logout success!");
