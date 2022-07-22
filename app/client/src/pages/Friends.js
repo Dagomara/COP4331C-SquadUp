@@ -2,8 +2,16 @@ import React from 'react';
 import axios from "axios";
 import Navbar from '../components/Navbar';
 import FriendRow from '../components/FriendRow';
-const clientRoot = process.env.URL_ROOT_CLIENT || "http://localhost:3000";
-const serverRoot = process.env.URL_ROOT_SERVER || "http://localhost:3001";
+import { HEROKU_ROOT_SERVER, HEROKU_ROOT_CLIENT, CLIENT_ID,
+     LOCALHOST_ROOT_SERVER, LOCALHOST_ROOT_CLIENT } from '../assets/js/keys';
+var serverRoot;
+if (process.env.NODE_ENV == "production") {
+    serverRoot = HEROKU_ROOT_SERVER;
+}
+else {
+    serverRoot = LOCALHOST_ROOT_SERVER;
+}
+const clientId = CLIENT_ID;
 
 
 //axios.method('url', data(if needed), {withCredentials: true})
