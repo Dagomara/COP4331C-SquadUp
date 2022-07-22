@@ -1,18 +1,22 @@
 // (MOTL): "More On That Later"
 
 // user sends this first
-socket.on("queue-request", {discordId: 321321,
+socket.on("queue-request", {
+  discordId: 321321,
   gameID: 13,
   players_needed: 5,
   filters: {}
 }, () => {
   for item in searchingQueues:
-    if item matches filters:
+    if item.gameID == payload.gameID:
+    if item.players_needed >= 1:
+    if item.filters matches payload.filters:
       make proper queue-request-response;
       send the q-r-r;
       return;
     else:
       start a new, empty queue;
+      put that newQueue object into searchingQueues [];
       send the q-r-r;
       return;
 })
@@ -23,7 +27,8 @@ socket.on("queue-request", {discordId: 321321,
 
 // server sends the player who joined:
 "queue-request-response", {
-  discordId: 091273987,
+  discordId: 321321,
+  gameID: 13,
   queueId: 24,
   ownerId: 190273098,
   players: [],
@@ -45,8 +50,14 @@ socket.on("queue-abandon-request", {
   if discordId == Queue.ownerID {
     send queue-quit-announcement;
   }
-  return;
+  else:
+    send queue-leave-announcment;
 })
+// server sends this to frontend
+"queue-leave-announcement", {
+  queueId: 24,
+  discordId: 321321, // of player who left
+}
 
 // Queue owners can start the game whenever they're ready:
 socket.on("queue-play-request", {
@@ -54,7 +65,7 @@ socket.on("queue-play-request", {
   ownerId: 190273098 // will just be the id of the player who sent the request,
                      // for validation purposes
 }, () => {
-  if (ownerId == searchingQueues.map(o for o.queueId = queueId))
+  if (payload.ownerId == searchingQueues.find(o => (o.queueId = payload.queueId)).ownerID)
     send webhook signal to squadup discord to start game;
     move Queue to playingQueues [];
     send queue-play-announcement;
@@ -76,6 +87,7 @@ socket.on("queue-quit-request", {
   queueId: 24,
   discordId: 6424234 // id of person who requested
 } () => {
+  if there's a queue in playingQueues with queueId == payload.queueId:
   if discordID is in Queue.players:
     send webhook to discord to end game;
     send queue-quit-announcemnt;
@@ -96,9 +108,9 @@ socket.on("queue-quit-request", {
 // The server stores Queues as objects in arrays:
 let newQueue = {
   queueId: 24,
-  game: 5,
+  gameID: 13,
   players_needed: 4,
-  players: [091273987],
+  players: [091273987, 321321],
   filters: {}
 }
 
