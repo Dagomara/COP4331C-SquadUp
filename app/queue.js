@@ -24,47 +24,62 @@ io.on('connection', socket =>{
     socket.on('queue-request', payload =>{
         searchingQueues.forEach(element => {
             if(element.filters == payload.filters) {
-                // send qrr payload
+                io.emit('queue-request-reponse', {
+                    discordId: payload.discordID,
+                    gameID: payload.gameID,
+                    queueId: payload.queueID,
+                    ownerId: payload.ownerID,
+                    players: payload.players
+                })
             }
             else{
-                var q = new queue(payload.queueID, payload.gameID, payload.players_needed, payload.players, payload.filters);
+                let q = new queue(payload.queueID, payload.gameID, payload.players_needed, payload.players, payload.filters);
                 searchingQueues.push(q);
-                // send qrr payload
+                io.emit('queue-request-reponse', {
+                    discordId: payload.discordID,
+                    gameID: payload.gameID,
+                    queueId: payload.queueID,
+                    ownerId: payload.ownerID,
+                    players: payload.players
+                })
                 return;
             }
             return;
         })
     })
 
-    socket.on('queue-request-response', payload =>{
-        
-    })
-
-    socket.on('queue-join-announcement', payload =>{
-        
-    })
-
     socket.on('queue-abandon-request', payload =>{
         if(discordID == payload.queue.ownerID) {
-            //send queue quit anouncement
+            io.emit('queue-quit-announcement', { queueID:payload.queueID })
+        }
+        else{
+            io.emit('queue-leave-announcement', {
+                queueID: payload.queueID,
+                discordID: payload.discordID
+            })
         }
         return;
     })
 
     socket.on('queue-play-request', payload =>{
-        
+        let q = searchingQueues.find(o => (o.queueID - payload.queueID));
+        if(payload.ownerID == q.ownerID) {
+            // webhook signal to squadup discord to start game @mike
+            playingQueues.push(q);
+            searchingQueues.splice(q, 1);
+            io.emit('queue-play-announcement', { queueID: payload.queueID })
+        }
     })
 
-    socket.on('queue-play-announcement', payload =>{
-        
-    })
-
-    socket.on('queue-quit-request', payload =>{
-        
-    })
-
-    socket.on('queue-quit-announcement', payload =>{
-        
+    socket.on('queue-quit-request', payload => {
+        let q = playingQueues.find(o => (o.queueID));
+        if(payload.queueID == q.queueID) {
+            if(q.players.find(payload.discordID)){
+                //send webhook to discord to end game @mike
+                io.emit('queue-quit-announcement', { queueID: payload.queueID})
+            }
+        }
+        return;
     })
 })
 
