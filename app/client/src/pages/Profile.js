@@ -39,9 +39,9 @@ class Profile extends React.Component {
     componentDidMount = async () => {
       await axios.get(`${serverRoot}/auth/getUserData`, {withCredentials: true})
       .then(async res => {
-        console.log("res" + res.data.login);
+        console.log("res.data.login: " + res.data.login);
         if(res.data.login) {
-          this.setState({
+          await this.setState({
             login: true,
             username : res.data.username,
             discordId: res.data.discordId,
@@ -52,19 +52,19 @@ class Profile extends React.Component {
             games: undefined
           });
           await axios.post(`${serverRoot}/api/viewProfile`, {discordID: this.state.discordId})
-        .then(res2 => {
-            if (res2.data) {
-                console.log("res2.data: ", res2.data);
-                this.setState({
-                    gender: res2.data.gender,
-                    school: res2.data.school,
-                });
-                this.setState({
-                    games: res2.data.games
-                })
-                console.log("updated state w/ new games: ", this.state);
-            }
-        })
+          .then(res2 => {
+              if (res2.data) {
+                  console.log("res2.data: ", res2.data);
+                  this.setState({
+                      gender: res2.data.gender,
+                      school: res2.data.school,
+                  });
+                  this.setState({
+                      games: res2.data.games
+                  })
+                  console.log("updated state w/ new games: ", this.state);
+              }
+          })
         }
         else {
           // Redirect to login page if user was not logged in!
@@ -76,13 +76,13 @@ class Profile extends React.Component {
     }
 
     render() {
-        if (this.state.loginRedirect) return (
-          <div className='redirectNotice'>
-            <button className='btn btn-primary'>
-              <a href="/" className='text-white'>Not logged in. Please go to login page!</a>
-            </button>
-          </div>
-        )
+      if (this.state.loginRedirect) return (
+        <div className='redirectNotice'>
+          <button className='btn btn-primary'>
+            <a href="/" className='text-white'>Not logged in. Please go to login page!</a>
+          </button>
+        </div>
+      )
   
       return (
         <div className='Profile' id='page-top'>
@@ -108,36 +108,6 @@ class Profile extends React.Component {
                                 </div>
                             </div>
                             <div class="col-lg-8">
-                                <div class="row mb-3 d-none">
-                                    <div class="col">
-                                        <div class="card text-white bg-primary shadow">
-                                            <div class="card-body">
-                                                <div class="row mb-2">
-                                                    <div class="col">
-                                                        <p class="m-0">Peformance</p>
-                                                        <p class="m-0"><strong>65.2%</strong></p>
-                                                    </div>
-                                                    <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
-                                                </div>
-                                                <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i>&nbsp;5% since last month</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="card text-white bg-success shadow">
-                                            <div class="card-body">
-                                                <div class="row mb-2">
-                                                    <div class="col">
-                                                        <p class="m-0">Peformance</p>
-                                                        <p class="m-0"><strong>65.2%</strong></p>
-                                                    </div>
-                                                    <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
-                                                </div>
-                                                <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i>&nbsp;5% since last month</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="row">
                                     <div class="col">
                                         <div class="card shadow mb-4">
