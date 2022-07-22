@@ -154,10 +154,12 @@ router.get("/callback", cors(corsOptionsDelegate), async (req, res) => {
               //req.session.cookie.discordID = req.session.userdata.id;
               console.log("redirect!");
               if (isUserNew) {
+                console.log("Sending user to welcome...")
                 res.redirect(clientRoot+"/welcome");
                 return;
               }
               else {
+                console.log("Sending user to queue...")
                 res.redirect(clientRoot+"/queue");
                 return;
               }
@@ -173,7 +175,7 @@ router.get("/callback", cors(corsOptionsDelegate), async (req, res) => {
 // GET userData router from **ComponentDidMount** 
 router.get("/getUserData", cors(corsOptionsDelegate), (req, res)=>{
     
-    console.log("tryna get userdata for:", req);
+    console.log("tryna get userdata for this request:", req.session.userdata);
     //console.log("req.session:", req.session);
     if(!req.session.userdata){
         console.log("req.session.userdata is empty!");

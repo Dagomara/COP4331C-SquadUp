@@ -24,14 +24,15 @@ app.use(bodyParser.json());
 
 database.then(() => console.log('Connected to MongoDB.')).catch(err => console.log(err));
 
+app.set('trust proxy', 1) // trust first proxy
 app.use(session({
-    secret: 'some random secret',
+    secret: 'made with love :)',
     cookie: {
         maxAge: 60000 * 60 * 24, // 1 day
-        secure:  process.env.NODE_ENV !== "production"? false : true,
+        secure:  (process.env.NODE_ENV && process.env.NODE_ENV == "production") ? true : false,
         SameSite: "None"
     },
-    saveUninitialized: false, // session management
+    saveUninitialized: true, // session management
     resave: false,
     name: 'discID',
     // Session Store for users to stay logged in
