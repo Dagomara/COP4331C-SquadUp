@@ -38,7 +38,7 @@ socket.on("queue-request", {
 "queue-join-announcement", {
   queueId: 24,
   discordId: 321321, // of player who joined
-  discordAvatar: "912u3098sndofihsoEWu091" // I can get this for you Leo
+  discordAvatar: "912u3098sndofihsoEWu091" // MongoDB call must grab this
 }
 
 // At this point, everyone in the Queue is up-to-date on who's there.

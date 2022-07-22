@@ -32,7 +32,7 @@ router.get("/callback", cors(corsOptionsDelegate), async (req, res) => {
     let isUserNew = false;
     console.log(`callback: code is ${accessCode}`);
     if(!accessCode){
-        res.send("No access code returned from discord")
+        res.send("No access code returned from discord");
     }
     else {
         let redirectUri = serverRoot+"/auth/callback";
@@ -50,11 +50,11 @@ router.get("/callback", cors(corsOptionsDelegate), async (req, res) => {
 
         // Get the access token from disc
         await axios.post("https://discordapp.com/api/oauth2/token", new url.URLSearchParams(data).toString())
-        .then((res) =>{
-            //let resJson = JSON.stringify(res);
-            console.log(`res used beyond:`);
-            console.log(res.data);
-            return res.data;
+        .then((resp) =>{
+            //let respJson = JSON.stringify(resp);
+            console.log(`resp used beyond:`);
+            console.log(resp.data);
+            return resp.data;
         })
         .then(async (response) => {
             console.log(`'authorization': ${response.token_type} ${response.access_token}`);
@@ -107,11 +107,11 @@ router.get("/callback", cors(corsOptionsDelegate), async (req, res) => {
                     console.log(`savedUser: ${savedUser}`);
                     // session save this user
                 }
-
             }).catch((error) => {
                 console.log(error);
             });
             
+            // Get Guild Information (join new users too!)
             console.log("about to do ask for guilds")
             await axios.get('https://discordapp.com/api/users/@me/guilds', {
                 headers: {
@@ -153,17 +153,20 @@ router.get("/callback", cors(corsOptionsDelegate), async (req, res) => {
               
               //req.session.cookie.discordID = req.session.userdata.id;
               console.log("redirect!");
-              if (isUserNew)
+              if (isUserNew) {
                 res.redirect(clientRoot+"/welcome");
-              else 
+                return;
+              }
+              else {
                 res.redirect(clientRoot+"/queue");
-              }).catch((error) => {
+                return;
+              }
+            }).catch((error) => {
                 console.log(error);
             });
           }).catch((error) => {
             console.log(error);
         });
-    
     }
 });
 
@@ -176,8 +179,7 @@ router.get("/getUserData", cors(corsOptionsDelegate), (req, res)=>{
         console.log("no data");
         res.json({
             login : false,
-        })
-        res.redirect('/error');
+        });
     }
     else{
         //console.log(req);
