@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from "axios";
-import { withRouter } from "react-router-dom";
 import Navbar from '../components/Navbar';
 import { HEROKU_ROOT_SERVER, HEROKU_ROOT_CLIENT, CLIENT_ID,
      LOCALHOST_ROOT_SERVER, LOCALHOST_ROOT_CLIENT } from '../assets/js/keys';
@@ -24,7 +23,8 @@ class Queue extends React.Component {
             username : "Loading User",
             discordId: 0,
             avatar: undefined,
-            avatarURL: undefined
+            avatarURL: undefined,
+            loginRedirect: false
         };
       }
 
@@ -34,7 +34,7 @@ class Queue extends React.Component {
       await axios.get(`${serverRoot}/auth/getUserData`, {withCredentials: true})
       .then(res => {
         console.log("res" + res.data.login);
-        if(res.data.login) {
+        if(res.data.login == true) {
           this.setState({
             login: true,
             username : res.data.username,
@@ -44,7 +44,8 @@ class Queue extends React.Component {
           });
         }
         else {
-          res.redirect("/");
+          // Redirect to login page if user was not logged in!
+          this.setState({loginRedirect: true});
         }
       }).catch((err)=>{
         console.log(err);
@@ -57,7 +58,7 @@ class Queue extends React.Component {
       .then(res => {
         if (!res.data.login) {
           console.log("logout success!");
-          this.props.history.push("/");
+          this.setState({loginRedirect: true});
         }
         else
           console.log("something unpoggers happened!");
@@ -68,6 +69,14 @@ class Queue extends React.Component {
     };
 
     render() {
+      if (this.state.loginRedirect) return (
+        <div className='redirectNotice'>
+          <button className='btn btn-primary'>
+            <a href="/" className='text-white'>Not logged in. Please go to login page!</a>
+          </button>
+        </div>
+      )
+
       return (
         <div className='Queue' id='page-top'>
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>

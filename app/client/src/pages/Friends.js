@@ -31,7 +31,8 @@ class Friends extends React.Component {
             status: "offline",
             games: undefined,
             friendIDs: undefined,
-            friends: []
+            friends: [],
+            loginRedirect: false
         };
         // const [friendsList, setFriendsList] = React.useState([]);
       }
@@ -86,7 +87,8 @@ class Friends extends React.Component {
 
         }
         else {
-          res.redirect("/");
+          // Redirect to login page if user was not logged in!
+          this.setState({loginRedirect: true});
         }
       }).catch((err)=>{
         console.log(err);
@@ -94,6 +96,14 @@ class Friends extends React.Component {
     }
 
     render() {
+      if (this.state.loginRedirect) return (
+        <div className='redirectNotice'>
+          <button className='btn btn-primary'>
+            <a href="/" className='text-white'>Not logged in. Please go to login page!</a>
+          </button>
+        </div>
+      )
+
       return (
         <div className='Profile' id='page-top'>
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>

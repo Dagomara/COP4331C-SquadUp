@@ -173,10 +173,10 @@ router.get("/callback", cors(corsOptionsDelegate), async (req, res) => {
 // GET userData router from **ComponentDidMount** 
 router.get("/getUserData", cors(corsOptionsDelegate), (req, res)=>{
     
-    console.log("tryna get userdata");
+    console.log("tryna get userdata for:", req);
     //console.log("req.session:", req.session);
     if(!req.session.userdata){
-        console.log("no data");
+        console.log("req.session.userdata is empty!");
         res.json({
             login : false,
         });

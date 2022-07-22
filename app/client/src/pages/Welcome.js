@@ -30,7 +30,8 @@ class Welcome extends React.Component {
             school: undefined,
             status: "offline",
             games: undefined,
-            formStep: 0
+            formStep: 0,
+            loginRedirect: false
         };
       }
 
@@ -65,30 +66,23 @@ class Welcome extends React.Component {
         })
         }
         else {
-          res.redirect("/");
+          // Redirect to login page if user was not logged in!
+          this.setState({loginRedirect: true});
         }
       }).catch((err)=>{
         console.log(err);
       });
     }
 
-    doLogout = async (e) => {
-      e.preventDefault();
-      await axios.get(`${serverRoot}/auth/logout`, {withCredentials: true})
-      .then(res => {
-        if (!res.data.login) {
-          console.log("logout success!");
-          this.props.history.push("/");
-        }
-        else
-          console.log("something unpoggers happened!");
-      })
-      .catch((err)=>{
-        console.log(err);
-      });
-    };
-
     render() {
+      if (this.state.loginRedirect) return (
+        <div className='redirectNotice'>
+          <button className='btn btn-primary'>
+            <a href="/" className='text-white'>Not logged in. Please go to login page!</a>
+          </button>
+        </div>
+      )
+
       return (
         <div className='splash' id='page-top'>
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
