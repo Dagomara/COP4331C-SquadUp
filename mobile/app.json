@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "owner": "azoomer2",
+    "name": "squadup",
+    "slug": "squadup",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
