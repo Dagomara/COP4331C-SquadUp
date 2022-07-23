@@ -14,7 +14,6 @@ class queue{
         this.players = players;
         this.filters = filters;
     }
-
 }
 const searchingQueues = [];
 const playingQueues = [];
@@ -31,7 +30,7 @@ io.on('connection', socket =>{
                     ownerId: payload.ownerID,
                     players: payload.players
                 })
-            }
+                return}
             else{
                 let q = new queue(payload.queueID, payload.gameID, payload.players_needed, payload.players, payload.filters);
                 searchingQueues.push(q);
