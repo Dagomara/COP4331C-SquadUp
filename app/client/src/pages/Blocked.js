@@ -93,6 +93,7 @@ class Blocked extends React.Component {
         console.log(err);
       });
     }
+    
     unblockPlayer = async (blockedId) => {
       await axios.patch(`${serverRoot}/api/editProfile`, { discordID: this.state.discordId, blocked: blockedId})
       .then(res => {
