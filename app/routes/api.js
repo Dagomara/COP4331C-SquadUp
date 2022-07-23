@@ -38,7 +38,9 @@ router.patch('/editProfile', cors(corsOptionsDelegate), async (req, res) =>
     { $set:{
       username:req.body.username,
       gender:req.body.gender,
-      school:req.body.school,}}
+      school:req.body.school,
+      tag:req.body.tag
+    }}
   );
 
   // Returning the edited profile
@@ -46,7 +48,7 @@ router.patch('/editProfile', cors(corsOptionsDelegate), async (req, res) =>
   .then( (users, err) => {
     if (!err) {
       if (users.length > 0) {
-        let ret = {discordID:users[0].discordID,username:users[0].username,gender:users[0].gender,school:users[0].school};
+        let ret = {discordID:users[0].discordID,username:users[0].username,gender:users[0].gender,school:users[0].school,tag:users[0].tag};
         res.status(200).json(ret);
       }
       else

@@ -49,6 +49,8 @@ class Queue extends React.Component {
               if (res2.data) {
                   console.log("res2.data: ", res2.data);
                   this.setState({
+                      username: res2.data.username,
+                      tag: res2.data.tag,
                       games: res2.data.games
                   });
                   console.log("updated state w/ new games: ", this.state);

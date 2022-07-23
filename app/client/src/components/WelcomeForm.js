@@ -6,6 +6,7 @@ import { MultiSelect } from "@progress/kendo-react-dropdowns";
 import { schools, games } from "./templates";
 import { gameTemplates } from "../assets/js/gameTemplates";
 import '@progress/kendo-theme-default/dist/all.css';
+import { DropDown, Input, SearchSelector } from "../components/formComponents";
 import { HEROKU_ROOT_SERVER, HEROKU_ROOT_CLIENT, CLIENT_ID,
      LOCALHOST_ROOT_SERVER, LOCALHOST_ROOT_CLIENT } from '../assets/js/keys';
 var serverRoot;
@@ -19,90 +20,6 @@ else {
 // USING KendoUI trial: https://www.telerik.com/kendo-react-ui/my-license/
 // `npx kendo-ui-license activate` must be run I think before launching app on new device
 // License expires on 8/18/2022.
-
-const Input = (fieldProps) => {
-  const {
-    fieldType, label, value, visited, touched, valid,
-    onChange, onBlur, onFocus, validationMessage, 
-    placeholder, classNames
-  } = fieldProps;
-  const invalid = !valid && visited;
-  return (
-    <div onBlur={onBlur} onFocus={onFocus}>
-        <input
-          type={fieldType}
-          className={invalid ? "invalid "+classNames : ""+classNames}
-          value={value}
-          onChange={onChange} 
-          placeholder={placeholder} />
-      { invalid && 
-        (<div className="required text-white text-center">{validationMessage}</div>) }
-    </div>
-  );
-};
-
-const DropDown = ({ label, value, valid, visited, options,
-  onChange, onBlur, onFocus, validationMessage, }) => {
-  const invalid = !valid && visited;
-  const defaultClasses = "form-control-user form-select text-black"
-  return (
-    <div onBlur={onBlur} onFocus={onFocus}>
-        <select
-          className={invalid ? "invalid "+defaultClasses : ""+defaultClasses}
-          value={value}
-          onChange={onChange}>
-          <option key=""></option>
-          {options.map(option => (
-            <option key={option}>{option}</option>
-          ))}
-        </select>
-      { invalid && 
-        (<div className="required">{validationMessage}</div>) }
-    </div>
-  )
-}
-
-const SearchSelector = ({ label, value, valid, visited, options,
-  onChange, onBlur, onFocus, validationMessage, classNames }) => {
-  const invalid = !valid && visited;
-  return (
-    <div onBlur={onBlur} onFocus={onFocus}>
-        <MultiSelect
-          className={classNames}
-          data={options}
-          onChange={onChange} 
-          value={value} />
-      { invalid && 
-        (<div className="required">{validationMessage}</div>) }
-    </div>
-  )
-}
-
-const Checkbox = ({ label, visited, valid, onChange, value,
-  validationMessage }) => {
-  const onValueChange = React.useCallback(
-    () => {
-      onChange({ value: !value });
-    },
-    [onChange, value]
-  );
-  const invalid = !valid && visited;
-
-  return (
-    <div>
-      <label>
-        <input
-          type="checkbox"
-          className={invalid ? "invalid" : ""}
-          onChange={onValueChange}
-          value={value} />
-        { label }
-      </label>
-      { invalid && 
-        (<div className="required">{validationMessage}</div>) }
-    </div>
-  );
-};
 
 // takes the GameName and the setGameObjects from the KendoUI Form inside of WelcomeForm
 const GameBox = ({ gameName, finalCommand}) => {

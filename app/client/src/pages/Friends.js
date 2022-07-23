@@ -53,7 +53,7 @@ class Friends extends React.Component {
             avatarURL: `https://cdn.discordapp.com/avatars/${res.data.discordId}/${res.data.avatar}.png`,
             tag: res.data.tag,
             status: "online",
-            friendIDs: undefined,
+            friendIDs: [],
             friends: []
           });
 
@@ -61,7 +61,7 @@ class Friends extends React.Component {
           .then(res2 => {
             if (res2.data) {
               console.log("viewFriends data: ", res2.data);
-              this.state.friendIDs = res2.data;
+              this.setState({friendIDs: res2.data});
             }
           })
 

@@ -56,6 +56,8 @@ class Profile extends React.Component {
               if (res2.data) {
                   console.log("res2.data: ", res2.data);
                   this.setState({
+                      username: res2.data.username,
+                      tag: res2.data.tag,
                       gender: res2.data.gender,
                       school: res2.data.school,
                       games: res2.data.games

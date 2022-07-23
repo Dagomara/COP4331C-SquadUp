@@ -1,6 +1,12 @@
 import React from 'react';
 import axios from "axios";
 import Navbar from '../components/Navbar';
+import { Form, Field } from "@progress/kendo-react-form";
+import { schools } from "../components/templates";
+import { DropDown, Input } from "../components/formComponents";
+
+
+
 import { HEROKU_ROOT_SERVER, HEROKU_ROOT_CLIENT, CLIENT_ID,
      LOCALHOST_ROOT_SERVER, LOCALHOST_ROOT_CLIENT } from '../assets/js/keys';
 var serverRoot;
@@ -13,7 +19,17 @@ else {
 const clientId = CLIENT_ID;
 
 
+const tagValidator = (value) => {
+  let n = parseInt(value);
+  // console.log("value information: ", (value && value.length ? value.length: value));
+  // console.log("n: ", n, !isNaN(n) ? " a real number" : " a NaN");
+  // console.log("in bounds? ", n >= 0 && n < 10000)
+  return (value == "" || (!isNaN(n) && n >= 0 && n < 10000 && value.length == 4)) ? "" : "This tag is invalid!";
+}
+
 //axios.method('url', data(if needed), {withCredentials: true})
+
+
 
 class Settings extends React.Component {
     constructor(props){
@@ -24,12 +40,39 @@ class Settings extends React.Component {
             discordId: 0,
             avatar: undefined,
             avatarURL: undefined,
-            tag: undefined,
+            tag: "0000",
             gender: undefined,
             school: undefined,
-            status: "offline",
-            games: undefined,
+            saveSuccess: "",
             loginRedirect: false
+        };
+        this.sendSettings = async(data, event) => {
+          console.log("settings sent!");
+          let info = {
+            discordID: this.state.discordId,
+            username: data.username || this.state.username,
+            gender: data.gender || this.state.gender,
+            school: data.school || this.state.school,
+            tag: data.tag || this.state.tag
+          };
+          console.log(info);
+          await axios.patch(`${serverRoot}/api/editProfile`, info)
+          .then(res => {
+            this.setState({
+              saveSuccess: "Success!",
+              username: res.data.username,
+              tag: res.data.tag,
+              gender: res.data.gender,
+              school: res.data.school
+            });
+          }).catch((err)=>{
+            console.log(err);
+            this.setState({
+              saveSuccess: err.message,
+            });
+          });
+        
+          event.preventDefault();
         };
       }
 
@@ -38,7 +81,7 @@ class Settings extends React.Component {
     componentDidMount = async () => {
       await axios.get(`${serverRoot}/auth/getUserData`, {withCredentials: true})
       .then(async res => {
-        console.log("res" + res.data.login);
+        console.log("res.data.login: " + res.data.login);
         if(res.data.login) {
           this.setState({
             login: true,
@@ -46,22 +89,21 @@ class Settings extends React.Component {
             discordId: res.data.discordId,
             avatar: res.data.avatar,
             avatarURL: `https://cdn.discordapp.com/avatars/${res.data.discordId}/${res.data.avatar}.png`,
-            tag: res.data.tag,
-            status: "online",
-            games: []
+            tag: res.data.tag
           });
-          await axios.post(`${serverRoot}/api/viewProfile`, {discordID: this.state.discordId})
-        .then(res2 => {
-            if (res2.data) {
-                console.log("res2.data: ", res2.data);
-                this.setState({
-                    games: res2.data.games,
-                    gender: res2.data.gender,
-                    school: res2.data.school,
-                });
-                console.log("updated state w/ new games: ", this.state);
-            }
-        })
+          await axios.post(`${serverRoot}/api/viewProfile`, {discordID: res.data.discordId})
+          .then(res2 => {
+              if (res2.data) {
+                  console.log("res2.data: ", res2.data);
+                  this.setState({
+                      username: res2.data.username,
+                      tag: res2.data.tag,
+                      gender: res2.data.gender,
+                      school: res2.data.school
+                  });
+                  console.log("updated state w/ gender+school: ", this.state);
+              }
+          })
         }
         else {
           // Redirect to login page if user was not logged in!
@@ -93,84 +135,97 @@ class Settings extends React.Component {
                     <h1 className="ribbon"><em><strong className="text-uppercase fw-bolder ribbon-content">My Settings</strong></em></h1>
                     </div>
                     <div className="container-fluid">
-                    <div className="row mb-3">
+                    <div className="row mb-3 text-white">
                         <div className="col-lg-4">
                         <div className="card mb-3">
                             <div className="card-body text-center shadow"><img className="rounded-circle mb-3 mt-4" src={this.state.avatarURL} width={160} height={160} />
                             <div>
-                                <p className="profile-username"><span>@</span>{this.state.username}<span>#1234</span></p>
-                                <p className="profile-subheading">{this.state.school || "No School"}, {this.state.gender || "No Gender"}<br /></p>
+                                <p className="profile-username"><span>@</span>{this.state.username}<span>#{this.state.tag}</span></p>
+                                <p className="profile-subheading text-capitalize">{this.state.school || "No School"}, {this.state.gender || "No Gender"}<br /></p>
                             </div>
                             </div>
                         </div>
                         </div>
                         <div className="col-lg-8">
-                        <div className="row mb-3 d-none">
-                            <div className="col">
-                            <div className="card text-white bg-primary shadow">
-                                <div className="card-body">
-                                <div className="row mb-2">
-                                    <div className="col">
-                                    <p className="m-0">Peformance</p>
-                                    <p className="m-0"><strong>65.2%</strong></p>
-                                    </div>
-                                    <div className="col-auto"><i className="fas fa-rocket fa-2x" /></div>
-                                </div>
-                                <p className="text-white-50 small m-0"><i className="fas fa-arrow-up" />&nbsp;5% since last month</p>
-                                </div>
-                            </div>
-                            </div>
-                            <div className="col">
-                            <div className="card text-white bg-success shadow">
-                                <div className="card-body">
-                                <div className="row mb-2">
-                                    <div className="col">
-                                    <p className="m-0">Peformance</p>
-                                    <p className="m-0"><strong>65.2%</strong></p>
-                                    </div>
-                                    <div className="col-auto"><i className="fas fa-rocket fa-2x" /></div>
-                                </div>
-                                <p className="text-white-50 small m-0"><i className="fas fa-arrow-up" />&nbsp;5% since last month</p>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
                         <div className="row">
                             <div className="col">
-                            <div className="card shadow mb-3">
-                                <div className="card-header py-3">
-                                <p className="m-0 fw-bold">User Settings</p>
+                            <Form
+                                onSubmit={this.sendSettings}
+                                initialValues={{}}
+                                render={(formRenderProps) => (
+                                  <div className="card shadow mb-3">
+                                    <div className="card-header py-3">
+                                    <p className="m-0 fw-bold">User Settings</p>
+                                    </div>
+                                    <div className="card-body">
+                                    <form onSubmit={formRenderProps.onSubmit}>
+                                        <div className="row">
+                                        <div className="col">
+                                            <div className="mb-3">
+                                              <label className="form-label" htmlFor="username">
+                                                <strong>Username</strong>
+                                              </label>
+                                              <Field
+                                                name="username"
+                                                fieldType="text"
+                                                value=""
+                                                component={Input}
+                                                placeholder={`${this.state.username}`}
+                                                classNames="form-control text-black"/>
+                                            </div>
+                                        </div>
+                                        <div className="col">
+                                            <div className="mb-3">
+                                              <label className="form-label" htmlFor="tag">
+                                                <strong>Tag</strong>
+                                              </label>
+                                              <Field
+                                                name="tag"
+                                                fieldType="text"
+                                                validator={tagValidator}
+                                                component={Input}
+                                                placeholder={`${this.state.tag}`}
+                                                value=""
+                                                classNames="form-control text-black"/>
+                                            </div>
+                                        </div>
+                                        </div>
+                                        <div className="row">
+                                        <div className="col">
+                                            <div className="mb-3">
+                                              <label className="form-label" htmlFor="school">
+                                                <strong>School</strong>
+                                              </label>
+                                              <Field 
+                                                name="school"
+                                                component={DropDown}
+                                                value=""
+                                                options={schools}/>
+                                            </div>
+                                        </div>
+                                        <div className="col">
+                                            <div className="mb-3">
+                                              <label className="form-label" htmlFor="gender">
+                                                <strong>Gender</strong>
+                                              </label>
+                                              <Field 
+                                                name="gender"
+                                                value=""
+                                                component={DropDown}
+                                                options={["Male", "Female", "Other"]}/>
+                                            </div>
+                                        </div>
+                                        </div>
+                                        <div className="mb-3">
+                                          <button className="btn btn-primary btn-sm bg-gradient-primary" type="submit" disabled={!formRenderProps.allowSubmit}>Save Settings</button>
+                                          <p className={this.state.saveSuccess == "Success!" ? "online" : "away"}>{this.state.saveSuccess}</p>
+                                        </div>
+                                    </form>
+                                    </div>
                                 </div>
-                                <div className="card-body">
-                                <form>
-                                    <div className="row">
-                                    <div className="col">
-                                        <div className="mb-3"><label className="form-label" htmlFor="username"><strong>Username</strong></label><input className="form-control" type="text" id="username" placeholder={this.state.username} name="username" /></div>
-                                    </div>
-                                    <div className="col">
-                                        <div className="mb-3"><label className="form-label" htmlFor="tag"><strong>Tag</strong></label><input className="form-control" type="email" id="tag" placeholder={this.state.tag} name="emailtag" /></div>
-                                    </div>
-                                    </div>
-                                    <div className="row">
-                                    <div className="col">
-                                        <div className="mb-3"><label className="form-label" htmlFor="school"><strong>School</strong></label><select className="form-select" name="school">
-                                            <option value={1} selected>{this.state.school}</option>
-                                            <option value={2}>Female</option>
-                                            <option value={3}>Other</option>
-                                        </select></div>
-                                    </div>
-                                    <div className="col">
-                                        <div className="mb-3"><label className="form-label" htmlFor="gender"><strong>Gender</strong></label><select className="form-select" name="gender">
-                                            <option value={1} selected>Male</option>
-                                            <option value={2}>Female</option>
-                                            <option value={3}>Other</option>
-                                        </select></div>
-                                    </div>
-                                    </div>
-                                    <div className="mb-3"><button className="btn btn-primary btn-sm bg-gradient-primary" type="submit">Save Settings</button></div>
-                                </form>
-                                </div>
-                            </div>
+                                )}>
+                            </Form>
+                            
                             </div>
                         </div>
                         <div className="row">
@@ -185,7 +240,7 @@ class Settings extends React.Component {
                         </div>
                         <div className="row">
                             <div className="col">
-                            <p>Paragraph</p>
+                            <p/>
                             </div>
                         </div>
                         <div className="row">
