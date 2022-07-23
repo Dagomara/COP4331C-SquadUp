@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from "axios";
 import Navbar from '../components/Navbar';
+import io from 'socket.io-client';
+
 import { HEROKU_ROOT_SERVER, HEROKU_ROOT_CLIENT, CLIENT_ID,
      LOCALHOST_ROOT_SERVER, LOCALHOST_ROOT_CLIENT } from '../assets/js/keys';
 var serverRoot;
@@ -11,6 +13,8 @@ else {
     serverRoot = LOCALHOST_ROOT_SERVER;
 }
 const clientId = CLIENT_ID;
+
+const socket = io(serverRoot);
 
 
 //axios.method('url', data(if needed), {withCredentials: true})

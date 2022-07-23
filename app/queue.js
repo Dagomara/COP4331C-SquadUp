@@ -1,5 +1,6 @@
 const server = require('http').createServer(app);
 const {Webhook} = require('discord-webhook-node');
+const webhookURL = process.env.WEBHOOK_URL;
 
 const io = require('socket.io')(server, {
     cors:{
@@ -86,7 +87,7 @@ io.on('connection', socket =>{
         let index = searchingQueues.findIndex(o => (o.queueId == payload.queueId));
         if(payload.ownerId == q.ownerId) {
             // webhook signal to squadup discord to start game @mike
-            const hook = new Webhook("https://discord.com/api/webhooks/1000140654434844793/HusQU4VJ0S5u7s-daw7aGMxiES5cMBDIFB4Fin7KDmZcc6mtPxj0toN5xuRmHCr5Ph3h");
+            const hook = new Webhook(webhookURL);
             hook.send("start" + q.players.join(" "));
 
             console.log("searchingQueues before: ", searchingQueues);
@@ -101,7 +102,7 @@ io.on('connection', socket =>{
         let q = playingQueues.find(o => (o.queueId == payload.queueId));
         if(q.players.find(o => (o == payload.discordId))){
             //send webhook to discord to end game @mike
-            const hook = new Webhook("https://discord.com/api/webhooks/1000140654434844793/HusQU4VJ0S5u7s-daw7aGMxiES5cMBDIFB4Fin7KDmZcc6mtPxj0toN5xuRmHCr5Ph3h");
+            const hook = new Webhook(webhookURL);
             hook.send("end" + q.players.join(" "));
             io.emit('queue-quit-announcement', { queueId: payload.queueId});
         }
