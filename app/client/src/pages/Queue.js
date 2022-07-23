@@ -152,7 +152,7 @@ class Queue extends React.Component {
                                                           this.setState({
                                                             selectedGame: biggerGame
                                                           });
-                                                          console.log("User picked: ", this.state.selectedGame);
+                                                          console.log("User picked: ", biggerGame);
                                                           e.preventDefault();
                                                         };
                                                         return (
@@ -184,7 +184,7 @@ class Queue extends React.Component {
                                         </div>
                                         <div class="card-body">
                                           <div class="row mb-3">
-                                          <div className="col-sm-12 col-xl-12 align-self-center mb-3 mb-sm-0 splash-box py-4">
+                                            <div className="col-sm-12 col-xl-12 align-self-center mb-3 mb-sm-0 splash-box py-4">
                                               <div className='row'>
                                                 <div className='col-sm-12 col-md-6'>
                                                   <p className="text-white">How many players do you need?</p>
@@ -214,10 +214,10 @@ class Queue extends React.Component {
                                                 </div>
                                               </div>
                                               <div className="row splash-option text-black" >
-                                                <div className="col-sm-12 col-md-3 text-start align-self-center">
+                                                <div className="col-sm-5 col-md-3 text-start align-self-center">
                                                   <p className="w-100 text-capitalize">Voice Call?</p>
                                                 </div>
-                                                <div className="col align-self-center">
+                                                <div className="col">
                                                   <Field 
                                                     name="voiceEnabled"
                                                     component={Checkbox}
@@ -226,30 +226,27 @@ class Queue extends React.Component {
                                               </div>
                                             </div>
                                             <div className="col-sm-12 col-xl-12 align-self-center mb-3 mb-sm-0 splash-box py-4">
-                                              <p className="text-white">Any general settings?</p>
-                                              <div className="row splash-option text-black" >
-                                                <div className="col-sm-12 col-md-3 text-start align-self-center">
-                                                  <p className="w-100 text-capitalize">School</p>
+                                              <div className='row'>
+                                                <div className='col-sm-12 col-md-6'>
+                                                  <p className="text-white">Player Filters:</p>
                                                 </div>
-                                                <div className="col align-self-center">
-                                                  <Field 
-                                                    name="schools"
-                                                    options={schools}
-                                                    component={SearchSelector}
-                                                    classNames="form-control form-control-user w-100" />
-                                                </div>
-                                              </div>
-                                              <div className="row splash-option text-black" >
-                                                <div className="col-sm-12 col-md-3 text-start align-self-center">
-                                                  <p className="w-100 text-capitalize">Voice Call?</p>
-                                                </div>
-                                                <div className="col align-self-center">
-                                                  <Field 
-                                                    name="voiceEnabled"
-                                                    component={Checkbox}
-                                                    classNames="form-control form-control-user w-100" />
+                                                <div className='col-sm-12 col-md-5'>
+                                                  <Slider
+                                                    min={3}
+                                                    max={10}
+                                                    value={this.state.playersNeeded}
+                                                    onChange={this.updatePlayersNeeded}
+                                                  />
                                                 </div>
                                               </div>
+                                            </div>
+                                          </div>
+                                          <div class="row">
+                                            <div class="col">
+                                              <button class="btn btn-primary fw-bold bg-gradient-danger" onClick={() => {this.setState({selectedGame: undefined})}} type="button">&lt;&nbsp;Back</button>
+                                            </div>
+                                            <div class="col text-end">
+                                              <button class="btn btn-primary bg-gradient-primary" type="submit" onClick={formRenderProps.onSubmit}>Submit! &gt;</button>
                                             </div>
                                           </div>
                                         </div>
