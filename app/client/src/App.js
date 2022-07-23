@@ -15,7 +15,7 @@ import Welcome from './pages/Welcome.js';
 import Blocked from './pages/Blocked.js';
 import About from './pages/About.js';
 import FAQ from './pages/FAQ.js';
-import Privacy from './pages/Privact=y.js';
+import Privacy from './pages/Privacy.js';
 // if (!(process.env.NODE_ENV === "production"))
 //   require('dotenv').config();
 console.log("Hello!");

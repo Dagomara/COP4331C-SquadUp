@@ -1,4 +1,4 @@
-.navbar img {
+.static-navbar img {
   max-height: 80px;
 }
 
@@ -13,13 +13,13 @@
   margin: 0 auto;
 }
 
-body {
+.static-body {
   --squadup-purple: #521658;
   --squadup-lightpurple: #936199;
-  --squapup-discpurple: #76608A;
+  --squadup-discpurple: #76608A;
 }
 
-html, body {
+.static-html, .static-body {
   background-color: var(--squadup-purple);
   min-height: 100vh;
   max-height: 100%;
@@ -38,7 +38,7 @@ html, body {
   }
 }
 
-.container-fluid {
+.static-container-fluid {
   background-color: var(--squadup-lightpurple);
   border-radius: 20px;
   max-width: 800px;
@@ -56,6 +56,6 @@ html, body {
 }
 
 .btn {
-  background-color: var(--squapup-discpurple);
+  background-color: var(--squadup-discpurple);
 }
 
