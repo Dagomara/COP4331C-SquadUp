@@ -13,6 +13,8 @@ function About() {
               <p style={{color: 'rgb(0,0,0)', fontSize: '18px'}}>The SquadUp service is all about queueing up with other players of similar skill level to you with one click of a button. With that click of a button you are able to not only play but also chat with the person(s) you have queued up with via Discord. SquadUp is all about bringing gamers together.</p>
             </div>
           </div>
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+          <script src="../assets/js/static.js"></script>
         </div>
       );
 }

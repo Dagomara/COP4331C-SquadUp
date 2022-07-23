@@ -30,7 +30,7 @@ body {
 a.active {
   background-color: #42464D;
   /*width: inherit;*/
-  padding: 0px;
+  padding: 0px auto;
   margin: 0px;
   border-radius: 10px;
   margin-right: 8%;

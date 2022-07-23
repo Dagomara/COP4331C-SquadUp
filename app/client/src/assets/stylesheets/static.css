@@ -2,11 +2,11 @@
   max-height: 80px;
 }
 
-#loginBox .container-fluid {
+#loginBox .static-container-fluid {
   width: 520px;
 }
 
-#loginBox .container-fluid {
+#loginBox .static-container-fluid {
   background-color: var(#936199);
   border-radius: 20px;
   max-width: 800px;
@@ -15,8 +15,9 @@
 
 .static-body {
   --squadup-purple: #521658;
-  --squadup-lightpurple: #936199;
-  --squadup-discpurple: #76608A;
+  --squadup-lightpurple: #ff76c1;
+  --squadup-discpurple: #3d0f68;
+  --clear: rgba(0, 0, 0, 0);
 }
 
 .static-html, .static-body {
@@ -25,7 +26,7 @@
   max-height: 100%;
 }
 
-#loginPane .container-fluid {
+#loginPane .static-container-fluid {
   background-color: var(--squadup-lightpurple);
   border-radius: 20px;
   max-width: 800px;
@@ -33,7 +34,7 @@
 }
 
 @media (min-width: 800px) {
-  #loginPane .container-fluid {
+  #loginPane .static-container-fluid {
     width: 650px;
   }
 }
@@ -46,7 +47,7 @@
 }
 
 @media (min-width: 768px) {
-  .container-fluid {
+  .static-container-fluid {
     width: 520px;
   }
 }
@@ -55,7 +56,27 @@
   color: white;
 }
 
-.btn {
-  background-color: var(--squadup-discpurple);
+.btn-static {
+  background-color: #4262be;
+  border-color: #4262be;
 }
 
+.btn-static:hover {
+  background-color: var(--squadup-discpurple);
+  border-color: var(--squadup-discpurple);
+}
+
+.nav-link-static {
+  background-color: var(--clear) !important;
+}
+
+.nav-item-static {
+  background-color: var(--clear) !important;
+  margin-left:0px !important;
+  margin-top:0px !important;
+  width:auto !important;
+}
+
+.active-static {
+  font-weight: bold !important;
+}

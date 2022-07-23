@@ -5,7 +5,7 @@ import BrandImg from '../assets/img/Squadup with text gradient white.png';
 
 export default function StaticNavbar(props) {
     let activeOrNot = (pg) => {
-        return props.page == pg ? "nav-link active" : "nav-link";
+        return props.page == pg ? "nav-link nav-link-static active active-static" : "nav-link nav-link-static";
     }
     return (
         <nav className="navbar static-navbar navbar-light navbar-expand-md navbar-fixed-top navigation-clean-button" style={{background: 'var(--ucf-gray)', borderRadius: 20, borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomRightRadius: 20, borderBottomLeftRadius: 20, borderStyle: 'none', paddingTop: 0, paddingBottom: '10px'}}>
@@ -13,10 +13,10 @@ export default function StaticNavbar(props) {
               <div><a className="navbar-brand" href="#"><img className="img-fluid" src={BrandImg} /> </a></div>
               <div className="collapse navbar-collapse" id="navcol-1" style={{color: 'rgb(255,255,255)'}}>
                 <ul className="navbar-nav">
-                  <li className="nav-item"><a className={activeOrNot("home")} style={{color: 'rgba(228, 241, 254)', fontWeight: 'bold'}} href="/">Home</a></li>
-                  <li className="nav-item"><a className={activeOrNot("about")} style={{color: 'rgba(228, 241, 254)'}} href="/about">About</a></li>
-                  <li className="nav-item"><a className={activeOrNot("faq")} style={{color: 'rgba(228, 241, 254)'}} href="/faq">FAQ</a></li>
-                  <li className="nav-item"><a className={activeOrNot("privacy")} style={{color: 'rgba(228, 241, 254)'}} href="/privacy">Privacy</a></li>
+                  <li className="nav-item nav-item-static"><a className={activeOrNot("home")} style={{color: 'rgba(228, 241, 254)'}} href="/">Home</a></li>
+                  <li className="nav-item nav-item-static"><a className={activeOrNot("about")} style={{color: 'rgba(228, 241, 254)'}} href="/about">About</a></li>
+                  <li className="nav-item nav-item-static"><a className={activeOrNot("faq")} style={{color: 'rgba(228, 241, 254)'}} href="/faq">FAQ</a></li>
+                  <li className="nav-item nav-item-static"><a className={activeOrNot("privacy")} style={{color: 'rgba(228, 241, 254)'}} href="/privacy">Privacy</a></li>
                 </ul>
               </div>
             </div>
