@@ -13,6 +13,9 @@ import Friends from './pages/Friends.js';
 import Profile from './pages/Profile.js';
 import Welcome from './pages/Welcome.js';
 import Blocked from './pages/Blocked.js';
+import About from './pages/About.js';
+import FAQ from './pages/FAQ.js';
+import Privacy from './pages/Privact=y.js';
 // if (!(process.env.NODE_ENV === "production"))
 //   require('dotenv').config();
 console.log("Hello!");
@@ -29,6 +32,9 @@ function App() {
       <Route path="/friends" index element={<Friends />} />
       <Route path="/welcome" index element={<Welcome />} />
       <Route path="/blocked" index element={<Blocked />} />
+      <Route path="/about" index element={<About />} />
+      <Route path="/faq" index element={<FAQ />} />
+      <Route path="/privacy" index element={<Privacy />} />
     </Routes>
   </BrowserRouter>
   );
