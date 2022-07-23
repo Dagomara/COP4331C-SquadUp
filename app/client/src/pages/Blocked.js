@@ -93,6 +93,13 @@ class Blocked extends React.Component {
         console.log(err);
       });
     }
+    unblockPlayer = async (blockedId) => {
+      await axios.patch(`${serverRoot}/api/editProfile`, { discordID: this.state.discordId, blocked: blockedId})
+      .then(res => {
+          console.log("unblock player: ", res.status);
+      })
+      .catch((err)=>{console.log("addGame Error!\n", err)});
+    };
 
     render() {
       if (this.state.loginRedirect) return (
@@ -126,7 +133,7 @@ class Blocked extends React.Component {
                                               if (this.state.blocked != undefined && this.state.blocked.length > 0) {
                                                   return (
                                                   this.state.blocked.map((b, index) => (
-                                                  <BlockedRow blocked={ b } />
+                                                  <BlockedRow blocked={ b } unblockPlayer={this.unblockPlayer}/>
                                                   )));
                                               }
                                               else {
