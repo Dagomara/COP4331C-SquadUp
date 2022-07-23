@@ -120,8 +120,16 @@ class Profile extends React.Component {
                                                         return (
                                                         this.state.games.map((game, index) => {
                                                             console.log(game);
+                                                            let selectGame = (e, pluckedInfo) => {
+                                                                console.log(game, pluckedInfo);
+
+                                                                e.preventDefault();
+                                                            };
                                                             return (
-                                                                <GameRow gameID={game.gameID} />
+                                                                <GameRow
+                                                                    gameID={game.gameID}
+                                                                    onClick={selectGame}
+                                                                />
                                                             )
                                                         }));
                                                     }

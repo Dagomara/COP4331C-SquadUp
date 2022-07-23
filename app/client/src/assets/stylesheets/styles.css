@@ -19,7 +19,7 @@ body {
 }
 
 .navbar-background {
-  background-color: #18191c;
+  background-color: var(--sidebar-bg);
 }
 
 .span-test {
@@ -143,6 +143,11 @@ a.active {
   margin-bottom: 10px;
 }
 
+.gameRow:hover {
+  cursor: pointer;
+  background-color: var(--sidebar-bg);
+}
+
 .gameName {
   margin-bottom: 0;
   font-size: large;
@@ -152,6 +157,11 @@ a.active {
 .gameIcon {
   height: 3rem;
   margin-left: 15%;
+}
+
+.gameIconHeader {
+  height:3em;
+  margin-right:12%;
 }
 
 .card-header {

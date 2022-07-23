@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from "axios";
 import Navbar from '../components/Navbar';
+import GameRow from '../components/GameRow';
 import io from 'socket.io-client';
 
 import { HEROKU_ROOT_SERVER, HEROKU_ROOT_CLIENT, CLIENT_ID,
@@ -14,9 +15,6 @@ else {
 }
 const clientId = CLIENT_ID;
 
-const socket = io(serverRoot);
-
-
 //axios.method('url', data(if needed), {withCredentials: true})
 
 class Queue extends React.Component {
@@ -29,7 +27,8 @@ class Queue extends React.Component {
             avatar: undefined,
             avatarURL: undefined,
             games: undefined,
-            loginRedirect: false
+            loginRedirect: false,
+            selectedGame: undefined
         };
       }
 
@@ -68,6 +67,9 @@ class Queue extends React.Component {
       }).catch((err)=>{
         console.log(err);
       });
+
+      //const socket = io(serverRoot);
+
     }
 
     doLogout = async (e) => {
@@ -107,7 +109,8 @@ class Queue extends React.Component {
                             <h1 class="ribbon"><em><strong class="text-uppercase fw-bolder ribbon-content">The Main Attraction</strong></em></h1>
                         </div>
                         <div class="container-fluid">
-                            {/* Start: Chart */}
+                          {/* When a user clicks a game, they will go to the next screen. */}
+                          {!this.state.selectedGame && (
                             <div class="row justify-content-center">
                                 <div class="col-lg-8 col-xl-8 align-self-center align-items-center">
                                     <div class="card shadow mb-4">
@@ -115,22 +118,75 @@ class Queue extends React.Component {
                                             <h6 class="fs-4 fw-bold m-0">Select A Game</h6>
                                         </div>
                                         <div class="card-body">
-                                            <div class="row gameRow">
-                                                <div class="col-lg-3"><img class="img-fluid rounded-circle gameIcon" src="../assets/img/avatars/avatar3.jpeg" /></div>
-                                                <div class="col align-self-center">
-                                                    <p class="gameName">League of Legends</p>
-                                                </div>
-                                            </div>
-                                            <div class="row gameRow">
-                                                <div class="col-lg-3"><img class="img-fluid rounded-circle gameIcon" src="../assets/img/avatars/avatar3.jpeg" /></div>
-                                                <div class="col align-self-center">
-                                                    <p class="gameName">Team Fortress 2</p>
-                                                </div>
-                                            </div>
+                                            {(() => {
+                                              // Display a GameRow for each loaded game.
+                                                if (this.state.games != undefined && this.state.games.length > 0) {
+                                                    return (
+                                                    this.state.games.map((game, index) => {
+                                                        // The GameRow will pluck some info including game name & icon.
+                                                        let selectGame = (e, pluckedInfo)=>{
+                                                          let biggerGame = JSON.parse(JSON.stringify(game));
+                                                          biggerGame.icon = pluckedInfo.icon;
+                                                          biggerGame.name = pluckedInfo.name;
+                                                          this.setState({
+                                                            selectedGame: biggerGame
+                                                          });
+                                                          console.log("User picked: ", this.state.selectedGame);
+                                                          e.preventDefault();
+                                                        };
+                                                        return (
+                                                            <GameRow
+                                                              gameID={game.gameID}
+                                                              onClick={selectGame} />
+                                                        )
+                                                    }));
+                                                }
+                                                else {
+                                                    return (<p class="away">Loading games...</p>);
+                                                }
+                                            })()}
                                         </div>
                                     </div>
                                 </div>
-                            </div>{/* End: Chart */}
+                            </div>)
+                          }
+                          {this.state.selectedGame && (
+                            <div class="row justify-content-center">
+                            <div class="col-lg-8 col-xl-8 align-self-center align-items-center">
+                                <div class="card shadow mb-4">
+                                    <div class="card-header d-flex align-items-center">
+                                        <img src={this.state.selectedGame.icon} 
+                                          className="img-fluid rounded-circle gameIconHeader"/>
+                                        <h6 class="fs-4 fw-bold m-0">{this.state.selectedGame.name}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        {(() => {
+                                            if (this.state.games != undefined && this.state.games.length > 0) {
+                                                return (
+                                                this.state.games.map((game, index) => {
+                                                    let selectGame = ()=>{
+                                                      console.log("cool beans;");
+                                                      this.setState({
+                                                        selectedGame: game
+                                                      });
+                                                      console.log("User picked: ", this.state.selectedGame);
+                                                    };
+                                                    return (
+                                                        <GameRow
+                                                          gameID={game.gameID}
+                                                          onClick={selectGame} />
+                                                    )
+                                                }));
+                                            }
+                                            else {
+                                                return (<p class="away">Loading games...</p>);
+                                            }
+                                        })()}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                          )}
                         </div>
                     </div>
                 </div>
