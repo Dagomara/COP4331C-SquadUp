@@ -56,10 +56,11 @@ export const gameTemplates = {
         "gameID": 2,
         "name": "Valorant",
         "filters": {
-          "level": "i0-20",
+          "level": "i1 - 399",
+          "rank": ["unranked", "iron", "bronze", "silver", "gold", "platinum", "diamond", "ascendant", "immortal", "radiant"],
           "positions": ["duelist", "initiator", "controller", "sentinel"],
           "characters": ["astra", "brimstone", "omen", "viper", "phoenix", "jett", "yoru", "raze", "reyna", "neon", "breach", "fade", "kay/o", "skye", "sova", "chamber", "cypher", "killjoy", "sage"],
-          "gamemodes": ["unrated", "competitive", "spike rush", "deathmatch", "escalation", "replication"]
+          "gamemodes": ["unrated", "competitive", "spike rush", "deathmatch", "escalation", "replication"],
         }
     }
 };

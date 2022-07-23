@@ -6,77 +6,96 @@ const io = require('socket.io')(server, {
     }
 });
 
-class queue{
-    constructor(queueID, gameID, players_needed, players=[], filters={}){
-        this.queueID = queueID;
-        this.gameID = gameID;
+class Queue{
+    constructor(queueId, gameId, players_needed, players=[], filters={}, ownerId){
+        this.queueId = queueId;
+        this.gameId = gameId;
         this.players_needed = players_needed;
         this.players = players;
         this.filters = filters;
+        this.ownerId = ownerId;
     }
 }
 const searchingQueues = [];
 const playingQueues = [];
+const queues = 1;
+const newQueue = () => {
+    queues++;
+    return queues;
+};
 
 io.on('connection', socket =>{
     console.log('connection made successfully');
     socket.on('queue-request', payload =>{
         searchingQueues.forEach(element => {
             if(element.filters == payload.filters) {
+                element.players_needed -= 1;
+                element.players.push(payload.discordId);
+
                 io.emit('queue-request-reponse', {
-                    discordId: payload.discordID,
-                    gameID: payload.gameID,
-                    queueId: payload.queueID,
-                    ownerId: payload.ownerID,
-                    players: payload.players
-                })
-                return}
-            else{
-                let q = new queue(payload.queueID, payload.gameID, payload.players_needed, payload.players, payload.filters);
-                searchingQueues.push(q);
-                io.emit('queue-request-reponse', {
-                    discordId: payload.discordID,
-                    gameID: payload.gameID,
-                    queueId: payload.queueID,
-                    ownerId: payload.ownerID,
-                    players: payload.players
-                })
+                    discordId: payload.discordId,
+                    gameId: element.gameId,
+                    queueId: element.queueId,
+                    ownerId: element.ownerId,
+                    players: element.players,
+                    players_needed: element.players_needed
+                });
+                io.emit('queue-join-announcement', {
+                    queueId: element.queueId,
+                    discordId: payload.discordId, // of player who joined
+                    discordAvatar: null, // MongoDB call must grab this
+                    players_needed: element.players_needed
+                });
                 return;
             }
-            return;
-        })
+        });
+        let q = new Queue(newQueue, payload.gameId, payload.players_needed, [payload.discordId], payload.filters, payload.discordId);
+        searchingQueues.push(q);
+        io.emit('queue-request-reponse', {
+            discordId: payload.discordId,
+            gameId: q.gameId,
+            queueId: q.queueId,
+            ownerId: q.ownerId,
+            players: q.players,
+            players_needed: payload.players_needed
+        });
     })
 
-    socket.on('queue-abandon-request', payload =>{
-        if(discordID == payload.queue.ownerID) {
-            io.emit('queue-quit-announcement', { queueID:payload.queueID })
+    socket.on('queue-leave-request', payload =>{
+        if(payload.discordId == payload.ownerId) {
+            io.emit('queue-abandon-announcement', { queueId:payload.queueId })
         }
         else{
+            let q = searchingQueues.find(o => (o.queueId == payload.queueId));
+            q.players_needed -= 1;
+            q.players.splice(); // todo
             io.emit('queue-leave-announcement', {
-                queueID: payload.queueID,
-                discordID: payload.discordID
-            })
+                queueId: payload.queueId,
+                discordId: payload.discordId,
+                players: q.players,// todo: take out discordId that left
+                players_needed: q.players_needed
+            });
         }
         return;
     })
 
     socket.on('queue-play-request', payload =>{
-        let q = searchingQueues.find(o => (o.queueID - payload.queueID));
-        if(payload.ownerID == q.ownerID) {
+        let q = searchingQueues.find(o => (o.queueId == payload.queueId));
+        if(payload.ownerId == q.ownerId) {
             // webhook signal to squadup discord to start game @mike
+            console.log("searchingQueues before: ", searchingQueues);
             playingQueues.push(q);
             searchingQueues.splice(q, 1);
-            io.emit('queue-play-announcement', { queueID: payload.queueID })
+            console.log("searchingQueues after: ", searchingQueues);
+            io.emit('queue-play-announcement', { queueId: payload.queueId })
         }
     })
 
     socket.on('queue-quit-request', payload => {
-        let q = playingQueues.find(o => (o.queueID));
-        if(payload.queueID == q.queueID) {
-            if(q.players.find(payload.discordID)){
-                //send webhook to discord to end game @mike
-                io.emit('queue-quit-announcement', { queueID: payload.queueID})
-            }
+        let q = playingQueues.find(o => (o.queueId == payload.queueId));
+        if(q.players.find(o => (o == payload.discordId))){
+            //send webhook to discord to end game @mike
+            io.emit('queue-quit-announcement', { queueId: payload.queueId});
         }
         return;
     })
