@@ -24,6 +24,7 @@ class Queue extends React.Component {
             discordId: 0,
             avatar: undefined,
             avatarURL: undefined,
+            games: undefined,
             loginRedirect: false
         };
       }
@@ -32,16 +33,27 @@ class Queue extends React.Component {
     // GETTING THE USER DATA
     componentDidMount = async () => {
       await axios.get(`${serverRoot}/auth/getUserData`, {withCredentials: true})
-      .then(res => {
-        console.log("res" + res.data.login);
-        if(res.data.login == true) {
+      .then(async res => {
+        console.log("res.data.login: " + res.data.login);
+        if(res.data.login) {
           this.setState({
             login: true,
             username : res.data.username,
             discordId: res.data.discordId,
             avatar: res.data.avatar,
-            avatarURL: `https://cdn.discordapp.com/avatars/${res.data.discordId}/${res.data.avatar}.png`
+            avatarURL: `https://cdn.discordapp.com/avatars/${res.data.discordId}/${res.data.avatar}.png`,
+            games: undefined
           });
+          await axios.post(`${serverRoot}/api/viewProfile`, {discordID: res.data.discordId})
+          .then(res2 => {
+              if (res2.data) {
+                  console.log("res2.data: ", res2.data);
+                  this.setState({
+                      games: res2.data.games
+                  });
+                  console.log("updated state w/ new games: ", this.state);
+              }
+          })
         }
         else {
           // Redirect to login page if user was not logged in!
