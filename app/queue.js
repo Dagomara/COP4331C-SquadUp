@@ -68,12 +68,13 @@ io.on('connection', socket =>{
         }
         else{
             let q = searchingQueues.find(o => (o.queueId == payload.queueId));
+            let index = searchingQueues.findIndex(o => (o.queueId == payload.queueId));
             q.players_needed -= 1;
-            q.players.splice(); // todo
+            q.players.splice(index, 1);
             io.emit('queue-leave-announcement', {
                 queueId: payload.queueId,
                 discordId: payload.discordId,
-                players: q.players,// todo: take out discordId that left
+                players: q.players,
                 players_needed: q.players_needed
             });
         }
@@ -82,6 +83,7 @@ io.on('connection', socket =>{
 
     socket.on('queue-play-request', payload =>{
         let q = searchingQueues.find(o => (o.queueId == payload.queueId));
+        let index = searchingQueues.findIndex(o => (o.queueId == payload.queueId));
         if(payload.ownerId == q.ownerId) {
             // webhook signal to squadup discord to start game @mike
             const hook = new Webhook("https://discord.com/api/webhooks/1000140654434844793/HusQU4VJ0S5u7s-daw7aGMxiES5cMBDIFB4Fin7KDmZcc6mtPxj0toN5xuRmHCr5Ph3h");
@@ -89,7 +91,7 @@ io.on('connection', socket =>{
 
             console.log("searchingQueues before: ", searchingQueues);
             playingQueues.push(q);
-            searchingQueues.splice(q, 1);
+            searchingQueues.splice(index, 1);
             console.log("searchingQueues after: ", searchingQueues);
             io.emit('queue-play-announcement', { queueId: payload.queueId })
         }
