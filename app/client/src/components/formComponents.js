@@ -61,26 +61,67 @@ return (
   
 export function Checkbox({ label, visited, valid, onChange, value,
 validationMessage }) {
-const onValueChange = React.useCallback(
-    () => {
-    onChange({ value: !value });
-    },
-    [onChange, value]
-);
-const invalid = !valid && visited;
+    const onValueChange = React.useCallback(
+        () => {
+        onChange({ value: !value });
+        },
+        [onChange, value]
+    );
+    const invalid = !valid && visited;
 
-return (
-    <div>
-    <label>
-        <input
-        type="checkbox"
-        className={invalid ? "invalid" : ""}
-        onChange={onValueChange}
-        value={value} />
-        { label }
-    </label>
-    { invalid && 
-        (<div className="required">{validationMessage}</div>) }
-    </div>
-);
+    return (
+        <div>
+        <label>
+            <input
+            type="checkbox"
+            className={invalid ? "invalid" : ""}
+            onChange={onValueChange}
+            value={value} />
+            { label }
+        </label>
+        { invalid && 
+            (<div className="required">{validationMessage}</div>) }
+        </div>
+    );
 };
+
+// for choosing # players to queue with :) 
+export function PlayerSlider({ classes, label, onChange, value, ...sliderProps }) {
+    //set initial value to 0 this will change inside useEffect in first render also| or you can directly set useState(value)
+    const [sliderVal, setSliderVal] = React.useState(0);
+
+    // keep mouse state to determine whether i should call parent onChange or not.
+    // so basically after dragging the slider and then release the mouse then we will call the parent onChange, otherwise parent function will get call each and every change
+    const [mouseState, setMouseState] = React.useState(null);
+
+    React.useEffect(() => {
+    setSliderVal(value); // set new value when value gets changed, even when first render
+    }, [value]);
+
+    const changeCallback = (e) => {
+    setSliderVal(e.target.value); // update local state of the value when changing
+    }
+
+    React.useEffect(() => {
+    if (mouseState === "up") {
+        onChange(sliderVal)// when mouse is up then call the parent onChange
+    }
+    }, [mouseState])
+
+    return (
+    <div className="range-slider">
+        <p>{label}</p>
+        <h3>value: { sliderVal }</h3>
+        <input
+        type="range"
+        value={sliderVal}
+        {...sliderProps}
+        className={`slider ${classes}`}
+        id="myRange"
+        onChange={changeCallback}
+        onMouseDown={() => setMouseState("down")} // When mouse down set the mouseState to 'down'
+        onMouseUp={() => setMouseState("up")} // When mouse down set the mouseState to 'up' | now we can call the parent onChnage
+        />
+    </div>
+    );
+  };

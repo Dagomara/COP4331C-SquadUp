@@ -2,6 +2,15 @@ import React from 'react';
 import axios from "axios";
 import Navbar from '../components/Navbar';
 import GameRow from '../components/GameRow';
+import { Form, Field } from "@progress/kendo-react-form";
+import { Checkbox, DropDown, Input, SearchSelector } from "../components/formComponents";
+import Slider from 'react-rangeslider';
+import 'react-rangeslider/lib/index.css';
+import { games, schools } from "../components/templates";
+import { gameTemplates } from "../assets/js/gameTemplates";
+
+
+
 import io from 'socket.io-client';
 
 import { HEROKU_ROOT_SERVER, HEROKU_ROOT_CLIENT, CLIENT_ID,
@@ -28,7 +37,13 @@ class Queue extends React.Component {
             avatarURL: undefined,
             games: undefined,
             loginRedirect: false,
-            selectedGame: undefined
+            selectedGame: undefined,
+            playersNeeded: 3
+        };
+        this.startQueue = async(data, event) => {
+          console.log("queue requested: ", data);
+        
+          event.preventDefault();
         };
       }
 
@@ -86,6 +101,12 @@ class Queue extends React.Component {
       .catch((err)=>{
         console.log(err);
       });
+    };
+
+    updatePlayersNeeded = value => {
+      this.setState({
+        playersNeeded: value
+      })
     };
 
     render() {
@@ -151,41 +172,91 @@ class Queue extends React.Component {
                             </div>)
                           }
                           {this.state.selectedGame && (
-                            <div class="row justify-content-center">
-                            <div class="col-lg-8 col-xl-8 align-self-center align-items-center">
-                                <div class="card shadow mb-4">
-                                    <div class="card-header d-flex align-items-center">
-                                        <img src={this.state.selectedGame.icon} 
-                                          className="img-fluid rounded-circle gameIconHeader"/>
-                                        <h6 class="fs-4 fw-bold m-0">{this.state.selectedGame.name}</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        {(() => {
-                                            if (this.state.games != undefined && this.state.games.length > 0) {
-                                                return (
-                                                this.state.games.map((game, index) => {
-                                                    let selectGame = ()=>{
-                                                      console.log("cool beans;");
-                                                      this.setState({
-                                                        selectedGame: game
-                                                      });
-                                                      console.log("User picked: ", this.state.selectedGame);
-                                                    };
-                                                    return (
-                                                        <GameRow
-                                                          gameID={game.gameID}
-                                                          onClick={selectGame} />
-                                                    )
-                                                }));
-                                            }
-                                            else {
-                                                return (<p class="away">Loading games...</p>);
-                                            }
-                                        })()}
+                            <Form onSubmit={this.startQueue}
+                            render={(formRenderProps) => (
+                              <div class="row justify-content-center">
+                                <div class="col-lg-8 col-xl-8 align-self-center align-items-center">
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header d-flex align-items-center">
+                                            <img src={this.state.selectedGame.icon} 
+                                              className="img-fluid rounded-circle gameIconHeader"/>
+                                            <h6 class="fs-4 fw-bold m-0">{this.state.selectedGame.name}</h6>
+                                        </div>
+                                        <div class="card-body">
+                                          <div class="row mb-3">
+                                          <div className="col-sm-12 col-xl-12 align-self-center mb-3 mb-sm-0 splash-box py-4">
+                                              <div className='row'>
+                                                <div className='col-sm-12 col-md-6'>
+                                                  <p className="text-white">How many players do you need?</p>
+                                                </div>
+                                                <div className='col-sm-12 col-md-5'>
+                                                  <Slider
+                                                    min={3}
+                                                    max={10}
+                                                    value={this.state.playersNeeded}
+                                                    onChange={this.updatePlayersNeeded}
+                                                  />
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <div className="col-sm-12 col-xl-12 align-self-center mb-3 mb-sm-0 splash-box py-4">
+                                              <p className="text-white">Any general settings?</p>
+                                              <div className="row splash-option text-black" >
+                                                <div className="col-sm-12 col-md-3 text-start align-self-center">
+                                                  <p className="w-100 text-capitalize">School</p>
+                                                </div>
+                                                <div className="col align-self-center">
+                                                  <Field 
+                                                    name="schools"
+                                                    options={schools}
+                                                    component={SearchSelector}
+                                                    classNames="form-control form-control-user w-100" />
+                                                </div>
+                                              </div>
+                                              <div className="row splash-option text-black" >
+                                                <div className="col-sm-12 col-md-3 text-start align-self-center">
+                                                  <p className="w-100 text-capitalize">Voice Call?</p>
+                                                </div>
+                                                <div className="col align-self-center">
+                                                  <Field 
+                                                    name="voiceEnabled"
+                                                    component={Checkbox}
+                                                    classNames="form-control form-control-user w-100" />
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <div className="col-sm-12 col-xl-12 align-self-center mb-3 mb-sm-0 splash-box py-4">
+                                              <p className="text-white">Any general settings?</p>
+                                              <div className="row splash-option text-black" >
+                                                <div className="col-sm-12 col-md-3 text-start align-self-center">
+                                                  <p className="w-100 text-capitalize">School</p>
+                                                </div>
+                                                <div className="col align-self-center">
+                                                  <Field 
+                                                    name="schools"
+                                                    options={schools}
+                                                    component={SearchSelector}
+                                                    classNames="form-control form-control-user w-100" />
+                                                </div>
+                                              </div>
+                                              <div className="row splash-option text-black" >
+                                                <div className="col-sm-12 col-md-3 text-start align-self-center">
+                                                  <p className="w-100 text-capitalize">Voice Call?</p>
+                                                </div>
+                                                <div className="col align-self-center">
+                                                  <Field 
+                                                    name="voiceEnabled"
+                                                    component={Checkbox}
+                                                    classNames="form-control form-control-user w-100" />
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
+                              </div>
+                              )} />
                           )}
                         </div>
                     </div>

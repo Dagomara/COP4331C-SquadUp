@@ -89,11 +89,9 @@ const GameBox = ({ gameName, finalCommand}) => {
                             type="number"
                             name={field}
                             min={lower} max={upper}
-                            
                             onChange={changeFunct}
                             step="1"/>
                         </div>
-                        
                       );
                     }
                   }
@@ -115,7 +113,6 @@ const GameBox = ({ gameName, finalCommand}) => {
                       onChange={changeFunct}/>
                   );
               })()}
-              
             </div>
           </div>)
         })
