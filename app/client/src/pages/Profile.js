@@ -41,7 +41,7 @@ class Profile extends React.Component {
       .then(async res => {
         console.log("res.data.login: " + res.data.login);
         if(res.data.login) {
-          await this.setState({
+          this.setState({
             login: true,
             username : res.data.username,
             discordId: res.data.discordId,
@@ -51,17 +51,15 @@ class Profile extends React.Component {
             status: "online",
             games: undefined
           });
-          await axios.post(`${serverRoot}/api/viewProfile`, {discordID: this.state.discordId})
+          await axios.post(`${serverRoot}/api/viewProfile`, {discordID: res.data.discordId})
           .then(res2 => {
               if (res2.data) {
                   console.log("res2.data: ", res2.data);
                   this.setState({
                       gender: res2.data.gender,
                       school: res2.data.school,
-                  });
-                  this.setState({
                       games: res2.data.games
-                  })
+                  });
                   console.log("updated state w/ new games: ", this.state);
               }
           })
