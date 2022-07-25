@@ -11,7 +11,6 @@ if (process.env.NODE_ENV == "production") {
 else {
    serverRoot = LOCALHOST_ROOT_SERVER;
 }
-const socket = io(serverRoot);
 
 // QueueHandlers handle all socket.io connections! Upon creation,
 // they fire a queue-request to the websocket.
@@ -19,12 +18,18 @@ export default function QueueHandler(props) {
   const {discordId, avatar, username, qrrPayload} = props;
   const [users, setUsers] = useState([]); // players in match with you
   const [queueStatus, setQueueStatus] = useState("queueing");
+  const socket = io(serverRoot);
 
+  // Establish sockets.io handling. 
   useEffect(() => {
+    
     socket.on("queue-request-response", payload => {
       console.log("response garnered! ", payload);
     });
-  });
+
+    socket.emit("queue-request", qrrPayload);
+    console.log("Sent queue request with ", qrrPayload);
+  }, []); // empty array makes sure this component only renders ONCE. 
 
   return (
     <div class="row justify-content-center">
@@ -37,6 +42,7 @@ export default function QueueHandler(props) {
             {queueStatus=="queueing" && (
               <div>
                 <p className="away">Looking for game...</p>
+                <pre className='text-white'>{JSON.stringify(qrrPayload, null, 2)}</pre>
                 <button onClick={(e) => {
                   setQueueStatus("waiting"); e.preventDefault();
                 }}>Next stage test</button>
