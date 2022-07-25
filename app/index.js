@@ -11,13 +11,10 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const database = require('./db/connect');
-const server = require('http').createServer(app);
-const io = require('socket.io')(server, {
-    cors:{
-        origin: process.env.URL_ROOT_CLIENT
-    }
-});
-const { qReqHandle, qLeaveHandle, qPlayHandle, qQuitHandle } = require("./matchmaking/queue");
+// socket.io import
+const io = require("./matchmaking/queue");
+io.app = app;
+io.run();
 
 const corsOptions = {
     methods: 'GET,POST,PATCH,DELETE,OPTIONS',
@@ -53,32 +50,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.resolve(__dirname, 'client/build')));
 app.use("/api", require("./routes/api"));
 app.use("/auth", require("./routes/auth"));
-
-// Matchmaking socket.io handling
-const searchingQueues = [];
-const playingQueues = [];
-io.on('connection', socket =>{
-    console.log('websocket connection made successfully');
-    socket.on('queue-request', payload =>{
-        console.log("queue request received! ", payload);
-        qReqHandle(payload);
-    })
-
-    socket.on('queue-leave-request', payload =>{
-        console.log("queue leave request received! ", payload);
-        qLeaveHandle(payload);
-    })
-
-    socket.on('queue-play-request', payload =>{
-        console.log("queue play request received! ", payload);
-        qPlayHandle(payload);
-    })
-
-    socket.on('queue-quit-request', payload => {
-        console.log("queue quit request received! ", payload);
-        qQuitHandle(payload);
-    })
-})
 
 // All other GET requests not handled before will return our React app
 //if (process.env.NODE_ENV === 'production') {
