@@ -474,3 +474,7 @@ body {
 .rangeslider-horizontal .rangeslider__fill {
   background-color: #25DA3A !important;
 }
+
+.placeholder-small::placeholder {
+  font-size: small;
+}

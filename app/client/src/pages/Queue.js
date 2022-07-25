@@ -2,16 +2,15 @@ import React from 'react';
 import axios from "axios";
 import Navbar from '../components/Navbar';
 import GameRow from '../components/GameRow';
+import QueueHandler from '../components/QueueHandler';
 import { Form, Field } from "@progress/kendo-react-form";
+import { MultiSelect } from "@progress/kendo-react-dropdowns";
 import { Checkbox, DropDown, Input, SearchSelector } from "../components/formComponents";
 import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 import { games, schools } from "../components/templates";
 import { gameTemplates } from "../assets/js/gameTemplates";
 
-
-
-import io from 'socket.io-client';
 
 import { HEROKU_ROOT_SERVER, HEROKU_ROOT_CLIENT, CLIENT_ID,
      LOCALHOST_ROOT_SERVER, LOCALHOST_ROOT_CLIENT } from '../assets/js/keys';
@@ -38,12 +37,33 @@ class Queue extends React.Component {
             games: undefined,
             loginRedirect: false,
             selectedGame: undefined,
-            playersNeeded: 3
+            filters: {},
+            playersNeeded: 3,
+            queueStarted: false,
+            qrrPayload: undefined
         };
+        // begins queueing strategy. 
         this.startQueue = async(data, event) => {
-          console.log("queue requested: ", data);
+          let payload = {
+            discordId: this.state.discordId, gameId: this.state.selectedGame.gameID,
+            players_needed: this.state.playersNeeded, filters: {...this.state.filters, ...data}
+          };
+          //{...data, ...{filters: this.state.filters, players_needed: this.state.playersNeeded}};
+          console.log("queue requested: ", payload);
+
+          // begin socket.io madness!
+          this.setState({ queueStarted: true, qrrPayload: payload });
         
           event.preventDefault();
+        };
+        // Properly manages this.state.filters for matchmaking!
+        this.updateFilter = (filt, val) => {
+          console.log("updating ", filt, ": ", val);
+          // seen on https://davidwalsh.name/merge-objects
+          let f = {...this.state.filters};
+          f[filt] = val; 
+          this.setState({ filters: f });
+          console.log("updated filters object: ", f);
         };
       }
 
@@ -60,7 +80,8 @@ class Queue extends React.Component {
             discordId: res.data.discordId,
             avatar: res.data.avatar,
             avatarURL: `https://cdn.discordapp.com/avatars/${res.data.discordId}/${res.data.avatar}.png`,
-            games: undefined
+            games: undefined,
+            school: res.data.school
           });
           await axios.post(`${serverRoot}/api/viewProfile`, {discordID: res.data.discordId})
           .then(res2 => {
@@ -83,7 +104,6 @@ class Queue extends React.Component {
         console.log(err);
       });
 
-      //const socket = io(serverRoot);
 
     }
 
@@ -171,10 +191,14 @@ class Queue extends React.Component {
                                 </div>
                             </div>)
                           }
-                          {this.state.selectedGame && (
+                          {(this.state.selectedGame && !this.state.queueStarted) && (
                             <Form onSubmit={this.startQueue}
+                            initialValues={{
+                              voiceEnabled: false
+                            }}
                             render={(formRenderProps) => (
                               <div class="row justify-content-center">
+                                {formRenderProps.allowSubmit = true}
                                 <div class="col-lg-8 col-xl-8 align-self-center align-items-center">
                                     <div class="card shadow mb-4">
                                         <div class="card-header d-flex align-items-center">
@@ -191,7 +215,7 @@ class Queue extends React.Component {
                                                 </div>
                                                 <div className='col-sm-12 col-md-5'>
                                                   <Slider
-                                                    min={3}
+                                                    min={1}
                                                     max={10}
                                                     value={this.state.playersNeeded}
                                                     onChange={this.updatePlayersNeeded}
@@ -226,19 +250,68 @@ class Queue extends React.Component {
                                               </div>
                                             </div>
                                             <div className="col-sm-12 col-xl-12 align-self-center mb-3 mb-sm-0 splash-box py-4">
-                                              <div className='row'>
-                                                <div className='col-sm-12 col-md-6'>
-                                                  <p className="text-white">Player Filters:</p>
-                                                </div>
-                                                <div className='col-sm-12 col-md-5'>
-                                                  <Slider
-                                                    min={3}
-                                                    max={10}
-                                                    value={this.state.playersNeeded}
-                                                    onChange={this.updatePlayersNeeded}
-                                                  />
-                                                </div>
-                                              </div>
+                                              <p className="text-white">Player Filters:</p>
+                                              {(() => {
+                                                // Grab the selected game's gameTemplate
+                                                let filters = gameTemplates[this.state.selectedGame.name].filters;
+                                                console.log(filters);
+                                                // Run through each filter
+                                                return Object.keys(filters).map((field, i) => {
+                                                  return (
+                                                  <div className="row splash-option" >
+                                                    <div className="col-sm-12 col-md-3 text-start align-self-center">
+                                                      <p className="w-100 text-capitalize">{field}</p>
+                                                    </div>
+                                                    <div className="col align-self-center">
+                                                      {/* `field` -- the current filter being rendered -- is passed as `name` when updating text in onChange*/}
+                                                      {(()=>{
+                                                        let changeFunct = ((e) => {
+                                                          console.log(`Setting ${e.target.name}: ${e.target.value}...`);
+                                                          this.updateFilter(field, e.target.value);
+                                                        });
+                                                        // see if filters field is an iRange :) (ex: level: "i1-250")
+                                                        if (typeof filters[field] === 'string' || filters[field] instanceof String) {
+                                                          // ["i1", "250"]
+                                                          let splits = filters[field].split("-");
+                                                          if (splits[0].charAt(0) == 'i') {
+                                                            let lower = parseInt(splits[0].substr(1)); // 1
+                                                            let upper = parseInt(splits[1]); // 250
+                                                            if (!isNaN(lower) && !isNaN(upper)) {
+                                                              return (
+                                                                <div>
+                                                                  <input className='placeholder-small'
+                                                                    placeholder={`Matched ${field}s will be >= this value.`}
+                                                                    type="number"
+                                                                    name={field}
+                                                                    min={lower} max={upper}
+                                                                    onChange={changeFunct}
+                                                                    step="1"/>
+                                                                </div>
+                                                              );
+                                                            }
+                                                          }
+                                                          // should never happen, but just in case!
+                                                          return (
+                                                            <input
+                                                              className="form-control"
+                                                              onChange={changeFunct}
+                                                              name={field}
+                                                              type="text" />
+                                                          );
+                                                        }
+                                                        else
+                                                          return (
+                                                            <MultiSelect
+                                                              name={field}
+                                                              className="form-control form-control-user w-100"
+                                                              data={filters[field]}
+                                                              onChange={changeFunct}/>
+                                                          );
+                                                      })()}
+                                                    </div>
+                                                  </div>)
+                                                })
+                                              })()}
                                             </div>
                                           </div>
                                           <div class="row">
@@ -246,7 +319,7 @@ class Queue extends React.Component {
                                               <button class="btn btn-primary fw-bold bg-gradient-danger" onClick={() => {this.setState({selectedGame: undefined})}} type="button">&lt;&nbsp;Back</button>
                                             </div>
                                             <div class="col text-end">
-                                              <button class="btn btn-primary bg-gradient-primary" type="submit" onClick={formRenderProps.onSubmit}>Submit! &gt;</button>
+                                              <button class="btn btn-primary bg-gradient-primary" type="submit" onClick={formRenderProps.onSubmit}>SquadUP!<span className='d-none'>Submit</span></button>
                                             </div>
                                           </div>
                                         </div>
@@ -254,6 +327,14 @@ class Queue extends React.Component {
                                 </div>
                               </div>
                               )} />
+                          )}
+                          {this.state.queueStarted && (
+                            <QueueHandler 
+                              discordId={this.state.discordId}
+                              avatar={this.state.avatarURL}
+                              username={this.state.username}
+                              qrrPayload={this.state.qrrPayload}
+                            />
                           )}
                         </div>
                     </div>
