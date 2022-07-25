@@ -26,11 +26,57 @@ const newQueue = () => {
     return queues;
 };
 
+// Takes 2 ints, i and j, and sees if they're within n units of each other
+const withinN = (i, j, n) => {
+    console.log(`seeing if ${i} and ${j} are within ${n} of each other...`)
+    return (-n <= i-j && i-j <= n);
+};
+
+// counts matching items between 2 arrays and sees if they're withinN of each other. 
+const arraysCloseEnough = (arr1, arr2, n) => {
+    let combinedLen = [...arr1, ...arr2].length;
+    console.log("Total length of combined arrays: ", combinedLen);
+    return (withinN(combinedLen, arr1.length, n));
+};
+
+// Takes a payload and a Queue object, and sees if the Queue and payload are a good match for each other. 
+// Returns: true if requests are similar enough, false otherwise. 
+const fuzzyMatch = (pl, q) => {
+    if (pl.gameId == q.gameId) { // if same game
+        // if almost same # players needed (on a bigger system, n would be 0)
+        if (withinN(q.players.length, pl.players_needed, 3)) {
+            Object.keys(pl.filters).map(filt => {
+                // make sure this case fits well enough
+                switch (typeof pl.filters[filt]) {
+                    case "number":
+                        let i = q.filters[filt];
+                        let j = pl.filters[filt];
+                        if (!(i >= j || withinN(i, j, 6)))
+                            return false; // stop early if levels don't match
+                        break;
+                    case "object": // always an array in our app's use case
+                        if (!arraysCloseEnough(pl.filters[filt], q.filters[filt], 4))
+                            return false; // stop early if not enough similarities
+                        break;
+                    default: // should never happen
+                        console.log("default case encountered? ", filt, pl.filters[filt]);
+                        return false;
+                }
+                return true;
+            })
+            // TODO: filter out blocked players
+        }
+    }
+    return false; // if anything fails, return false!
+}
+
 io.on('connection', socket =>{
-    console.log('connection made successfully');
+    console.log('websocket connection made successfully');
     socket.on('queue-request', payload =>{
+        console.log("queue request received. Looking through searchingQueues:");
         searchingQueues.forEach(element => {
-            if(element.filters == payload.filters) {
+            console.log("element: ", element);
+            if(fuzzyMatch(payload, element)) { // see if queue is a good fit
                 element.players_needed -= 1;
                 element.players.push(payload.discordId);
 
