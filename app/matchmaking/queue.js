@@ -17,11 +17,14 @@ const webhookURL = process.env.WEBHOOK_URL;
 module.exports = {
   run: () => {
     console.log("io running? ");
+    const hook = new Webhook(webhookURL);
+    hook.send("testing!");
     const server = require('http').createServer(this.app);
     const io = require('socket.io')(server, {
         cors:{
             origin: process.env.URL_ROOT_CLIENT,
-        }
+        },
+        rejectUnauthorized: false
     });
     
     const searchingQueues = [];
@@ -164,6 +167,9 @@ module.exports = {
             }
             return;
         })
+    });
+    io.on("connect_error", (err) => {
+      console.log(`connect_error due to ${err.message}`);
     })
   }
 }

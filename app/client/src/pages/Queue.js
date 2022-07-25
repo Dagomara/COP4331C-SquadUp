@@ -331,9 +331,10 @@ class Queue extends React.Component {
                           {this.state.queueStarted && (
                             <QueueHandler 
                               discordId={this.state.discordId}
-                              avatar={this.state.avatarURL}
+                              avatar={this.state.avatar}
                               username={this.state.username}
                               qrrPayload={this.state.qrrPayload}
+                              goBack={()=>{this.setState({queueStarted: false});}}
                             />
                           )}
                         </div>
