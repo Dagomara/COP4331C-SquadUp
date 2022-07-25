@@ -45,7 +45,7 @@ io.on('connection', socket =>{
                 io.emit('queue-join-announcement', {
                     queueId: element.queueId,
                     discordId: payload.discordId, // of player who joined
-                    discordAvatar: null, // TODO MongoDB call must grab this
+                    discordAvatar: `https://cdn.discordapp.com/avatars/${payload.discordId}/${payload.avatar}.png`,
                     players_needed: element.players_needed
                 });
                 return;

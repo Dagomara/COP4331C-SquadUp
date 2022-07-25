@@ -76,7 +76,7 @@ router.post('/viewProfile', cors(corsOptionsDelegate), async (req, res, next) =>
       if (users.length > 0) {
         console.log("Cool dude found:");
         console.log(users[0]);
-        res.status(200).json(users[0]);  
+        res.status(200).json(users[0]);
       }
       else
         console.log("issue found", users);
@@ -317,6 +317,28 @@ router.post('/viewFriends', cors(corsOptionsDelegate), async (req, res, next) =>
   }).catch(function(err) {
     res.status(400).json({"error": err});
   });
+});
+
+router.post('/viewFriendsMobile', cors(corsOptionsDelegate), async (req, res) => 
+{
+  // incoming: discordID
+  // outgoing: friends discordID, friends username, friends avatar
+
+  const { discordID } = req.body;
+
+  let user = await User.find({discordID:discordID});
+  let friendsArray = [String];
+
+  for (let i = 0; i < user[0].friends.length; i++){
+    let friendId = user[0].friends[i];    // Get friend ID from user
+    let friendSearch = await User.find({discordID:friendId});   // Search each specific friend
+    let friendData = {DiscordID:friendSearch[0].discordID, username:friendSearch[0].username, avatar:friendSearch[0].avatar};  // Prepare the string to be inserted
+    friendsArray.push(friendData);   // Insert string to be returned
+  }
+  friendsArray.shift();
+
+  res.status(200).json(friendsArray);
+
 });
 
 router.post('/addBlocked', cors(corsOptionsDelegate), async (req, res, next) => 
