@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from "axios";
 import Navbar from '../components/Navbar';
 import { Form, Field } from "@progress/kendo-react-form";
 import { schools } from "../components/templates";
 import { DropDown, Input } from "../components/formComponents";
+import DeleteModal from '../components/DeleteModal';
 
 
 
@@ -18,6 +19,7 @@ else {
 }
 const clientId = CLIENT_ID;
 
+const [modalDelete, setModalDelete] = useState(false);
 
 const tagValidator = (value) => {
   let n = parseInt(value);
@@ -249,7 +251,7 @@ class Settings extends React.Component {
                                 <div className="card-header py-3">
                                 <p className="m-0 fw-bold">Delete Account</p>
                                 </div>
-                                <div className="card-body"><button className="btn btn-danger" type="button">DELETE ACCOUNT</button></div>
+                                <div className="card-body"><button className="btn btn-danger" type="button" onClick={() => {setModalDelete(true); }}>DELETE ACCOUNT</button>{modalDelete && <Modal setDeleteModal={setModalDelete} />}</div>
                             </div>
                             </div>
                         </div>
