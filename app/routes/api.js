@@ -421,16 +421,11 @@ router.post('/deleteAccount', cors(corsOptionsDelegate), async (req, res) =>
   const {discordID} = req.body;
   console.log(`Trying to delete ${discordID}...`)
 
-  try{
-    await User.deleteOne({discordID:discordID});
-    let ret = `User with ${discordID} has been deleted`;
-    res.status(200).json(ret);
-    return;
-  }
-  catch (error) {
-    console.log("Delete didn't work... ", err);
-    res.status(400).json({"error": err});
-  }
+  User.deleteOne({ discordID:discordID}).then(function(){
+    console.log("Data deleted"); // Success
+}).catch(function(error){
+    console.log(error); // Failure
+});
 
 
 });
