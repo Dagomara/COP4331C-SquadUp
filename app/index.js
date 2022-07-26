@@ -1,6 +1,9 @@
 require('dotenv').config(); // get .env stuffs
+const { socketConnection } = require('./matchmaking/queue-two');
+const http = require('http');
 const express = require('express');
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 3001;
 const session = require('express-session');
 // register express session with MongoStore
@@ -11,10 +14,9 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const database = require('./db/connect');
-// socket.io import
-const io = require("./matchmaking/queue");
-io.app = app;
-io.run();
+
+// socket.io messings
+socketConnection(server);
 
 const corsOptions = {
     methods: 'GET,POST,PATCH,DELETE,OPTIONS',
@@ -58,6 +60,6 @@ app.get('*', (req, res) => {
   });
 //}
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Now listening to requests on port ${PORT}`);
 });
