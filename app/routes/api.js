@@ -415,14 +415,17 @@ router.post('/viewBlocked', cors(corsOptionsDelegate), async (req, res, next) =>
 
 router.post('/test', cors(corsOptionsDelegate), async (req, res, next) => 
 {
-  // incoming: discordID, game
-  // outgoing: game, error
+  // incoming: discordID
+  // outgoing: friends discordID, friends username, friends avatar
 
-  let {discordID, games} = req.body;
+  // const {school, gender} = req.body;
+  // let search = await User.find({school:school, gender:gender , }).select({ "username": 1, "_id": 0});
 
-  let results = games.gameID;
+  const {gameID, gender} = req.body;
+  let search = await User.find({'games.gameID':gameID, gender:gender }).select({ "username": 1, "_id": 0});
+  
 
-  res.status(200).json(results);
+  res.status(200).json(search);
 });
 
 module.exports = router;
