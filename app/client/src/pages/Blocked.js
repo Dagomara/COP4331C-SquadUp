@@ -34,6 +34,29 @@ class Blocked extends React.Component {
             blocked: [],
             loginRedirect: false
         };
+
+        this.unblockPlayer = async (blockedId) => {
+          await axios.post(`${serverRoot}/api/deleteBlocked`, { discordID: this.state.discordId, blocked: blockedId})
+          .then(res => {
+              console.log("unblocked player: ", res.status);
+              window.location.reload(false);
+              return true;
+          })
+          .catch((err)=>{console.log("deleteBlocked Error!\n", err)});
+          return false;
+        };
+
+        this.addTestDummies = async () => {
+          await axios.post(`${serverRoot}/api/addBlocked`, { discordID: this.state.discordId, blocked: "280827046685573122"})
+          .then((res) => {
+            console.log("Added dummy account 1!");
+          });
+          await axios.post(`${serverRoot}/api/addBlocked`, { discordID: this.state.discordId, blocked: "155082013987045376"})
+          .then((res) => {
+            console.log("Added dummy account 2!");
+          });
+          window.location.reload(false);
+        };
       }
       
 
@@ -74,7 +97,8 @@ class Blocked extends React.Component {
                       blocked: this.state.blocked.concat([{
                         name: res2.data.username,
                         avatar: `https://cdn.discordapp.com/avatars/${id}/${res2.data.avatar}.png`,
-                        status: res2.data.status
+                        status: res2.data.status,
+                        id: id
                     }])});
                     console.log("updated state w/ new blocked players: ", this.state.blocked);
                 }
@@ -93,14 +117,6 @@ class Blocked extends React.Component {
         console.log(err);
       });
     }
-    
-    unblockPlayer = async (blockedId) => {
-      await axios.patch(`${serverRoot}/api/editProfile`, { discordID: this.state.discordId, blocked: blockedId})
-      .then(res => {
-          console.log("unblock player: ", res.status);
-      })
-      .catch((err)=>{console.log("addGame Error!\n", err)});
-    };
 
     render() {
       if (this.state.loginRedirect) return (
@@ -123,28 +139,41 @@ class Blocked extends React.Component {
                               <h1 class="ribbon"><em><strong class="text-uppercase fw-bolder ribbon-content">Blocked Players</strong></em></h1>
                           </div>
                           <div class="container-fluid">
-                              <div class="row justify-content-center">
-                                  <div class="col-lg-8 col-xl-8 align-self-center align-items-center">
-                                      <div class="card shadow mb-4">
-                                          <div class="card-header d-flex justify-content-between align-items-center">
-                                              <h6 class="fs-4 fw-bold m-0">Blocked</h6>
-                                          </div>
-                                          <div class="card-body">
-                                            {(() => {
-                                              if (this.state.blocked != undefined && this.state.blocked.length > 0) {
-                                                  return (
-                                                  this.state.blocked.map((b, index) => (
-                                                  <BlockedRow blocked={ b } unblockPlayer={this.unblockPlayer}/>
-                                                  )));
-                                              }
-                                              else {
-                                                  return (<p class="away">No Blocked Players. Cool!</p>);
-                                              }
-                                            })()}
-                                          </div>
-                                      </div>
+                          <div class="row justify-content-center">
+                                <div class="col-lg-8 col-xl-8 align-self-center align-items-center">
+                                  <div class="card shadow mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                      <h6 class="fs-4 fw-bold m-0">Blocked</h6>
+                                    </div>
+                                    <div class="card-body">
+                                      {(() => {
+                                        if (this.state.blocked != undefined && this.state.blocked.length > 0) {
+                                          return (
+                                            this.state.blocked.map((b, index) => (
+                                            <BlockedRow blocked={ b } unblockPlayer={this.unblockPlayer}/>
+                                          )));
+                                        }
+                                        else {
+                                            return (<p class="away">No Blocked Players. Cool!</p>);
+                                        }
+                                      })()}
+                                    </div>
                                   </div>
+                                </div>
                               </div>
+                              {(process.env.NODE_ENV != "production") && (
+                              <div class="row justify-content-center">
+                                <div class="col-lg-8 col-xl-8 align-self-center align-items-center">
+                                  <div class="card shadow mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                      <h6 class="fs-4 fw-bold m-0">Testing Zone</h6>
+                                    </div>
+                                    <div class="card-body">
+                                      <button onClick={this.addTestDummies}>Add some testing figures</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>)}
                           </div>
                       </div>
                   </div>

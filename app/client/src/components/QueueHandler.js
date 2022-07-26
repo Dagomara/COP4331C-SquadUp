@@ -142,9 +142,10 @@ export default function QueueHandler(props) {
     };
   }, []); // array makes sure this component only renders ONCE. 
 
-  const sendQR = () => {
+  const sendQR = (e) => {
     console.log("Sending queue request with ", qrrPayload);
     socket.emit("queue-request", qrrPayload);
+    e.preventDefault();
   }
 
   return (

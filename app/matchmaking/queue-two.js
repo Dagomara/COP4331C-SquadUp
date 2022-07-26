@@ -40,7 +40,7 @@ const fuzzyMatch = async (pl, q) => {
     if (pl.gameId == q.gameId) { // if same game
         // if almost same # players needed (on a bigger system, n would be 0)
         if (withinN(q.players.length, pl.players_needed, 3)) {
-            Object.keys(pl.filters).map(filt => {
+            let filtsMatch = Object.keys(pl.filters).map(filt => {
                 // make sure this case fits well enough
                 switch (typeof pl.filters[filt]) {
                     case "number":
@@ -62,20 +62,26 @@ const fuzzyMatch = async (pl, q) => {
                         return false;
                 }
                 return true;
-            })
-            // TODO: filter out blocked players
-            await axios.post(`${process.env.URL_ROOT_SERVER}/api/viewBlocked`, {discordID: pl.discordID})
-            .then(res => {
-            if (res.data) {
-              console.log("viewBlocked data: ", res.data);
-              let blockedIDs = res.data;
-              let intersection = blockedIDs.filter(element => q.discordID.includes(element));
-              if(intersection){
-                console.log("At least of your queue members is blocked");
-              }    
+            });
+            if (filtsMatch) {
+              // filter out blocked players
+              return await axios.post(`${process.env.URL_ROOT_SERVER}/api/viewBlocked`, {discordID: pl.discordID})
+              .then(res => {
+                if (res.data) {
+                  console.log("viewBlocked data: ", res.data);
+                  let blockedIDs = res.data;
+                  let intersection = blockedIDs.filter(element => q.discordID.includes(element));
+                  if(intersection){
+                    console.log("At least of your queue members is blocked");
+                    return false;
+                  }
+                  else {
+                    // Any other things to add will go in here!!
+                    return true;
+                  }
+                }
+              })
             }
-          })
-
         }
     }
     return false; // if anything fails, return false!
