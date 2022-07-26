@@ -203,7 +203,7 @@ class Queue extends React.Component {
                                     <div class="card shadow mb-4">
                                         <div class="card-header d-flex align-items-center">
                                             <img src={this.state.selectedGame.icon} 
-                                              className="img-fluid rounded-circle gameIconHeader"/>
+                                              className="img-fluid gameIconHeader"/>
                                             <h6 class="fs-4 fw-bold m-0">{this.state.selectedGame.name}</h6>
                                         </div>
                                         <div class="card-body">
@@ -279,7 +279,7 @@ class Queue extends React.Component {
                                                             if (!isNaN(lower) && !isNaN(upper)) {
                                                               return (
                                                                 <div>
-                                                                  <input className='placeholder-small'
+                                                                  <input className='placeholder-small w-100'
                                                                     placeholder={`Matched ${field}s will be >= this value.`}
                                                                     type="number"
                                                                     name={field}
