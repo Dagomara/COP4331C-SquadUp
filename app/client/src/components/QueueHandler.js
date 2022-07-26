@@ -14,7 +14,7 @@ else {
    serverRoot = LOCALHOST_ROOT_SERVER;
 }
 
-const socket = openSocket('http://localhost:3001');
+const socket = openSocket(serverRoot);
 
 function sendSocketIO() {
   socket.emit('example_message', 'demo');
