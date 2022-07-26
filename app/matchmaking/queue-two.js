@@ -4,6 +4,7 @@ const webhookURL = process.env.WEBHOOK_URL;
 
 class Queue{
     constructor(queueId, gameId, players_needed, players=[], filters={}, ownerId){
+      console.log(`Making a new queue for the owner ${ownerId} with ${players_needed} players needed on game ${gameId}...`)
         this.queueId = queueId;
         this.gameId = gameId;
         this.players_needed = players_needed;
@@ -64,23 +65,29 @@ const fuzzyMatch = async (pl, q) => {
                 return true;
             });
             if (filtsMatch) {
+              console.log("Got pretty far with queue #", q.queueId, ". Seeing if anyone's blocked...");
               // filter out blocked players
-              return await axios.post(`${process.env.URL_ROOT_SERVER}/api/viewBlocked`, {discordID: pl.discordID})
+              let hasBlocked = false;
+              await axios.post(`${process.env.URL_ROOT_SERVER}/api/viewBlocked`, {discordID: pl.discordID})
               .then(res => {
                 if (res.data) {
                   console.log("viewBlocked data: ", res.data);
                   let blockedIDs = res.data;
                   let intersection = blockedIDs.filter(element => q.discordID.includes(element));
-                  if(intersection){
-                    console.log("At least of your queue members is blocked");
-                    return false;
-                  }
-                  else {
-                    // Any other things to add will go in here!!
-                    return true;
+                  console.log("intersection: ", intersection);
+                  if(intersection && intersection[0]){
+                    console.log("At least one of your queue members is blocked");
+                    hasBlocked = true;
+                    return;
                   }
                 }
-              })
+              });
+              if (hasBlocked)
+                return false;
+              // All other checking code goes afer this!
+              //...
+              console.log("fuzzyMatch: Join was a success for ", pl.discordId, `into queue ${q.queueId}!`);
+              return true;
             }
         }
     }
@@ -108,9 +115,12 @@ exports.socketConnection = (server) => {
     
     socket.on('queue-request', async (payload) =>{
         console.log("queue request received. Looking through searchingQueues:");
-        searchingQueues.forEach(element => {
+        let joinedExisting = false;
+        searchingQueues.forEach(async (element) => {
             console.log("element: ", element);
-            if(fuzzyMatch(payload, element)) { // see if queue is a good fit
+            let matches = await fuzzyMatch(payload, element);
+            console.log("Matches result: ", matches);
+            if(matches) { // see if queue is a good fit
                 element.players_needed -= 1;
                 element.players.push(payload.discordId);
                 console.log("Putting player into queue ", element.queueId);
@@ -128,9 +138,14 @@ exports.socketConnection = (server) => {
                     discordAvatar: `https://cdn.discordapp.com/avatars/${payload.discordId}/${payload.avatar}.png`,
                     players_needed: element.players_needed
                 });
+                console.log("Sent the thingies. searchingQueues now: ", searchingQueues);
+                joinedExisting = true;
                 return;
             }
         });
+        if (joinedExisting == true)
+          return;
+        // If an existing queue was not found, make a new one for this player!
         let q = new Queue(newQueue(), payload.gameId, payload.players_needed, [payload.discordId], payload.filters, payload.discordId);
         searchingQueues.push(q);
         console.log("searchingQueues after push: ", searchingQueues);
@@ -144,52 +159,64 @@ exports.socketConnection = (server) => {
             players_needed: payload.players_needed
         });
         console.log("queue request response sent!");
-    })
+    });
 
     socket.on('queue-leave-request', payload =>{
-        if(payload.discordId == payload.ownerId) {
-            io.emit('queue-abandon-announcement', { queueId:payload.queueId })
-        }
-        else{
-            let q = searchingQueues.find(o => (o.queueId == payload.queueId));
+      console.log("queue leave request received. Processing...");
+      if(payload.discordId == payload.ownerId) {
+          console.log("Queue is being abandoned!");
+          io.emit('queue-abandon-announcement', { queueId:payload.queueId })
+          //todo: remove this queue from searchingQueues
+      }
+      else{
+          let q = searchingQueues.find(o => (o.queueId == payload.queueId));
+          console.log("I think I found ", payload.queueId);
+          if (q) { // make sure it found one!
             let index = searchingQueues.findIndex(o => (o.queueId == payload.queueId));
             q.players_needed -= 1;
             q.players.splice(index, 1);
+            console.log("Sending a queue leave announcement!");
             io.emit('queue-leave-announcement', {
                 queueId: payload.queueId,
                 discordId: payload.discordId,
                 players: q.players,
                 players_needed: q.players_needed
             });
-        }
-        return;
+          }
+      }
+      return;
     })
 
     socket.on('queue-play-request', payload =>{
-        let q = searchingQueues.find(o => (o.queueId == payload.queueId));
-        let index = searchingQueues.findIndex(o => (o.queueId == payload.queueId));
-        if(payload.ownerId == q.ownerId) {
+      console.log("queue play request received. Processing...");
+      let q = searchingQueues.find(o => (o.queueId == payload.queueId));
+      if (q) { // make sure it found one!
+        let index = searchingQueues.findIndex(o => (o.queueId == payload.queueId)); // for moving to other array
+        if(payload.discordId == q.ownerId) {
             // webhook signal to squadup discord to start game @mike
             const hook = new Webhook(webhookURL);
-            hook.send("start" + q.players.join(" "));
+            hook.send("start " + q.players.join(" "));
 
             console.log("searchingQueues before: ", searchingQueues);
             playingQueues.push(q);
             searchingQueues.splice(index, 1);
             console.log("searchingQueues after: ", searchingQueues);
             io.emit('queue-play-announcement', { queueId: payload.queueId })
+            console.log("queue play announcement sent out!")
         }
+      }
     })
 
     socket.on('queue-quit-request', payload => {
-        let q = playingQueues.find(o => (o.queueId == payload.queueId));
-        if(q.players.find(o => (o == payload.discordId))){
-            //send webhook to discord to end game @mike
-            const hook = new Webhook(webhookURL);
-            hook.send("end" + q.players.join(" "));
-            io.emit('queue-quit-announcement', { queueId: payload.queueId});
-        }
-        return;
+      console.log("queue quit request received. Processing...");
+      let q = playingQueues.find(o => (o.queueId == payload.queueId));
+      if(q && q.players.find(o => (o == payload.discordId))){
+          //send webhook to discord to end game @mike
+          const hook = new Webhook(webhookURL);
+          hook.send("end " + q.players.join(" "));
+          io.emit('queue-quit-announcement', { queueId: payload.queueId});
+      }
+      return;
     })
   });
 

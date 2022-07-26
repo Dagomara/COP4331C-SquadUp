@@ -34,6 +34,7 @@ export default function QueueHandler(props) {
   const [queueId, setQueueId] = useState(0);
   const [ownerId, setOwnerId] = useState(""); // who owns the match? 
   const [queueStatus, setQueueStatus] = useState("queueing");
+  const [mostRecentPayload, setMostRecentPayload] = useState({}); // for bugtesting 
 
   // socket playings
   const [isConnected, setIsConnected] = useState(socket.connected);
@@ -80,30 +81,39 @@ export default function QueueHandler(props) {
         makeAvatars(payload.players); // set up avatar URLs
         console.log("Established all joining variables and setting status to waiting...");
 
+        setMostRecentPayload(payload);
         setQueueStatus("waiting");
       }
     });
 
     // Server response when a player joins queue. 
     socket.on("queue-join-announcement", payload => {
-      console.log("Player joined! ", payload);
-      setUsers([...users, payload.discordId]);
-      let newAvatarObject = {};
-      newAvatarObject[payload.discordId] = payload.avatar;
-      setAvatars({...avatars, ...newAvatarObject}); // add player's avatar to the game!
-      setPlayersNeeded(payload.players_needed);
+      console.log("received a queue join announcement for queueId", payload.queueId);
+      if (payload.queueId == queueId) {
+        console.log("Player joined! ", payload);
+        setUsers([...users, payload.discordId]);
+        let newAvatarObject = {};
+        newAvatarObject[payload.discordId] = payload.avatar;
+        setAvatars({...avatars, ...newAvatarObject}); // add player's avatar to the game!
+        setPlayersNeeded(payload.players_needed);
+      }
     });
 
     // Server response when the owner quits out of waiting queue. 
     socket.on('queue-abandon-announcement', payload => {
+      console.log("received a queue abandon announcement for queueId", payload.queueId);
+      console.log("queueStatus: ", queueStatus);
       if (queueStatus == "waiting" && payload.queueId == queueId) {
         console.log("Queue was abandoned by owner!");
+        setMostRecentPayload(payload);
         setQueueStatus("abandoned");
       }
     });
 
     // Server response when other players quit out of waiting queue. 
     socket.on("queue-leave-announcement", payload => {
+      console.log("received a queue leave announcement for queueId", payload.queueId);
+      console.log("queueStatus: ", queueStatus);
       if (queueStatus == "waiting" && payload.queueId == queueId) {
         console.log("Player left! ", payload);
         delete avatars[payload.discordId];
@@ -115,8 +125,11 @@ export default function QueueHandler(props) {
     
     // Server response when anyone presses quit on a playing game. 
     socket.on("queue-quit-announcement", payload => {
+      console.log("received a quit abandon announcement for queueId", payload.queueId);
+      console.log("queueStatus: ", queueStatus);
       if (queueStatus == "playing" && payload.queueId == queueId) {
         console.log("Player left current match! Quitting: ", payload);
+        setMostRecentPayload(payload);
         setQueueStatus("quit");
       }
     });
@@ -125,6 +138,7 @@ export default function QueueHandler(props) {
     socket.on("queue-play-announcement", payload => {
       if (queueStatus == "waiting" && payload.queueId == queueId) {
         console.log("Let's play! ", payload);
+        setMostRecentPayload(payload);
         setQueueStatus("playing");
       }
     });
@@ -142,62 +156,115 @@ export default function QueueHandler(props) {
     };
   }, []); // array makes sure this component only renders ONCE. 
 
-  const sendQR = (e) => {
+  const queueRequest = (e) => {
     console.log("Sending queue request with ", qrrPayload);
     socket.emit("queue-request", qrrPayload);
     e.preventDefault();
   }
+  const leaveRequest = (e) => {
+    let payload = {
+      queueId: queueId,
+      discordId: discordId,
+      ownerId: ownerId
+    };
+    console.log("Sending leave request with ", payload);
+    socket.emit("queue-leave-request", payload);
+    e.preventDefault();
+  };
+  const playRequest = (e) => {
+    let payload = {
+      queueId: queueId,
+      discordId: discordId,
+      ownerId: ownerId
+    };
+    console.log("Sending play request with ", payload);
+    socket.emit("queue-play-request", payload);
+    e.preventDefault();
+  };
+  const quitRequest = (e) => {
+    let payload = {
+      queueId: queueId,
+      discordId: discordId,
+      ownerId: ownerId
+    };
+    console.log("Sending quit request with ", payload);
+    socket.emit("queue-quit-request", payload);
+    e.preventDefault();
+  };
 
   return (
-    <div class="row justify-content-center">
-      <div class="col-lg-8 col-xl-8 align-self-center align-items-center">
-        <div class="card shadow mb-4">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h6 class="fs-4 fw-bold m-0">Select A Game</h6>
-          </div>
-          <div class="card-body">
-            {queueStatus=="queueing" && ( // after queue req first sent
-              <div>
-                <button onClick={goBack}>Back to Options</button>
-                <p className="away">Looking for game...</p>
-                <pre className='text-white'>{JSON.stringify(qrrPayload, null, 2)}</pre>
-                <button onClick={(e) => {
-                  setQueueStatus("waiting"); e.preventDefault();
-                }}>Next stage test</button>
-                <button onClick={sendQR}>Send queue request!</button>
-              </div>
-            )}
-            {queueStatus=="waiting" && ( // in a match & waiting to start
-              <div>
-                <p className='online'>Got a response! Waiting to start...</p>
-                {(()=>{
-                  console.log("users: ", users);
-                  return users.map(id => {return (
-                    <div className='row'>
-                      <img src={avatars[id]} alt={`avatar of ${id}`} />
-                      <p>Player with ID {id} and name {names[id]}</p>
-                    </div>
-                  )})
-                })()}
-                <button onClick={(e) => {
-                  setQueueStatus("playing"); e.preventDefault();
-                }}>Next stage test</button>
-              </div>
-            )}
-            {queueStatus=="playing" && ( // Playing with the group!
-              <div>
-                <p className='online'>You're now in-game :)</p>
-                <button onClick={(e) => {
-                  setQueueStatus("quit"); e.preventDefault();
-                }}>Next stage test</button>
-              </div>
-            )}
-            {queueStatus=="quit" && ( // Match has been quit :) 
-              <p className='away'>Game over! How was it?</p>
-            )}
+    <div>
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-8 align-self-center align-items-center">
+          <div class="card shadow mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h6 class="fs-4 fw-bold m-0">Select A Game</h6>
+            </div>
+            <div class="card-body">
+              {queueStatus=="queueing" && ( // after queue req first sent
+                <div>
+                  <button onClick={goBack}>Back to Options</button>
+                  <p className="away">Looking for game...</p>
+                  <pre className='text-white'>{JSON.stringify(qrrPayload, null, 2)}</pre>
+                  <button onClick={(e) => {
+                    setQueueStatus("waiting"); e.preventDefault();
+                  }}>Next stage test</button>
+                  <button onClick={queueRequest}>Send queue request!</button>
+                </div>
+              )}
+              {queueStatus=="waiting" && ( // in a match & waiting to start
+                <div>
+                  <p className='online'>Got a response! Waiting to start...</p>
+                  {(()=>{
+                    console.log("users: ", users);
+                    return users.map(id => {return (
+                      <div className='row'>
+                        <img src={avatars[id]} alt={`avatar of ${id}`} />
+                        <p>Player with ID {id} and name {names[id]}</p>
+                      </div>
+                    )})
+                  })()}
+                  <button onClick={(e) => {
+                    setQueueStatus("playing"); e.preventDefault();
+                  }}>Next stage test</button>
+                </div>
+              )}
+              {queueStatus=="playing" && ( // Playing with the group!
+                <div>
+                  <p className='online'>You're now in-game :)</p>
+                  <button onClick={(e) => {
+                    setQueueStatus("quit"); e.preventDefault();
+                  }}>Next stage test</button>
+                </div>
+              )}
+              {queueStatus=="quit" && ( // Match has been quit :) 
+                <p className='away'>Game over! How was it?</p>
+                )}
+            </div>
           </div>
         </div>
       </div>
-  </div>
+      {(process.env.NODE_ENV != "production") && (
+        <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-8 align-self-center align-items-center">
+          <div class="card shadow mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h6 class="fs-4 fw-bold m-0">Testing Zone</h6>
+            </div>
+            <div class="card-body">
+              <div className='row'>
+                <h5 className='text-white'>Most recent payload:</h5>
+                <pre className='text-white'>{JSON.stringify(mostRecentPayload, null, 2)}</pre>
+              </div>
+              <div className='row'>
+                <button onClick={leaveRequest}>Try leaving the queue</button>
+                <button onClick={playRequest}>Try playing the queue</button>
+                <button onClick={quitRequest}>Try quitting the queue</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>)}
+    </div>
   )
 }
