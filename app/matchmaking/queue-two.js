@@ -1,3 +1,4 @@
+const axios = require("axios");
 const {Webhook} = require('discord-webhook-node');
 const webhookURL = process.env.WEBHOOK_URL;
 
@@ -35,7 +36,7 @@ const arraysCloseEnough = (arr1, arr2, n) => {
 
 // Takes a payload and a Queue object, and sees if the Queue and payload are a good match for each other. 
 // Returns: true if requests are similar enough, false otherwise. 
-const fuzzyMatch = (pl, q) => {
+const fuzzyMatch = async (pl, q) => {
     if (pl.gameId == q.gameId) { // if same game
         // if almost same # players needed (on a bigger system, n would be 0)
         if (withinN(q.players.length, pl.players_needed, 3)) {
@@ -63,7 +64,7 @@ const fuzzyMatch = (pl, q) => {
                 return true;
             })
             // TODO: filter out blocked players
-            await axios.post(`${serverRoot}/api/viewBlocked`, {discordID: pl.discordID})
+            await axios.post(`${process.env.URL_ROOT_SERVER}/api/viewBlocked`, {discordID: pl.discordID})
             .then(res => {
             if (res.data) {
               console.log("viewBlocked data: ", res.data);
@@ -99,7 +100,7 @@ exports.socketConnection = (server) => {
       io.emit('pong');
     })
     
-    socket.on('queue-request', payload =>{
+    socket.on('queue-request', async (payload) =>{
         console.log("queue request received. Looking through searchingQueues:");
         searchingQueues.forEach(element => {
             console.log("element: ", element);
