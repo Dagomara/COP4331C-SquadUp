@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from "axios";
 import io from 'socket.io-client';
+import 'whatwg-fetch';
+import openSocket from 'socket.io-client';
 
 import { HEROKU_ROOT_SERVER, HEROKU_ROOT_CLIENT, CLIENT_ID,
     LOCALHOST_ROOT_SERVER, LOCALHOST_ROOT_CLIENT } from '../assets/js/keys';
@@ -10,6 +12,12 @@ if (process.env.NODE_ENV == "production") {
 }
 else {
    serverRoot = LOCALHOST_ROOT_SERVER;
+}
+
+const socket = openSocket(serverRoot);
+
+function sendSocketIO() {
+  socket.emit('example_message', 'demo');
 }
 
 // QueueHandlers handle all socket.io connections! Upon creation,
@@ -24,7 +32,10 @@ export default function QueueHandler(props) {
   const [queueId, setQueueId] = useState(0);
   const [ownerId, setOwnerId] = useState(""); // who owns the match? 
   const [queueStatus, setQueueStatus] = useState("queueing");
-  const socket = useRef(null);
+
+  // socket playings
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [lastPong, setLastPong] = useState(null);
 
   // For each discordId in `ids`, will make a "dictionary" of avatarURLs. 
   const makeAvatars = (ids) => {
@@ -41,10 +52,20 @@ export default function QueueHandler(props) {
   // Establish sockets.io handling. 
   useEffect(() => {
     console.log("Connecting to serverRoot: ", serverRoot);
-    socket.current = io(serverRoot, { autoConnect: false });
+    socket.on('connect', () => {
+      setIsConnected(true);
+    });
 
+    socket.on('disconnect', () => {
+      setIsConnected(false);
+    });
+
+    socket.on('pong', () => {
+      setLastPong(new Date().toISOString());
+    });
+    
     // Server response when we've been squadded up with other users. 
-    socket.current.on("queue-request-response", payload => {
+    socket.on("queue-request-response", (payload) => {
       console.log("Joining game! ", payload);
       if (queueStatus == "queueing" && payload.discordId == discordId) {
         setUsers(payload.players);
@@ -58,51 +79,18 @@ export default function QueueHandler(props) {
       }
     });
 
-    // Server response when a player joins queue. 
-    socket.current.on("queue-join-announcement", payload => {
-      console.log("Player joined! ", payload);
-      setUsers([...users, payload.discordId]);
-      let newAvatarObject = {};
-      newAvatarObject[payload.discordId] = payload.avatar;
-      setAvatars({...avatars, ...newAvatarObject}); // add player's avatar to the game!
-      setPlayersNeeded(payload.players_needed);
-    });
+    return () => {
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('pong');
+      socket.off('queue-request-response');
+    };
+  }, []); // array makes sure this component only renders ONCE. 
 
-    // Server response when the owner quits out of waiting queue. 
-    socket.current.on('queue-abandon-announcement', payload => {
-      if (queueStatus == "waiting" && payload.queueId == queueId) {
-        console.log("Queue was abandoned by owner!");
-        setQueueStatus("abandoned");
-      }
-    });
-
-    // Server response when other players quit out of waiting queue. 
-    socket.current.on("queue-leave-announcement", payload => {
-      if (queueStatus == "waiting" && payload.queueId == queueId) {
-        console.log("Player left! ", payload);
-        delete avatars[payload.discordId];
-        setAvatars(avatars);
-        setUsers(payload.players);
-        setPlayersNeeded(payload.players_needed);
-      }
-    });
-    
-    // Server response when anyone presses quit on a playing game. 
-    socket.current.on("queue-quit-announcement", payload => {
-      if (queueStatus == "playing" && payload.queueId == queueId) {
-        console.log("Player left current match! Quitting: ", payload);
-        setQueueStatus("quit");
-      }
-    });
-
-    // Server response when queue owner decided to start up the game!
-    socket.current.on("queue-play-announcement", payload => {
-      if (queueStatus == "waiting" && payload.queueId == queueId) {
-        console.log("Let's play! ", payload);
-        setQueueStatus("playing");
-      }
-    });
-  }, [serverRoot]); // array makes sure this component only renders ONCE. 
+  const sendQR = () => {
+    console.log("Sending queue request with ", qrrPayload);
+    socket.emit("queue-request", qrrPayload);
+  }
 
   return (
     <div class="row justify-content-center">
@@ -120,11 +108,7 @@ export default function QueueHandler(props) {
                 <button onClick={(e) => {
                   setQueueStatus("waiting"); e.preventDefault();
                 }}>Next stage test</button>
-                <button onClick={(e) => {
-                  socket.current.emit("queue-request", qrrPayload);
-                  console.log("Sent queue request with ", qrrPayload);
-                  e.preventDefault();
-                }}>Send queue request!</button>
+                <button onClick={sendQR}>Send queue request!</button>
               </div>
             )}
             {queueStatus=="waiting" && ( // in a match & waiting to start

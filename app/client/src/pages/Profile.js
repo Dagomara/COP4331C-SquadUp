@@ -30,7 +30,8 @@ class Profile extends React.Component {
             school: undefined,
             status: "offline",
             games: undefined,
-            loginRedirect: false
+            loginRedirect: false,
+            modalGame: false
         };
       }
 
@@ -116,14 +117,20 @@ class Profile extends React.Component {
                                             </div>
                                             <div class="card-body">
                                                 {(() => {
+                                                    // Display a GameRow for each loaded game.
                                                     if (this.state.games != undefined && this.state.games.length > 0) {
                                                         return (
                                                         this.state.games.map((game, index) => {
-                                                            console.log(game);
-                                                            let selectGame = (e, pluckedInfo) => {
-                                                                console.log(game, pluckedInfo);
-
-                                                                e.preventDefault();
+                                                            // The GameRow will pluck some info including game name & icon.
+                                                            let selectGame = (e, pluckedInfo)=>{
+                                                              let biggerGame = JSON.parse(JSON.stringify(game));
+                                                              biggerGame.icon = pluckedInfo.icon;
+                                                              biggerGame.name = pluckedInfo.name;
+                                                              this.setState({
+                                                                selectedGame: biggerGame
+                                                              });
+                                                              console.log("User picked: ", biggerGame);
+                                                              e.preventDefault();
                                                             };
                                                             return (
                                                                 <GameRow

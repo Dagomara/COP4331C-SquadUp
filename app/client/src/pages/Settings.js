@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import axios from "axios";
 import Navbar from '../components/Navbar';
 import { Form, Field } from "@progress/kendo-react-form";
@@ -18,8 +18,6 @@ else {
     serverRoot = LOCALHOST_ROOT_SERVER;
 }
 const clientId = CLIENT_ID;
-
-const [modalDelete, setModalDelete] = useState(false);
 
 const tagValidator = (value) => {
   let n = parseInt(value);
@@ -46,7 +44,8 @@ class Settings extends React.Component {
             gender: undefined,
             school: undefined,
             saveSuccess: "",
-            loginRedirect: false
+            loginRedirect: false,
+            modalDelete: false
         };
         this.sendSettings = async(data, event) => {
           console.log("settings sent!");
@@ -251,7 +250,9 @@ class Settings extends React.Component {
                                 <div className="card-header py-3">
                                 <p className="m-0 fw-bold">Delete Account</p>
                                 </div>
-                                <div className="card-body"><button className="btn btn-danger" type="button" onClick={() => {setModalDelete(true); }}>DELETE ACCOUNT</button>{modalDelete && <Modal setDeleteModal={setModalDelete} />}</div>
+                                <div className="card-body"><button className="btn btn-danger" type="button" onClick={() => {this.setState({modalDelete: true}); }}>
+                                  DELETE ACCOUNT
+                                </button>{this.state.modalDelete && <DeleteModal setDeleteModal={() => {this.setState({modalDelete: true}); }} />}</div>
                             </div>
                             </div>
                         </div>
