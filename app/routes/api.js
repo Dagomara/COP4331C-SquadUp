@@ -413,6 +413,25 @@ router.post('/viewBlocked', cors(corsOptionsDelegate), async (req, res, next) =>
   });
 });
 
+router.post('/api/deleteAccount', cors(corsOptionsDelegate), async (req, res) => 
+{
+  // incoming: discordID
+  // outgoing: deleted account
+  
+  const {discordID} = req.body;
+
+  try{
+    await User.deleteOne({discordID:discordID});
+    let ret = `User with ${discordID} has been deleted`;
+    res.status(200).json(ret);
+  }
+  catch (error) {
+    res.status(400).json({"error": err});
+  }
+
+
+});
+
 router.post('/test', cors(corsOptionsDelegate), async (req, res, next) => 
 {
   // incoming: discordID
