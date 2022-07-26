@@ -63,6 +63,18 @@ const fuzzyMatch = (pl, q) => {
                 return true;
             })
             // TODO: filter out blocked players
+            await axios.post(`${serverRoot}/api/viewBlocked`, {discordID: pl.discordID})
+            .then(res => {
+            if (res.data) {
+              console.log("viewBlocked data: ", res.data);
+              let blockedIDs = res.data;
+              let intersection = blockedIDs.filter(element => q.discordID.includes(element));
+              if(intersection){
+                console.log("At least of your queue members is blocked");
+              }    
+            }
+          })
+
         }
     }
     return false; // if anything fails, return false!
