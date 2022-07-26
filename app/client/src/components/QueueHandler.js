@@ -170,7 +170,7 @@ export default function QueueHandler(props) {
             {queueStatus=="waiting" && ( // in a match & waiting to start
               <div>
                 <p className='online'>Got a response! Waiting to start...</p>
-                {()=>{
+                {(()=>{
                   console.log("users: ", users);
                   return users.map(id => {return (
                     <div className='row'>
@@ -178,7 +178,7 @@ export default function QueueHandler(props) {
                       <p>Player with ID {id} and name {names[id]}</p>
                     </div>
                   )})
-                }}
+                })()}
                 <button onClick={(e) => {
                   setQueueStatus("playing"); e.preventDefault();
                 }}>Next stage test</button>

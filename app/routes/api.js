@@ -413,19 +413,22 @@ router.post('/viewBlocked', cors(corsOptionsDelegate), async (req, res, next) =>
   });
 });
 
-router.post('/api/deleteAccount', cors(corsOptionsDelegate), async (req, res) => 
+router.post('/deleteAccount', cors(corsOptionsDelegate), async (req, res) => 
 {
   // incoming: discordID
   // outgoing: deleted account
   
   const {discordID} = req.body;
+  console.log(`Trying to delete ${discordID}...`)
 
   try{
     await User.deleteOne({discordID:discordID});
     let ret = `User with ${discordID} has been deleted`;
     res.status(200).json(ret);
+    return;
   }
   catch (error) {
+    console.log("Delete didn't work... ", err);
     res.status(400).json({"error": err});
   }
 
