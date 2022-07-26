@@ -145,7 +145,58 @@ exports.socketConnection = (server) => {
         });
         console.log("queue request response sent!");
     })
+
+    socket.on('queue-leave-request', payload =>{
+        if(payload.discordId == payload.ownerId) {
+            io.emit('queue-abandon-announcement', { queueId:payload.queueId })
+        }
+        else{
+            let q = searchingQueues.find(o => (o.queueId == payload.queueId));
+            let index = searchingQueues.findIndex(o => (o.queueId == payload.queueId));
+            q.players_needed -= 1;
+            q.players.splice(index, 1);
+            io.emit('queue-leave-announcement', {
+                queueId: payload.queueId,
+                discordId: payload.discordId,
+                players: q.players,
+                players_needed: q.players_needed
+            });
+        }
+        return;
+    })
+
+    socket.on('queue-play-request', payload =>{
+        let q = searchingQueues.find(o => (o.queueId == payload.queueId));
+        let index = searchingQueues.findIndex(o => (o.queueId == payload.queueId));
+        if(payload.ownerId == q.ownerId) {
+            // webhook signal to squadup discord to start game @mike
+            const hook = new Webhook(webhookURL);
+            hook.send("start" + q.players.join(" "));
+
+            console.log("searchingQueues before: ", searchingQueues);
+            playingQueues.push(q);
+            searchingQueues.splice(index, 1);
+            console.log("searchingQueues after: ", searchingQueues);
+            io.emit('queue-play-announcement', { queueId: payload.queueId })
+        }
+    })
+
+    socket.on('queue-quit-request', payload => {
+        let q = playingQueues.find(o => (o.queueId == payload.queueId));
+        if(q.players.find(o => (o == payload.discordId))){
+            //send webhook to discord to end game @mike
+            const hook = new Webhook(webhookURL);
+            hook.send("end" + q.players.join(" "));
+            io.emit('queue-quit-announcement', { queueId: payload.queueId});
+        }
+        return;
+    })
   });
+
+  io.on("connect_error", (err) => {
+    console.log(`connect_error due to ${err.message}`);
+  })
+  
 };
 
 exports.sendMessage = (key, message) => io.emit(key, message);
