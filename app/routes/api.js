@@ -327,20 +327,46 @@ router.post('/viewFriendsMobile', cors(corsOptionsDelegate), async (req, res) =>
   // outgoing: friends discordID, friends username, friends avatar
 
   const { discordID } = req.body;
-
-  let user = await User.find({discordID:discordID});
   let friendsArray = [String];
 
-  for (let i = 0; i < user[0].friends.length; i++){
+  let user = await User.find({discordID:discordID});
+
+  try{
+    for (let i = 0; i < user[0].friends.length; i++){
     let friendId = user[0].friends[i];    // Get friend ID from user
     let friendSearch = await User.find({discordID:friendId});   // Search each specific friend
     let friendData = {DiscordID:friendSearch[0].discordID, username:friendSearch[0].username, avatar:friendSearch[0].avatar};  // Prepare the string to be inserted
     friendsArray.push(friendData);   // Insert string to be returned
   }
   friendsArray.shift();
-
   res.status(200).json(friendsArray);
+  }catch(err) {
+    res.status(400).json({"error": err})
+  }
 
+  // await User.find({discordID:discordID})
+  // .then( (users, err) => {
+  //   if (!err) {
+  //     if (users.length > 0){
+  //       for (let i = 0; i < users[0].friends.length; i++){
+  //       let friendId = users[0].friends[i];    // Get friend ID from user
+  //       let friendSearch = User.find({discordID:friendId});   // Search each specific friend
+  //       let friendData = {DiscordID:friendSearch[0].discordID, username:friendSearch[0].username, avatar:friendSearch[0].avatar};  // Prepare the string to be inserted
+  //       friendsArray.push(friendData);   // Insert string to be returned
+  //       }
+  //       friendsArray.shift();
+  //       res.status(200).json(friendsArray);}
+  //     else{
+  //       console.log("Request issue. Telling user to retry...");
+  //       throw "Try try reloading!";
+  //     }
+  //   }
+  //   else
+  //     throw err;
+  // }).catch(function(err) {
+  //   res.status(400).json({"error": err});
+  // });
+  
 });
 
 router.post('/addBlocked', cors(corsOptionsDelegate), async (req, res, next) => 
