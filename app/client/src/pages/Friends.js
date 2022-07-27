@@ -43,6 +43,10 @@ class Friends extends React.Component {
             modalFriend: val
           }); 
         }
+
+        this.removeFriend = () => {
+          await axios.post(`${serverRoot}/api/deleteFriend`, ())
+        }
       }
       
 

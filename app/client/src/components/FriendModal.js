@@ -6,14 +6,16 @@ function FriendModal(props) {
   let { name, avatar, status } = props.friend;
     return (
     <div className="modalBackground text-white">
-      <div className="modalContainer">
-      <div className="modalContainer2">
+      <div className="friend-modalContainer">
+      <div className="friend-modalContainer2">
         <div className="titleCloseBtn">
-          <button onClick={() => { setFriendModal(false);  }}> X </button>
+          <button className="text-white" onClick={() => { setFriendModal(false);  }}> X </button>
         </div>
-        <div className="title">
+        <div className="title-friend">
           <div className="title-border">
-          <img className="img-fluid rounded-circle" src={avatar} /><span>{name}</span><span class="online"><i class="fas fa-circle"></i>&nbsp;{status}</span>
+          <img className="img-modal rounded-circle" src={avatar}></img>
+          <span className="friend-name">&nbsp;&nbsp;{name}</span><br/>
+          <span className="online"><i class="fas fa-circle"></i>&nbsp;{status}</span>
           </div>
         </div>
         <div className="body">

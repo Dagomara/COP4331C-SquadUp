@@ -39,7 +39,10 @@ function DeleteModal(props) {
               </div>
               <div className="footer">
                 <button onClick={() => { setDeleteModal(false);  }} id="cancelBtn">No</button>
-                <button onClick={() => { setDeleteConfirm(true);  }}>Yes, Delete</button>
+                <button onClick={() => { 
+                  setDeleteConfirm(true); 
+                  props.accountDelete()  }}
+                  >Yes, Delete</button>
               </div>
            </div>
           )}

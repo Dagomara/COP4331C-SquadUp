@@ -89,6 +89,16 @@ class Settings extends React.Component {
             deleteConfirm: val
           }); 
         }
+
+        this.accountDelete = async () => {
+          await axios.post(`${serverRoot}/api/deleteAccount`, {discordID: this.state.discordId})
+          .then(res => {
+            console.log("Account Deleted: ", res.status);
+            return true;
+          })
+          .catch((err)=>{console.log("deleteAccount Error!\n", err)});
+          return false;
+        }
       }
 
     // detects user login status, kicks them away if not logged in
@@ -148,6 +158,7 @@ class Settings extends React.Component {
             avatarURL={this.state.avatarURL}
             deleteConfirm={this.state.deleteConfirm}
             setDeleteConfirm={this.setDeleteConfirm}
+            accountDelete={this.accountDelete}
           />)}
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
           {!this.state.modalDelete && (

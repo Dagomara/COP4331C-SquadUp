@@ -28,10 +28,37 @@
     flex-direction: column;
     padding: 25px;
   }
+
+  .friend-modalContainer {
+    width: 500px;
+    height: 500px;
+    border-radius: 12px;
+    background-color: #36393F;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+  }
+
+  .friend-modalContainer2 {
+    width: 450px;
+    height: 500px;
+    border-radius: 12px;
+    background-color: #2F3136;
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+  }
   
   .modalContainer .title {
     display: inline-block;
     text-align: center;
+    margin-top: 10px;
+  }
+
+  .modalContainer .title-friend {
+    display: inline-block;
+    text-align: left;
     margin-top: 10px;
   }
 
@@ -56,6 +83,14 @@
     font-size: 25px;
     cursor: pointer;
   }
+
+  .img-modal {
+    height: 65px;
+  }
+
+  .friend-name {
+    font-size: 25px;
+  }
   
   .modalContainer .body {
     flex: 50%;
@@ -74,6 +109,34 @@
   }
   
   .modalContainer .footer button {
+    width: 150px;
+    height: 45px;
+    margin: 10px;
+    border: none;
+    background-color: crimson;
+    color: white;
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  .friend-modalContainer .body {
+    flex: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.7rem;
+    text-align: center;
+  }
+  
+  .friend-modalContainer .footer {
+    flex: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .friend-modalContainer .footer button {
     width: 150px;
     height: 45px;
     margin: 10px;
