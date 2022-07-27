@@ -17,7 +17,7 @@ function DeleteModal(props) {
               </div>
               <div className="footer">
                 <button id="cancelBtn">
-                <a class="text-white" href="/">Go to Home</a>
+                <a className="text-white" href="/">Go to Home</a>
                 </button>
               </div>
             </div>
@@ -25,11 +25,11 @@ function DeleteModal(props) {
           {(!props.deleteConfirm) && (
             <div className="modalContainer2">
               <div className="titleCloseBtn">
-                <button class="text-white" onClick={() => { setDeleteModal(false);  }}> X </button>
+                <button className="text-white" onClick={() => { setDeleteModal(false);  }}> X </button>
               </div>
               <div className="title">
                 <div className="title-border">
-                <img class="img-fluid rounded-circle" src={props.avatarURL} /><span>{props.username}</span>
+                <img className="img-fluid rounded-circle" src={props.avatarURL} /><span>{props.username}</span>
                 </div>
               </div>
               <div className="body">

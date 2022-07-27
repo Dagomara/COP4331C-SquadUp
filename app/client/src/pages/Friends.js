@@ -2,6 +2,7 @@ import React from 'react';
 import axios from "axios";
 import Navbar from '../components/Navbar';
 import FriendRow from '../components/FriendRow';
+import FriendModal from '../components/FriendModal';
 import { HEROKU_ROOT_SERVER, HEROKU_ROOT_CLIENT, CLIENT_ID,
      LOCALHOST_ROOT_SERVER, LOCALHOST_ROOT_CLIENT } from '../assets/js/keys';
 var serverRoot;
@@ -32,9 +33,15 @@ class Friends extends React.Component {
             games: undefined,
             friendIDs: undefined,
             friends: [],
-            loginRedirect: false
+            loginRedirect: false,
+            modalFriend: false
         };
         // const [friendsList, setFriendsList] = React.useState([]);
+        this.setFriend = (val) => {
+          this.setState({
+            modalFriend: val
+          }); 
+        }
       }
       
 
@@ -106,7 +113,11 @@ class Friends extends React.Component {
 
       return (
         <div className='Profile' id='page-top'>
+          {this.state.modalFriend && (<FriendModal
+            setFriendModal={this.setFriend}
+          />)}
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
+            {!this.state.modalFriend && (
             <div id="wrapper">
               <Navbar username={this.state.username} avatarURL={this.state.avatarURL} page="friends"/>
               <div class="d-flex flex-column" id="content-wrapper">
@@ -127,7 +138,9 @@ class Friends extends React.Component {
                                               if (this.state.friends != undefined && this.state.friends.length > 0) {
                                                   return (
                                                   this.state.friends.map((f, index) => (
-                                                  <FriendRow friend={ f } />
+                                                  <FriendRow friend={ f } onClick={() => {
+                                                    this.setState({modalFriend: true});
+                                                    }}/>
                                                   )));
                                               }
                                               else {
@@ -142,7 +155,7 @@ class Friends extends React.Component {
                       </div>
                   </div>
               </div>
-            </div>
+            </div>)}
           <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
           <script src="../assets/js/theme.js"></script>
         </div>

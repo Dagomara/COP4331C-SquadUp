@@ -2,6 +2,7 @@ import React from 'react';
 import axios from "axios";
 import Navbar from '../components/Navbar';
 import GameRow from '../components/GameRow';
+import GameModal from '../components/GameModal';
 import { HEROKU_ROOT_SERVER, HEROKU_ROOT_CLIENT, CLIENT_ID,
     LOCALHOST_ROOT_SERVER, LOCALHOST_ROOT_CLIENT } from '../assets/js/keys';
 var serverRoot;
@@ -34,6 +35,11 @@ class Profile extends React.Component {
             modalGame: false,
             selectedGame: undefined
         };
+        this.setGameM = (val) => {
+          this.setState({
+            modalGame: val
+          }); 
+        }
       }
 
     // detects user login status, kicks them away if not logged in
@@ -88,7 +94,11 @@ class Profile extends React.Component {
   
       return (
         <div className='Profile' id='page-top'>
+          {this.state.modalGame && (<GameModal
+            setGameModal={this.setGameM}
+          />)}
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
+          {!this.state.modalGame && (
             <div id="wrapper">
             <Navbar username={this.state.username} avatarURL={this.state.avatarURL} page="profile"/>
         <div class="d-flex flex-column" id="content-wrapper">
@@ -136,7 +146,9 @@ class Profile extends React.Component {
                                                             return (
                                                                 <GameRow
                                                                     gameID={game.gameID}
-                                                                    onClick={selectGame}
+                                                                    onClick={() => {
+                                                                      this.setState({modalGame: true});
+                                                                      }}
                                                                 />
                                                             )
                                                         }));
@@ -155,7 +167,7 @@ class Profile extends React.Component {
                 </div>
             </div>
         </div>
-    </div>
+            </div>)}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../assets/js/theme.js"></script>
         </div>
