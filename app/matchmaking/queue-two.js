@@ -30,9 +30,22 @@ const withinN = (i, j, n) => {
 
 // counts matching items between 2 arrays and sees if they're withinN of each other. 
 const arraysCloseEnough = (arr1, arr2, n) => {
-    let combinedLen = [...arr1, ...arr2].length;
+  let combinedLen;
+  let withinOrNot = false;
+  console.log("arr1: ", arr1);
+  console.log("arr2: ", arr2);
+  if (arr1 && arr2) {
+    combinedLen = [...arr1, ...arr2].length;
     console.log("Total length of combined arrays: ", combinedLen);
-    return (withinN(combinedLen, arr1.length, n));
+  }
+  else if (arr1) {
+    withinOrNot = withinN(0, arr1.length, n)
+  }
+  else if (arr2) {
+    withinOrNot = withinN(0, arr2.length, n)
+  } // else: will be false already. 
+  console.log(`withinOrNot: ${withinOrNot}`);
+  return (withinOrNot);
 };
 
 // Takes a payload and a Queue object, and sees if the Queue and payload are a good match for each other. 
@@ -41,28 +54,36 @@ const fuzzyMatch = async (pl, q) => {
     if (pl.gameId == q.gameId) { // if same game
         // if almost same # players needed (on a bigger system, n would be 0)
         if (withinN(q.players.length, pl.players_needed, 3)) {
-            let filtsMatch = Object.keys(pl.filters).map(filt => {
+            let filtsMatch = undefined;
+            Object.keys(pl.filters).map((filt, ind) => {
+                console.log(`checking ${filt}...`)  ;
+                if (filtsMatch === false)
+                  return;
                 // make sure this case fits well enough
                 switch (typeof pl.filters[filt]) {
                     case "number":
                         let i = q.filters[filt];
                         let j = pl.filters[filt];
                         if (!(i >= j || withinN(i, j, 6)))
-                            return false; // stop early if levels don't match
+                            filtsMatch = false; // stop early if levels don't match
                         break;
                     case "object": // always an array in our app's use case
-                        if (!arraysCloseEnough(pl.filters[filt], q.filters[filt], 4))
-                            return false; // stop early if not enough similarities
+                        if (!arraysCloseEnough(pl.filters[filt], q.filters[filt], 4)) {
+                          console.log("Stopping early! Arrays aren't close enough.")
+                          filtsMatch = false; // stop early if not enough similarities
+                        }
                         break;
                     case "boolean":
                         if (pl.filters[filt] != q.filters[filt])
-                          return false;
+                          filtsMatch = false;
                         break;
                     default: // should never happen
                         console.log("default case encountered? ", filt, pl.filters[filt]);
-                        return false;
+                        filtsMatch = false;
                 }
-                return true;
+                console.log("ind just filtered: ", ind, "out of", Object.keys(pl.filters).length);
+                if (ind == Object.keys(pl.filters).length-1)
+                  return true;
             });
             if (filtsMatch) {
               console.log("Got pretty far with queue #", q.queueId, ". Seeing if anyone's blocked...");
@@ -169,6 +190,7 @@ exports.socketConnection = (server) => {
     socket.on('queue-leave-request', payload =>{
       console.log("queue leave request received. Processing...");
       if(payload.discordId == payload.ownerId) {
+          // Todo: Make sure this guy is in searchingQueues first!
           console.log("Queue is being abandoned!");
           io.emit('queue-abandon-announcement', { queueId:payload.queueId })
           //todo: remove this queue from searchingQueues

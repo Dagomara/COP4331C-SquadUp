@@ -32,7 +32,7 @@ class Friends extends React.Component {
             status: "offline",
             games: undefined,
             friendIDs: undefined,
-            friends: [],
+            friends: {},
             loginRedirect: false,
             modalFriend: false
         };
@@ -52,6 +52,9 @@ class Friends extends React.Component {
       .then(async res => {
         console.log("res" + res.data.login);
         if(res.data.login) {
+          // make sure discordId doesn't stall on setState (viewFriends issues)
+          this.state.discordId = res.data.discordId
+          // Also just do normal state updates
           this.setState({
             login: true,
             username : res.data.username,
@@ -61,34 +64,41 @@ class Friends extends React.Component {
             tag: res.data.tag,
             status: "online",
             friendIDs: [],
-            friends: []
+            friends: {}
           });
 
           await axios.post(`${serverRoot}/api/viewFriends`, {discordID: this.state.discordId})
           .then(res2 => {
             if (res2.data) {
               console.log("viewFriends data: ", res2.data);
+              this.state.friendIDs = res2.data
               this.setState({friendIDs: res2.data});
             }
           })
-
-          console.log(this.state.friendIDs);
-          this.state.friendIDs.forEach(async (id) => {
-            await axios.post(`${serverRoot}/api/viewProfile`, {discordID: id})
-            .then(res2 => {
-                if (res2.data) {
-                    console.log("res2.data: ", res2.data);
-                    this.setState({
-                      friends: this.state.friends.concat([{
+          .then(async () => {
+            console.log(this.state.friendIDs);
+            this.state.friendIDs.forEach(async (id) => {
+              await axios.post(`${serverRoot}/api/viewProfile`, {discordID: id})
+              .then(res2 => {
+                  if (res2.data) {
+                      console.log("res2.data: ", res2.data);
+                      let newDude = {};
+                      newDude[id] = {
                         name: res2.data.username,
                         avatar: `https://cdn.discordapp.com/avatars/${id}/${res2.data.avatar}.png`,
                         status: res2.data.status
-                    }])});
-                    console.log("updated state w/ new friends: ", this.state.friends);
-                }
-            })
-            .catch((err)=>{
-              console.log(err);
+                      };
+                      let newFriends = Object.assign(this.state.friends, newDude);
+                      this.state.friends = newFriends; // I hate this
+                      this.setState({
+                        friends: newFriends
+                      });
+                      console.log("updated state w/ new friends: ", this.state.friends);
+                  }
+              })
+              .catch((err)=>{
+                console.log(err);
+              });
             });
           });
 
@@ -102,7 +112,7 @@ class Friends extends React.Component {
       });
     }
 
-    render() {
+    render = () => {
       if (this.state.loginRedirect) return (
         <div className='redirectNotice'>
           <button className='btn btn-primary'>
@@ -138,16 +148,18 @@ class Friends extends React.Component {
                                           </div>
                                           <div class="card-body">
                                             {(() => {
-                                              if (this.state.friends != undefined && this.state.friends.length > 0) {
+                                              if (this.state.friends != undefined && Object.keys(this.state.friends).length > 0) {
                                                   return (
-                                                  this.state.friends.map((f, index) => (
-                                                  <FriendRow friend={ f } onClick={() => {
-                                                    this.setState({modalFriend: true});
-                                                    }}/>
-                                                  )));
+                                                  Object.keys(this.state.friends).map((id, index) => {
+                                                    console.log("id: ", id, "friend data: ", this.state.friends[id]);
+                                                  return (
+                                                    <FriendRow friend={ this.state.friends[id] } onClick={() => {
+                                                      this.setState({modalFriend: true});
+                                                      }}/>
+                                                  )}));
                                               }
                                               else {
-                                                  return (<p class="away">no friends lol</p>);
+                                                  return (<p class="away">Loading Friends...</p>);
                                               }
                                             })()}
                                           </div>

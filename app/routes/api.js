@@ -309,8 +309,10 @@ router.post('/viewFriends', cors(corsOptionsDelegate), async (req, res, next) =>
     if (!err) {
       if (users.length > 0)
         res.status(200).json(users[0].friends);  
-      else
-        console.log("issue found", users);
+      else {
+        console.log("Request issue. Telling user to retry...");
+        throw "Try try reloading!";
+      }
     }
     else
       throw err;
@@ -403,8 +405,10 @@ router.post('/viewBlocked', cors(corsOptionsDelegate), async (req, res, next) =>
     if (!err) {
       if (users.length > 0)
         res.status(200).json(users[0].blocked);  
-      else
-        console.log("issue found", users);
+      else {
+        console.log("Request issue. Telling user to retry...");
+        throw "Try try reloading!";
+      }
     }
     else
       throw err;

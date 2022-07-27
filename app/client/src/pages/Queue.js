@@ -319,7 +319,7 @@ class Queue extends React.Component {
                                               <button class="btn btn-primary fw-bold bg-gradient-danger" onClick={() => {this.setState({selectedGame: undefined})}} type="button">&lt;&nbsp;Back</button>
                                             </div>
                                             <div class="col text-end">
-                                              <button class="btn btn-primary bg-gradient-primary" type="submit" onClick={formRenderProps.onSubmit}>SquadUP!<span className='d-none'>Submit</span></button>
+                                              <button class="btn btn-primary bg-gradient-primary" type="submit" onClick={formRenderProps.onSubmit}>Review &gt;<span className='d-none'>Submit</span></button>
                                             </div>
                                           </div>
                                         </div>

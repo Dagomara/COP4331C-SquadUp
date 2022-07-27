@@ -3,6 +3,7 @@ import axios from "axios";
 import io from 'socket.io-client';
 import 'whatwg-fetch';
 import openSocket from 'socket.io-client';
+import PlayerResultRow from './PlayerResultRow';
 
 import { HEROKU_ROOT_SERVER, HEROKU_ROOT_CLIENT, CLIENT_ID,
     LOCALHOST_ROOT_SERVER, LOCALHOST_ROOT_CLIENT } from '../assets/js/keys';
@@ -62,7 +63,6 @@ export default function QueueHandler(props) {
   const delPlayer = (id) => {
     delete players[id];
   }
-
 
   // socket playings
   let [isConnected, setIsConnected] = useState(socket.connected);
@@ -197,7 +197,7 @@ export default function QueueHandler(props) {
       socket.off('queue-quit-announcement')
       socket.off('queue-play-announcement')
     };
-  }, []); // array makes sure this component only renders ONCE. 
+  }, [queueStatus, queueId]); // only rebuild event listeners on these changes
 
   const queueRequest = (e) => {
     console.log("Sending queue request with ", qrrPayload);
@@ -212,6 +212,7 @@ export default function QueueHandler(props) {
     };
     console.log("Sending leave request with ", payload);
     socket.emit("queue-leave-request", payload);
+    goBack();
     e.preventDefault();
   };
   const playRequest = (e) => {
@@ -246,13 +247,21 @@ export default function QueueHandler(props) {
             <div class="card-body">
               {queueStatus=="queueing" && ( // after queue req first sent
                 <div>
-                  <button onClick={goBack}>Back to Options</button>
                   <p className="away">Looking for game...</p>
                   <pre className='text-white'>{JSON.stringify(qrrPayload, null, 2)}</pre>
                   <button onClick={(e) => {
                     setQueueStatus("waiting"); e.preventDefault();
                   }}>Next stage test</button>
+                  <button onClick={goBack}>Back to Options</button>
                   <button onClick={queueRequest}>Send queue request!</button>
+                  <div class="row">
+                    <div class="col">
+                      <button class="btn btn-primary fw-bold bg-gradient-danger" onClick={goBack} type="button">&lt;&nbsp;Back to Options</button>
+                    </div>
+                    <div class="col text-end">
+                      <button class="btn btn-primary bg-gradient-primary" type="submit" onClick={queueRequest}>SquadUP!</button>
+                    </div>
+                  </div>
                 </div>
               )}
               {queueStatus=="waiting" && ( // in a match & waiting to start
@@ -281,7 +290,23 @@ export default function QueueHandler(props) {
                 </div>
               )}
               {queueStatus=="quit" && ( // Match has been quit :) 
-                <p className='away'>Game over! How was it?</p>
+                <div>
+                  <p className='away'>Game over! How was it?</p>
+                  {(() => {
+                    console.log("Object.keys(players): ", Object.keys(players));
+                    // Display an options row for each player who joined. 
+                    return (
+                      Object.keys(players).map((id, index) => {
+                        return (
+                            <PlayerResultRow
+                              myId={discordId}
+                              otherId={id}
+                              obj={players[id]}
+                              serverRoot={serverRoot} />
+                        )
+                    }));
+                  })()}
+                </div>
                 )}
             </div>
           </div>
