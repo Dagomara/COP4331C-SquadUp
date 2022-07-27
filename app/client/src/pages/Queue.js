@@ -45,7 +45,8 @@ class Queue extends React.Component {
         // begins queueing strategy. 
         this.startQueue = async(data, event) => {
           let payload = {
-            discordId: this.state.discordId, gameId: this.state.selectedGame.gameID, avatar: this.state.avatar,
+            discordId: this.state.discordId, gameId: this.state.selectedGame.gameID,
+            avatar: this.state.avatar, username: this.state.username,
             players_needed: this.state.playersNeeded, filters: {...this.state.filters, ...data}
           };
           //{...data, ...{filters: this.state.filters, players_needed: this.state.playersNeeded}};
@@ -335,6 +336,8 @@ class Queue extends React.Component {
                               username={this.state.username}
                               qrrPayload={this.state.qrrPayload}
                               goBack={()=>{this.setState({queueStarted: false});}}
+                              gameIcon={this.state.selectedGame.icon}
+                              gameName={this.state.selectedGame.name}
                             />
                           )}
                         </div>

@@ -483,3 +483,21 @@ body {
 .placeholder-small::placeholder {
   font-size: small;
 }
+
+.queue-player {
+  background-color: var(--right-bg);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  margin-left: 10%;
+  margin-right: 10%;
+  font-size: large;
+}
+
+.queue-icon {
+  height: 3em;
+}
+
+.owner-icon {
+  border-top: 3px solid yellow;
+  border-bottom: 3px solid yellow;
+}

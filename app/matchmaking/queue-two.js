@@ -154,7 +154,8 @@ exports.socketConnection = (server) => {
                 queueId: element.queueId,
                 discordId: payload.discordId, // of player who joined
                 discordAvatar: `https://cdn.discordapp.com/avatars/${payload.discordId}/${payload.avatar}.png`,
-                players_needed: element.players_needed
+                players_needed: element.players_needed,
+                username: payload.username
               });
               
               io.emit('queue-request-response', {

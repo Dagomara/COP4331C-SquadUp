@@ -32,36 +32,51 @@ export default function QueueHandler(props) {
   let [users, setUsers] = useState([]); // players in match with you
   let [avatars, setAvatars] = useState({}); // their avatars, arranged {plyaerId: discordUrl}
   let [playersNeeded, setPlayersNeeded] = useState(0);
+  let [squadText, setSquadText] = useState("SOMEONE's Squad");
   let [queueId, setQueueId] = useState(0);
   let [ownerId, setOwnerId] = useState(""); // who owns the match? 
   let [queueStatus, setQueueStatus] = useState("queueing");
   let [mostRecentPayload, setMostRecentPayload] = useState({}); // for bugtesting 
-  let [players, setPlayers] = useState({discordId: {
+  let [players, setPlayers] = useState({[discordId]: {
     avatar: `https://cdn.discordapp.com/avatars/${discordId}/${avatar}.png`,
     isOwner: false, name: username
   }}); // for fellow player infos
+  // Sets one player's information and updates the state of `players`. 
   const setPlayer = (id, stuff) => {
     // If player did not exist already, make them!
     if (!players[id]) {
+      console.log("setPlayer: filling info!");
       players[id] = {
-        avatar: stuff.avatar || undefined,
+        avatar: stuff.avatar,
         isOwner: stuff.isOwner,
-        name: stuff.name || undefined
+        name: stuff.name
       }
     }
     else {
+      console.log("setPlayer: player is old!");
       // prioritize new information, but fallback to existing.
-      let av = stuff.avatar || players[id].avatar;
-      let own = stuff.isOwner || players[id].isOwner;
-      let name = stuff.name || players[id].name;
-      let updatedPlayer = {avatar: av, isOwner: own, name: name};
+      // This doesn't work as expected, so establishOwner() exists. 
+      let av = (stuff.avatar) ? stuff.avatar : players[id].avatar;
+      let own = (stuff.isOwner) ? stuff.isOwner : players[id].isOwner;
+      let nam = (stuff.name) ? stuff.name : players[id].name;
+      let updatedPlayer = {avatar: av, isOwner: own, name: nam};
       console.log(`Updating ${id}: `, updatedPlayer);
       players[id] = updatedPlayer;
     }
     setPlayers(players); // to cause rerenders throughout component
+    console.log("setPlayer: new players obj: ", players);
   }
+  // Deletes a player ands updates the state of `players`. 
   const delPlayer = (id) => {
+    console.log(`delPlayer: deleting ${players[id].name}!`);
     delete players[id];
+    setPlayers(players);
+    console.log("delPlayer: see the changes! ", players);
+  }
+  // Sets up all owner stuff given just an ownerId. 
+  const establishOwner = (id) => {
+    setOwnerId(id);
+    setPlayer(id, {isOwner: true, avatar: players[id].avatar, name: players[id].name})
   }
 
   // socket playings
@@ -70,24 +85,26 @@ export default function QueueHandler(props) {
 
   // For each discordId in `ids`, will make a "dictionary" of avatarURLs. 
   // Meant for the initial joining of a queue.
-  const makePlayers = async (ids) => {
-    let urls = {};
-    ids.forEach(async id => {
+  const makePlayers = async (ids, owner) => {
+    for await (const id of ids) {
       console.log(`Getting ${id}'s information...`);
       // make axios request for id's avatarURL and username
       let av = undefined; // avatar
       let na = undefined // name
-      await axios.post(`${serverRoot}/auth/getSmallProfile`, {withCredentials: true})
+      await axios.post(`${serverRoot}/api/getSmallProfile`, {discordID: id})
       .then(res => {
-        console.log("res.data: " + res.data);
-        av = res.data.avatar;
-        na = res.data.name;
+        console.log("res.data: ", res.data, "and name: ", res.data.username);
+        av = `https://cdn.discordapp.com/avatars/${id}/${res.data.avatar}.png`;
+        na = res.data.username;
       }).catch((err)=>{
         console.log(err);
       });
-      setPlayer(id, {name: na, avatar: av});
+      setPlayer(id, {name: na, avatar: av, isOwner: (id == owner)});
+      if (id == owner)
+        setSquadText(`${na}'s Squad`);
       console.log(`Finished placing ${id}'s information.`)
-    });
+    }
+    setOwnerId(owner);
   }
 
   // Establish sockets.io handling. 
@@ -115,9 +132,8 @@ export default function QueueHandler(props) {
         setPlayersNeeded(payload.players_needed);
         setQueueId(payload.queueId);
         console.log("queueId: ", queueId, "payload queueId: ", payload.queueId);
-        setOwnerId(payload.ownerId);
-        makePlayers(payload.players); // set up avatar URLs and usernames
-        setPlayer(payload.ownerId, {isOwner: true})
+        makePlayers(payload.players, payload.ownerId); // set up avatar URLs and usernames
+        //establishOwner(payload.ownerId);
         console.log("Established all joining variables and setting status to waiting...");
 
         setMostRecentPayload(payload);
@@ -134,7 +150,7 @@ export default function QueueHandler(props) {
         console.log("Player joined! ", payload);
         // Make this guy renderable in the DOM 
         setPlayer(payload.discordId, {
-          name: payload.username || "DUDE", avatar: payload.avatar, isOwner: false
+          name: payload.username, avatar: payload.discordAvatar, isOwner: false
         });
         setPlayersNeeded(payload.players_needed);
         console.log("new player should be visible :)");
@@ -241,8 +257,10 @@ export default function QueueHandler(props) {
       <div class="row justify-content-center">
         <div class="col-lg-8 col-xl-8 align-self-center align-items-center">
           <div class="card shadow mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-              <h6 class="fs-4 fw-bold m-0">Select A Game</h6>
+            <div class="card-header d-flex align-items-center">
+              <img src={props.gameIcon} 
+                className="img-fluid gameIconHeader"/>
+              <h6 className="fs-4 fw-bold m-0">{props.gameName}</h6>
             </div>
             <div class="card-body">
               {queueStatus=="queueing" && ( // after queue req first sent
@@ -266,16 +284,41 @@ export default function QueueHandler(props) {
               )}
               {queueStatus=="waiting" && ( // in a match & waiting to start
                 <div>
-                  <p className='online'>Got a response! Waiting to start...</p>
+                  <h2 className='text-white text-center'>
+                    {squadText}
+                  </h2>
                   {(()=>{
                     console.log("users: ", users);
-                    return users.map(id => {return (
-                      <div className='row'>
-                        <img src={avatars[id]} alt={`avatar of ${id}`} />
-                        <p>Player with ID {id} and name {names[id]}</p>
+                    console.log("ownerId: ", ownerId);
+                    let iconProps = 'img-fluid rounded-circle queue-icon';
+
+                    return Object.keys(players).map(id => {return (
+                      <div className='row queue-player text-white'>
+                        <div className='col sm-2 text-center'>
+                          <img 
+                            className={ownerId == id ? iconProps+' owner-icon' : iconProps}
+                            src={players[id].avatar} alt={`avatar of ${id}`}
+                          />
+                        </div>
+                        <div className='col sm-5'>
+                          <p>{players[id].name}</p>
+                        </div>
                       </div>
-                    )})
+                    );});
                   })()}
+                  <div className='row'>
+                    <div class="col text-start">
+                      <button class="btn btn-primary fw-bold bg-gradient-danger" onClick={leaveRequest} type="button">&lt;&nbsp;Leave Squad</button>
+                    </div>
+                    <div className='col'>
+                      <p className='online'>
+                        Finding more players... {Object.keys(players).length}/{playersNeeded}
+                      </p>
+                    </div>
+                    <div class="col text-end">
+                      <button class="btn btn-primary bg-gradient-primary" type="submit" onClick={playRequest}>Ready UP!</button>
+                    </div>
+                  </div>
                   <button onClick={(e) => {
                     setQueueStatus("playing"); e.preventDefault();
                   }}>Next stage test</button>
@@ -283,7 +326,32 @@ export default function QueueHandler(props) {
               )}
               {queueStatus=="playing" && ( // Playing with the group!
                 <div>
-                  <p className='online'>You're now in-game :)</p>
+                  <h2 className='text-white text-center'>
+                    {squadText}
+                  </h2>
+                  {(()=>{
+                    console.log("users: ", users);
+                    console.log("ownerId: ", ownerId);
+                    let iconProps = 'img-fluid rounded-circle queue-icon';
+                    return Object.keys(players).map(id => {return (
+                      <div className='row queue-player text-white'>
+                        <div className='col sm-2 text-center'>
+                          <img 
+                            className={ownerId == id ? iconProps+' owner-icon' : iconProps}
+                            src={players[id].avatar} alt={`avatar of ${id}`}
+                          />
+                        </div>
+                        <div className='col sm-5'>
+                          <p>{players[id].name}</p>
+                        </div>
+                      </div>
+                    );});
+                  })()}
+                  <div className='row'>
+                    <div class="col text-center">
+                      <button class="btn btn-primary fw-bold bg-gradient-danger" onClick={quitRequest} type="button">Quit Match</button>
+                    </div>
+                  </div>
                   <button onClick={(e) => {
                     setQueueStatus("quit"); e.preventDefault();
                   }}>Next stage test</button>
@@ -291,6 +359,9 @@ export default function QueueHandler(props) {
               )}
               {queueStatus=="quit" && ( // Match has been quit :) 
                 <div>
+                  <h2 className='text-white text-center'>
+                    {squadText}
+                  </h2>
                   <p className='away'>Game over! How was it?</p>
                   {(() => {
                     console.log("Object.keys(players): ", Object.keys(players));
@@ -306,6 +377,11 @@ export default function QueueHandler(props) {
                         )
                     }));
                   })()}
+                  <div className='row'>
+                    <div class="col text-start">
+                      <button class="btn btn-primary fw-bold bg-gradient-danger" onClick={goBack} type="button">&lt;&nbsp;Make New Squad</button>
+                    </div>
+                  </div>
                 </div>
                 )}
             </div>
