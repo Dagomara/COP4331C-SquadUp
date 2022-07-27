@@ -116,33 +116,38 @@ exports.socketConnection = (server) => {
     socket.on('queue-request', async (payload) =>{
         console.log("queue request received. Looking through searchingQueues:");
         let joinedExisting = false;
-        searchingQueues.forEach(async (element) => {
-            console.log("element: ", element);
-            let matches = await fuzzyMatch(payload, element);
-            console.log("Matches result: ", matches);
-            if(matches) { // see if queue is a good fit
-                element.players_needed -= 1;
-                element.players.push(payload.discordId);
-                console.log("Putting player into queue ", element.queueId);
-                io.emit('queue-request-reponse', {
-                    discordId: payload.discordId,
-                    gameId: element.gameId,
-                    queueId: element.queueId,
-                    ownerId: element.ownerId,
-                    players: element.players,
-                    players_needed: element.players_needed
-                });
-                io.emit('queue-join-announcement', {
-                    queueId: element.queueId,
-                    discordId: payload.discordId, // of player who joined
-                    discordAvatar: `https://cdn.discordapp.com/avatars/${payload.discordId}/${payload.avatar}.png`,
-                    players_needed: element.players_needed
-                });
-                console.log("Sent the thingies. searchingQueues now: ", searchingQueues);
-                joinedExisting = true;
-                return;
-            }
-        });
+        for await (const element of searchingQueues) {
+          console.log("element: ", element);
+          if (element.players_needed <= 0) {
+            console.log("This element is full.");
+            break;
+          }
+          let matches = await fuzzyMatch(payload, element);
+          console.log("Matches result: ", matches);
+          if(matches) { // see if queue is a good fit
+              element.players_needed -= 1;
+              element.players.push(payload.discordId);
+              console.log("Putting player into queue ", element.queueId);
+              io.emit('queue-join-announcement', {
+                queueId: element.queueId,
+                discordId: payload.discordId, // of player who joined
+                discordAvatar: `https://cdn.discordapp.com/avatars/${payload.discordId}/${payload.avatar}.png`,
+                players_needed: element.players_needed
+              });
+              
+              io.emit('queue-request-response', {
+                discordId: payload.discordId,
+                gameId: payload.gameId,
+                queueId: element.queueId,
+                ownerId: element.ownerId,
+                players: element.players,
+                players_needed: element.players_needed
+              });
+              console.log("Sent the thingies. searchingQueues now: ", searchingQueues);
+              joinedExisting = true;
+              return;
+          }
+        }
         if (joinedExisting == true)
           return;
         // If an existing queue was not found, make a new one for this player!

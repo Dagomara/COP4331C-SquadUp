@@ -28,31 +28,56 @@ export default function QueueHandler(props) {
   const {discordId, avatar, username, qrrPayload, goBack} = props;
   const gameId = qrrPayload.gameId;
   console.log("gameId: ", gameId);
-  const [users, setUsers] = useState([]); // players in match with you
-  const [avatars, setAvatars] = useState({}); // their avatars, arranged {plyaerId: discordUrl}
-  const [playersNeeded, setPlayersNeeded] = useState(0);
-  const [queueId, setQueueId] = useState(0);
-  const [ownerId, setOwnerId] = useState(""); // who owns the match? 
-  const [queueStatus, setQueueStatus] = useState("queueing");
-  const [mostRecentPayload, setMostRecentPayload] = useState({}); // for bugtesting 
+  let [users, setUsers] = useState([]); // players in match with you
+  let [avatars, setAvatars] = useState({}); // their avatars, arranged {plyaerId: discordUrl}
+  let [playersNeeded, setPlayersNeeded] = useState(0);
+  let [queueId, setQueueId] = useState(0);
+  let [ownerId, setOwnerId] = useState(""); // who owns the match? 
+  let [queueStatus, setQueueStatus] = useState("queueing");
+  let [mostRecentPayload, setMostRecentPayload] = useState({}); // for bugtesting 
+  let [players, setPlayers] = useState({discordId: {
+    avatar: `https://cdn.discordapp.com/avatars/${discordId}/${avatar}.png`,
+    isOwner: false, name: username
+  }}); // for fellow player infos
+  const setPlayer = (id, stuff) => {
+    // prioritize new information, but fallback to existing.
+    let av = stuff.avatar || players[id].avatar;
+    let own = stuff.isOwner || players[id].isOwner;
+    let name = stuff.name || players[id].name;
+    let updatedPlayer = {avatar: av, isOwner: own, name: name};
+    console.log(`Updating ${id}: `, updatedPlayer);
+    players[id] = updatedPlayer;
+    setPlayers(players); // to cause rerenders throughout component
+  }
+  const delPlayer = (id) => {
+    delete players[id];
+  }
+
 
   // socket playings
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [lastPong, setLastPong] = useState(null);
+  let [isConnected, setIsConnected] = useState(socket.connected);
+  let [lastPong, setLastPong] = useState(null);
 
   // For each discordId in `ids`, will make a "dictionary" of avatarURLs. 
   // Meant for the initial joining of a queue.
-  const makeAvatars = (ids) => {
+  const makePlayers = async (ids) => {
     let urls = {};
-    ids.forEach(e => {
-      console.log("Getting e's information...", e);
-      // make axios request for e's avatarURL
-      let temp = {};
-      temp[e] = "placeholder image text";
-      urls = {...urls, ...temp}
-      names[e] = ("Craig #"+e);
+    ids.forEach(async id => {
+      console.log(`Getting ${id}'s information...`);
+      // make axios request for id's avatarURL and username
+      let av = undefined; // avatar
+      let na = undefined // name
+      await axios.post(`${serverRoot}/auth/getSmallProfile`, {withCredentials: true})
+      .then(res => {
+        console.log("res.data: " + res.data);
+        av = res.data.avatar;
+        na = res.data.name;
+      }).catch((err)=>{
+        console.log(err);
+      });
+      setPlayer(id, {name: na, avatar: av});
+      console.log(`Finished placing ${id}'s information.`)
     });
-    setAvatars(urls);
   }
 
   // Establish sockets.io handling. 
@@ -72,13 +97,17 @@ export default function QueueHandler(props) {
     
     // Server response when we've been squadded up with other users. 
     socket.on("queue-request-response", (payload) => {
-      console.log("Joining game! ", payload);
+      console.log("received a queue request response for queueId", payload.queueId);
+      console.log("queueStatus: ", queueStatus);
       if (queueStatus == "queueing" && payload.discordId == discordId) {
+        console.log("Joining game! ", payload);
         setUsers(payload.players);
-        setPlayersNeeded(payload.setPlayersNeeded);
+        setPlayersNeeded(payload.players_needed);
         setQueueId(payload.queueId);
+        console.log("queueId: ", queueId, "payload queueId: ", payload.queueId);
         setOwnerId(payload.ownerId);
-        makeAvatars(payload.players); // set up avatar URLs
+        makePlayers(payload.players); // set up avatar URLs and usernames
+        setPlayer(payload.ownerId, {isOwner: true})
         console.log("Established all joining variables and setting status to waiting...");
 
         setMostRecentPayload(payload);
@@ -89,13 +118,16 @@ export default function QueueHandler(props) {
     // Server response when a player joins queue. 
     socket.on("queue-join-announcement", payload => {
       console.log("received a queue join announcement for queueId", payload.queueId);
-      if (payload.queueId == queueId) {
+      console.log("queueStatus: ", queueStatus);
+      console.log("queueId: ", queueId, "equal? ", (payload.queueId == queueId ? "yes" : "no"));
+      if (queueStatus == "waiting" && payload.queueId == queueId) {
         console.log("Player joined! ", payload);
-        setUsers([...users, payload.discordId]);
-        let newAvatarObject = {};
-        newAvatarObject[payload.discordId] = payload.avatar;
-        setAvatars({...avatars, ...newAvatarObject}); // add player's avatar to the game!
+        // Make this guy renderable in the DOM 
+        setPlayer(payload.discordId, {
+          name: payload.username || "DUDE", avatar: payload.avatar, isOwner: false
+        });
         setPlayersNeeded(payload.players_needed);
+        console.log("new player should be visible :)");
       }
     });
 
@@ -116,9 +148,7 @@ export default function QueueHandler(props) {
       console.log("queueStatus: ", queueStatus);
       if (queueStatus == "waiting" && payload.queueId == queueId) {
         console.log("Player left! ", payload);
-        delete avatars[payload.discordId];
-        setAvatars(avatars);
-        setUsers(payload.players);
+        delPlayer(payload.discordId);
         setPlayersNeeded(payload.players_needed);
       }
     });
@@ -136,6 +166,9 @@ export default function QueueHandler(props) {
 
     // Server response when queue owner decided to start up the game!
     socket.on("queue-play-announcement", payload => {
+      console.log("received a queue play announcement for queueId", payload.queueId);
+      console.log("queueStatus: ", queueStatus);
+      console.log("queueId: ", queueId, "equal? ", (payload.queueId == queueId ? "yes" : "no"));
       if (queueStatus == "waiting" && payload.queueId == queueId) {
         console.log("Let's play! ", payload);
         setMostRecentPayload(payload);

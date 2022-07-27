@@ -141,7 +141,7 @@ class Settings extends React.Component {
       )
 
       return (
-        <div className='Profile' id='page-top'>
+        <div className='Settings' id='page-top'>
           {this.state.modalDelete && (<DeleteModal
             setDeleteModal={this.setDelete}
             username={this.state.username}
