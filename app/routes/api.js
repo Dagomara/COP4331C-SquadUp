@@ -415,20 +415,35 @@ router.post('/viewBlocked', cors(corsOptionsDelegate), async (req, res, next) =>
 
 router.post('/deleteAccount', cors(corsOptionsDelegate), async (req, res) => 
 {
-  // incoming: discordID
-  // outgoing: deleted account
-  
-  const {discordID} = req.body;
-  console.log(`Trying to delete ${discordID}...`)
+    // incoming: discordID
+    // outgoing: deleted account
+    
+    const {discordID} = req.body;
+    console.log(`Trying to delete ${discordID}...`)
 
-  User.deleteOne({ discordID:discordID}).then(function(){
-    console.log("User deleted"); // Success
-    res.status(200).json({"user deleted": discordID});
-}).catch(function(error){
-    console.log(error); // Failure
-    res.status(400).json("error");
+    User.deleteOne({ discordID:discordID}).then(function(){
+      console.log("User deleted"); // Success
+      res.status(200).json({"user deleted": discordID});
+  }).catch(function(error){
+      console.log(error); // Failure
+      res.status(400).json("error");
+  });
 });
 
+router.post('/getSmallProfile', cors(corsOptionsDelegate), async (req, res) => 
+{
+  // incoming: discordID
+  // outgoing: username, avatar
+
+  const {discordID} = req.body;
+
+  try{
+    let search = await User.find({discordID:discordID }).select({ "username": 1, "avatar": 1, "_id": 0});
+    res.status(200).json(search);
+  }
+  catch(err){
+    res.status(400).json("error");
+  }
 
 });
 

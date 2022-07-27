@@ -19,8 +19,6 @@ async def ping(ctx):
 if __name__ == "__main__":
     bot.run(TOKEN)
 
-client = discord.Client()
-
 @client.event
 async def on_voice_state_update(member, before, after):
     if str(after.channel) == 'Join to create channel':
