@@ -115,6 +115,9 @@ class Friends extends React.Component {
         <div className='Profile' id='page-top'>
           {this.state.modalFriend && (<FriendModal
             setFriendModal={this.setFriend}
+            username={this.state.username}
+            avatarURL={this.state.avatarURL}
+            status={this.state.status}
           />)}
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
             {!this.state.modalFriend && (

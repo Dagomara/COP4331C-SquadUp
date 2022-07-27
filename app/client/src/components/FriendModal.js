@@ -1,10 +1,10 @@
 import React from "react";
-import '../assets/stylesheets/deletemodal.css';
+import '../assets/stylesheets/modal.css';
 
 function FriendModal(props) {
   let setFriendModal = props.setFriendModal; 
     return (
-      <div className="modalBackground">
+      <div className="modalBackground text-white">
         <div className="modalContainer">
         <div className="modalContainer2">
           <div className="titleCloseBtn">
@@ -12,17 +12,17 @@ function FriendModal(props) {
           </div>
           <div className="title">
             <div className="title-border">
-            <h1>Discord Username with Avatar</h1>
+            <img className="img-fluid rounded-circle" src={props.avatarURL} /><span>{props.username}</span><span class="online"><i class="fas fa-circle"></i>&nbsp;{props.friend.status}</span>
             </div>
           </div>
           <div className="body">
           <div className="body-border">
-            <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+            <p>Your friends games will appear here.</p>
           </div>
           </div>
           <div className="footer">
-            <button onClick={() => { setFriendModal(false);  }} id="cancelBtn">No</button>
-            <button onClick={() => { setFriendModal(false);  }}>Yes</button>
+            <button onClick={() => { setFriendModal(false);  }}>Remove Friend</button>
+            <button onClick={() => { setFriendModal(false);  }}>Block</button>
           </div>
         </div>
         </div>

@@ -1,28 +1,28 @@
 import React from "react";
-import '../assets/stylesheets/deletemodal.css';
+import '../assets/stylesheets/modal.css';
 
 function GameModal(props) {
   let setGameModal = props.setGameModal; 
     return (
-      <div className="modalBackground">
+      <div className="modalBackground text-white">
         <div className="modalContainer">
         <div className="modalContainer2">
           <div className="titleCloseBtn">
-            <button onClick={() => { setGameModal(false);  }}> X </button>
+            <button className="text-white" onClick={() => { setGameModal(false);  }}> X </button>
           </div>
           <div className="title">
             <div className="title-border">
-            <h1>Discord Username with Avatar</h1>
+            <img className="img-fluid rounded-circle" src={props.avatarURL} /><span>{props.username}</span>
             </div>
           </div>
           <div className="body">
           <div className="body-border">
-            <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+            <p>Your friends games will appear here.</p>
           </div>
           </div>
           <div className="footer">
-            <button onClick={() => { setGameModal(false);  }} id="cancelBtn">No</button>
-            <button onClick={() => { setGameModal(false);  }}>Yes</button>
+            <button onClick={() => { setGameModal(false);  }}>Remove Friend</button>
+            <button onClick={() => { setGameModal(false);  }}>Block</button>
           </div>
         </div>
         </div>

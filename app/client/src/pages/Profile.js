@@ -96,6 +96,8 @@ class Profile extends React.Component {
         <div className='Profile' id='page-top'>
           {this.state.modalGame && (<GameModal
             setGameModal={this.setGameM}
+            username={this.state.username}
+            avatarURL={this.state.avatarURL}
           />)}
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
           {!this.state.modalGame && (

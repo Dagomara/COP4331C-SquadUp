@@ -1,5 +1,5 @@
 import React from "react";
-import '../assets/stylesheets/deletemodal.css';
+import '../assets/stylesheets/modal.css';
 
 function DeleteModal(props) {
   let setDeleteModal = props.setDeleteModal;
