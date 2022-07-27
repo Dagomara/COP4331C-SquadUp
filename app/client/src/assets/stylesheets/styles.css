@@ -396,6 +396,11 @@ body {
   font-size: large;
 }
 
+.friendRow:hover {
+  cursor: pointer;
+  background-color: var(--sidebar-bg);
+}
+
 .friendRow span {
   color: white;
   display: inline-block;

@@ -34,10 +34,11 @@ class Friends extends React.Component {
             friendIDs: undefined,
             friends: {},
             loginRedirect: false,
-            modalFriend: false
+            modalFriend: false,
+            selectedFriend: undefined
         };
         // const [friendsList, setFriendsList] = React.useState([]);
-        this.setFriend = (val) => {
+        this.setModalFriend = (val) => {
           this.setState({
             modalFriend: val
           }); 
@@ -124,10 +125,8 @@ class Friends extends React.Component {
       return (
         <div className='Profile' id='page-top'>
           {this.state.modalFriend && (<FriendModal
-            setFriendModal={this.setFriend}
-            username={this.state.username}
-            avatarURL={this.state.avatarURL}
-            status={this.state.status}
+            setFriendModal={this.setModalFriend}
+            friend={this.state.selectedFriend}
           />)}
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
             {!this.state.modalFriend && (
@@ -153,8 +152,10 @@ class Friends extends React.Component {
                                                   Object.keys(this.state.friends).map((id, index) => {
                                                     console.log("id: ", id, "friend data: ", this.state.friends[id]);
                                                   return (
-                                                    <FriendRow friend={ this.state.friends[id] } onClick={() => {
-                                                      this.setState({modalFriend: true});
+                                                    <FriendRow friend={ this.state.friends[id] } onClick={(e) => {
+                                                        this.setState({modalFriend: true});
+                                                        this.setState({selectedFriend: this.state.friends[id]});
+                                                        e.preventDefault();
                                                       }}/>
                                                   )}));
                                               }

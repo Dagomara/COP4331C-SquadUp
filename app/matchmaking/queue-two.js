@@ -37,12 +37,13 @@ const arraysCloseEnough = (arr1, arr2, n) => {
   if (arr1 && arr2) {
     combinedLen = [...arr1, ...arr2].length;
     console.log("Total length of combined arrays: ", combinedLen);
+    withinOrNot = withinN(combinedLen, arr1.length, n);
   }
   else if (arr1) {
-    withinOrNot = withinN(0, arr1.length, n)
+    withinOrNot = withinN(0, arr1.length, n);
   }
   else if (arr2) {
-    withinOrNot = withinN(0, arr2.length, n)
+    withinOrNot = withinN(0, arr2.length, n);
   } // else: will be false already. 
   console.log(`withinOrNot: ${withinOrNot}`);
   return (withinOrNot);
@@ -53,7 +54,7 @@ const arraysCloseEnough = (arr1, arr2, n) => {
 const fuzzyMatch = async (pl, q) => {
     if (pl.gameId == q.gameId) { // if same game
         // if almost same # players needed (on a bigger system, n would be 0)
-        if (withinN(q.players.length, pl.players_needed, 3)) {
+        if (withinN(q.players.length+q.players_needed, pl.players_needed+1, 3)) {
             let filtsMatch = undefined;
             Object.keys(pl.filters).map((filt, ind) => {
                 console.log(`checking ${filt}...`)  ;
@@ -81,9 +82,9 @@ const fuzzyMatch = async (pl, q) => {
                         console.log("default case encountered? ", filt, pl.filters[filt]);
                         filtsMatch = false;
                 }
-                console.log("ind just filtered: ", ind, "out of", Object.keys(pl.filters).length);
+                console.log("ind just filtered: ", ind, "out of", Object.keys(pl.filters).length-1);
                 if (ind == Object.keys(pl.filters).length-1)
-                  return true;
+                  filtsMatch = true;
             });
             if (filtsMatch) {
               console.log("Got pretty far with queue #", q.queueId, ". Seeing if anyone's blocked...");
