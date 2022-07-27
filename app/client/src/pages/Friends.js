@@ -44,9 +44,9 @@ class Friends extends React.Component {
           }); 
         }
 
-        this.removeFriend = () => {
+        /*this.removeFriend = () => {
           await axios.post(`${serverRoot}/api/deleteFriend`, ())
-        }
+        }*/
       }
       
 
