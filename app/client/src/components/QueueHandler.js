@@ -40,13 +40,23 @@ export default function QueueHandler(props) {
     isOwner: false, name: username
   }}); // for fellow player infos
   const setPlayer = (id, stuff) => {
-    // prioritize new information, but fallback to existing.
-    let av = stuff.avatar || players[id].avatar;
-    let own = stuff.isOwner || players[id].isOwner;
-    let name = stuff.name || players[id].name;
-    let updatedPlayer = {avatar: av, isOwner: own, name: name};
-    console.log(`Updating ${id}: `, updatedPlayer);
-    players[id] = updatedPlayer;
+    // If player did not exist already, make them!
+    if (!players[id]) {
+      players[id] = {
+        avatar: stuff.avatar || undefined,
+        isOwner: stuff.isOwner,
+        name: stuff.name || undefined
+      }
+    }
+    else {
+      // prioritize new information, but fallback to existing.
+      let av = stuff.avatar || players[id].avatar;
+      let own = stuff.isOwner || players[id].isOwner;
+      let name = stuff.name || players[id].name;
+      let updatedPlayer = {avatar: av, isOwner: own, name: name};
+      console.log(`Updating ${id}: `, updatedPlayer);
+      players[id] = updatedPlayer;
+    }
     setPlayers(players); // to cause rerenders throughout component
   }
   const delPlayer = (id) => {
