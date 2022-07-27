@@ -45,7 +45,8 @@ class Settings extends React.Component {
             school: undefined,
             saveSuccess: "",
             loginRedirect: false,
-            modalDelete: false
+            modalDelete: false,
+            deleteConfirm: false
         };
         this.sendSettings = async(data, event) => {
           console.log("settings sent!");
@@ -72,9 +73,22 @@ class Settings extends React.Component {
               saveSuccess: err.message,
             });
           });
+          
         
           event.preventDefault();
         };
+
+        this.setDelete = (val) => {
+          this.setState({
+            modalDelete: val
+          }); 
+        }
+
+        this.setDeleteConfirm = (val) => {
+          this.setState({
+            deleteConfirm: val
+          }); 
+        }
       }
 
     // detects user login status, kicks them away if not logged in
@@ -115,6 +129,8 @@ class Settings extends React.Component {
       });
     }
 
+    
+
     render() {
       if (this.state.loginRedirect) return (
         <div className='redirectNotice'>
@@ -126,8 +142,16 @@ class Settings extends React.Component {
 
       return (
         <div className='Profile' id='page-top'>
+          {this.state.modalDelete && (<DeleteModal
+            setDeleteModal={this.setDelete}
+            username={this.state.username}
+            avatarURL={this.state.avatarURL}
+            deleteConfirm={this.state.deleteConfirm}
+            setDeleteConfirm={this.setDeleteConfirm}
+          />)}
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
-            <div id="wrapper">
+          {!this.state.modalDelete && (
+          <div id="wrapper">
             <Navbar username={this.state.username} avatarURL={this.state.avatarURL} page="settings"/>
             <div className="d-flex flex-column" id="content-wrapper">
                 <div id="content">
@@ -250,9 +274,13 @@ class Settings extends React.Component {
                                 <div className="card-header py-3">
                                 <p className="m-0 fw-bold">Delete Account</p>
                                 </div>
-                                <div className="card-body"><button className="btn btn-danger" type="button" onClick={() => {this.setState({modalDelete: true}); }}>
-                                  DELETE ACCOUNT
-                                </button>{this.state.modalDelete && <DeleteModal setDeleteModal={() => {this.setState({modalDelete: true}); }} />}</div>
+                                <div className="card-body">
+                                  <button className="btn btn-danger" type="button" onClick={() => {
+                                    this.setState({modalDelete: true});
+                                    }}>
+                                    DELETE ACCOUNT
+                                  </button>
+                                </div>
                             </div>
                             </div>
                         </div>
@@ -262,9 +290,9 @@ class Settings extends React.Component {
           </div>
         </div>
       </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/js/theme.js"></script>
+          </div>)}
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+          <script src="../assets/js/theme.js"></script>
         </div>
       );
     }

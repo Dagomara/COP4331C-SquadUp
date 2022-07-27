@@ -31,7 +31,8 @@ class Profile extends React.Component {
             status: "offline",
             games: undefined,
             loginRedirect: false,
-            modalGame: false
+            modalGame: false,
+            selectedGame: undefined
         };
       }
 

@@ -1,7 +1,8 @@
 import React from "react";
 import '../assets/stylesheets/deletemodal.css';
 
-function GameModal({ setGameModal }) {
+function GameModal(props) {
+  let setGameModal = props.setGameModal; 
     return (
       <div className="modalBackground">
         <div className="modalContainer">
