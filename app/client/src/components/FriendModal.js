@@ -3,7 +3,7 @@ import '../assets/stylesheets/modal.css';
 
 function FriendModal(props) {
   let setFriendModal = props.setFriendModal; 
-  let { username, avatar, status } = props.friend;
+  let { name, avatar, status } = props.friend;
     return (
     <div className="modalBackground text-white">
       <div className="modalContainer">
@@ -13,7 +13,7 @@ function FriendModal(props) {
         </div>
         <div className="title">
           <div className="title-border">
-          <img className="img-fluid rounded-circle" src={avatar} /><span>{username}</span><span class="online"><i class="fas fa-circle"></i>&nbsp;{status}</span>
+          <img className="img-fluid rounded-circle" src={avatar} /><span>{name}</span><span class="online"><i class="fas fa-circle"></i>&nbsp;{status}</span>
           </div>
         </div>
         <div className="body">
