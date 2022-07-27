@@ -439,7 +439,7 @@ router.post('/getSmallProfile', cors(corsOptionsDelegate), async (req, res) =>
 
   try{
     let search = await User.find({discordID:discordID }).select({ "username": 1, "avatar": 1, "_id": 0});
-    res.status(200).json(search);
+    res.status(200).json(search[0]);
   }
   catch(err){
     res.status(400).json("error");
