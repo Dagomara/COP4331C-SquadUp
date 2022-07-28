@@ -19,7 +19,11 @@ export default function Navbar(props) {
                     <li class="nav-item"><a class={activeOrNot("friends")} href="/friends"><i class="fas fa-table"></i><span>Friends</span></a></li>
                     <li class="nav-item"><a class={activeOrNot("settings")} href="/settings"><i class="far fa-user-circle"></i><span>Settings</span></a></li>
                 </ul>
-                <div class="align-bottom sidebar-profile"><img class="img-fluid rounded-circle" src={props.avatarURL} /><span>{props.username}</span></div>
+                <div class="align-bottom sidebar-profile"><img class="img-fluid rounded-circle" src={props.avatarURL} 
+                                onError={({ currentTarget }) => {
+                                currentTarget.onerror = null;
+                                currentTarget.src="https://better-default-discord.netlify.app/Icons/Gradient-Pink.png";}} />
+                <span>{props.username}</span></div>
             </div>
         </nav>
     );

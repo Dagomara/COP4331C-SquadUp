@@ -19,7 +19,10 @@ function FriendModal(props) {
         </div>
         <div className="title-friend">
           <div className="title-border">
-          <img className="img-modal rounded-circle" src={avatar}></img>
+          <img className="img-modal rounded-circle" src={avatar} 
+            onError={({ currentTarget }) => {
+            currentTarget.onerror = null;
+            currentTarget.src="https://better-default-discord.netlify.app/Icons/Gradient-Pink.png";}}></img>
           <span className="friend-name">&nbsp;&nbsp;{name}</span><br/>
           <span className="online"><i class="fas fa-circle"></i>&nbsp;{status}</span>
           </div>

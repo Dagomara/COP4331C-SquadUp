@@ -29,7 +29,11 @@ function DeleteModal(props) {
               </div>
               <div className="title">
                 <div className="title-border">
-                <img className="img-fluid rounded-circle" src={props.avatarURL} /><span>{props.username}</span>
+                <img className="img-modal rounded-circle" src={props.avatarURL}             
+                  onError={({ currentTarget }) => {
+                  currentTarget.onerror = null;
+                  currentTarget.src="https://better-default-discord.netlify.app/Icons/Gradient-Pink.png";}}/>
+                <span className="user-name">&nbsp;{props.username}</span>
                 </div>
               </div>
               <div className="body">

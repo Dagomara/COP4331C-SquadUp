@@ -113,7 +113,11 @@ class Profile extends React.Component {
                         <div class="row mb-3">
                             <div class="col-lg-4">
                                 <div class="card mb-3">
-                                    <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" src={this.state.avatarURL} width="160" height="160" />
+                                    <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" src={this.state.avatarURL} 
+                                    onError={({ currentTarget }) => {
+                                    currentTarget.onerror = null;
+                                    currentTarget.src="https://better-default-discord.netlify.app/Icons/Gradient-Pink.png";}} 
+                                    width="160" height="160" />
                                         <div>
                                             <p class="profile-username"><span>@</span>{this.state.username}<span>#{this.state.tag}</span></p>
                                             <p class="profile-subheading">{this.state.school || "No School"}, {this.state.gender || "No Gender"}<br/></p>

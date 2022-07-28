@@ -1,7 +1,7 @@
 .modalBackground {
     width: 100vw;
     height: 100vh;
-    background-color: rgba(200, 200, 200);
+    background-color: #8E9095;
     position: fixed;
     display: flex;
     justify-content: center;
@@ -91,13 +91,17 @@
   .friend-name {
     font-size: 25px;
   }
+
+  .user-name {
+    font-size: 25px;
+  }
   
   .modalContainer .body {
     flex: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.7rem;
+    font-size: 25px;
     text-align: center;
   }
   
