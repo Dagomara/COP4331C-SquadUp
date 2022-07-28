@@ -20,5 +20,3 @@ export default function BlockedRow(props) {
         </div>
     );
 };
-
-// onClick={props.unblockPlayer(props.blocked.discordID)}
