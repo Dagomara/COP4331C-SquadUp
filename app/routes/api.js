@@ -376,9 +376,17 @@ router.post('/addBlocked', cors(corsOptionsDelegate), async (req, res, next) =>
 
   let {discordID, blocked} = req.body;
 
-  await User.findOneAndUpdate({discordID:discordID}, { $push:{blocked:blocked}});
+  try{
+    await User.findOneAndUpdate({discordID:discordID}, { $push:{blocked:blocked}});
+    let removeAsFriend = await User.find({discordID:discordID}, {friends:blocked});
+    if (removeAsFriend[0].friends.length > 0){
+      await User.findOneAndUpdate({discordID:discordID}, { $pull:{friends:blocked}});
+    }
+  }catch(err) {
+    res.status(400).json({"error": err});
+  };
 
-  // Return updated blocked
+  // Return updated blocked list
   await User.find({discordID:discordID})
   .then( (users, err) => {
     if (!err) {
@@ -485,11 +493,18 @@ router.post('/test', cors(corsOptionsDelegate), async (req, res, next) =>
   // const {school, gender} = req.body;
   // let search = await User.find({school:school, gender:gender , }).select({ "username": 1, "_id": 0});
 
-  const {gameID, gender} = req.body;
-  let search = await User.find({'games.gameID':gameID, gender:gender }).select({ "username": 1, "_id": 0});
-  
+  // const {gameID, gender} = req.body;
+  // let search = await User.find({'games.gameID':gameID, gender:gender }).select({ "username": 1, "_id": 0});
 
-  res.status(200).json(search);
+  let {discordID, blocked} = req.body;
+  await User.findOneAndUpdate({discordID:discordID}, { $push:{blocked:blocked}});
+
+  let removeAsFriend = await User.find({discordID:discordID}, {friends:blocked});
+  if (removeAsFriend[0].length > 0){
+    await User.findOneAndUpdate({discordID:discordID}, { $pull:{friends:blocked}});
+  }
+  
+  res.status(200).json(removeAsFriend[0].friends);
 });
 
 module.exports = router;
