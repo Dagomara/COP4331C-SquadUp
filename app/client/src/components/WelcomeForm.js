@@ -323,7 +323,7 @@ export default function WelcomeForm(props) {
                 </div>
             </div>)}
           
-          <pre className="text-white">games: {JSON.stringify(formRenderProps.valueGetter("games"), null, 2)}</pre>
+          {process.env.NODE_ENV != "production" && (<pre className="text-white">games: {JSON.stringify(formRenderProps.valueGetter("games"), null, 2)}</pre>)}
           
         </form>
       )}>

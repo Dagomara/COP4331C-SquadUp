@@ -54,7 +54,7 @@ const arraysCloseEnough = (arr1, arr2, n) => {
 const fuzzyMatch = async (pl, q) => {
     if (pl.gameId == q.gameId) { // if same game
         // if almost same # players needed (on a bigger system, n would be 0)
-        if (withinN(q.players.length+q.players_needed, pl.players_needed+1, 3)) {
+        if (withinN(q.players.length+q.players_needed, pl.players_needed+1, 5)) {
             let filtsMatch = undefined;
             Object.keys(pl.filters).map((filt, ind) => {
                 console.log(`checking ${filt}...`)  ;
@@ -65,11 +65,11 @@ const fuzzyMatch = async (pl, q) => {
                     case "number":
                         let i = q.filters[filt];
                         let j = pl.filters[filt];
-                        if (!(i >= j || withinN(i, j, 6)))
+                        if (!(i >= j || withinN(i, j, 25))) // bruh moment
                             filtsMatch = false; // stop early if levels don't match
                         break;
                     case "object": // always an array in our app's use case
-                        if (!arraysCloseEnough(pl.filters[filt], q.filters[filt], 4)) {
+                        if (!arraysCloseEnough(pl.filters[filt], q.filters[filt], 20)) {
                           console.log("Stopping early! Arrays aren't close enough.")
                           filtsMatch = false; // stop early if not enough similarities
                         }
