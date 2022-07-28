@@ -4,6 +4,12 @@ import '../assets/stylesheets/modal.css';
 function FriendModal(props) {
   let setFriendModal = props.setFriendModal; 
   let { name, avatar, status } = props.friend;
+  const removeThisGuy = () => {
+      props.removeFriend(props.friend.id);
+  }
+  const blockThisGuy = () => {
+    props.blockFriend(props.friend.id);
+  }
     return (
     <div className="modalBackground text-white">
       <div className="friend-modalContainer">
@@ -24,8 +30,10 @@ function FriendModal(props) {
         </div>
         </div>
         <div className="footer">
-          <button onClick={() => { setFriendModal(false);  }}>Remove Friend</button>
-          <button onClick={() => { setFriendModal(false);  }}>Block</button>
+          <button onClick={removeThisGuy}
+            >Remove Friend</button>
+          <button onClick={blockThisGuy}
+            >Block</button>
         </div>
       </div>
       </div>

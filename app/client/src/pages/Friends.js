@@ -35,7 +35,7 @@ class Friends extends React.Component {
             friends: {},
             loginRedirect: false,
             modalFriend: false,
-            selectedFriend: undefined
+            selectedFriend: undefined,
         };
         // const [friendsList, setFriendsList] = React.useState([]);
         this.setModalFriend = (val) => {
@@ -44,9 +44,30 @@ class Friends extends React.Component {
           }); 
         }
 
-        /*this.removeFriend = () => {
-          await axios.post(`${serverRoot}/api/deleteFriend`, ())
-        }*/
+        // remove friend call
+        this.removeFriend = async (friendsId) => {
+          await axios.post(`${serverRoot}/api/deleteFriend`, {discordID: this.state.discordId, friends: friendsId})
+          .then(res => {
+              console.log("Friend Removed ", res.status);
+              window.location.reload(false);
+              return true;
+          })
+          .catch((err)=>{console.log("deleteFriend Error!\n", err)});
+          return false;
+        }
+
+        // block player/friend call
+        this.blockFriend = async (friendsId) => {
+          await axios.post(`${serverRoot}/api/addBlocked`, {discordID: this.state.discordId, friends: friendsId})
+          .then(res => {
+              console.log("Friend Blocked", res.status);
+              window.location.reload(false);
+              return true;
+          })
+          .catch((err)=>{console.log("blockFriend Error!\n", err)});
+          return false;
+        }
+
       }
       
 
@@ -91,7 +112,8 @@ class Friends extends React.Component {
                       newDude[id] = {
                         name: res2.data.username,
                         avatar: `https://cdn.discordapp.com/avatars/${id}/${res2.data.avatar}.png`,
-                        status: res2.data.status
+                        status: res2.data.status,
+                        id: id
                       };
                       let newFriends = Object.assign(this.state.friends, newDude);
                       this.state.friends = newFriends; // I hate this
@@ -131,6 +153,8 @@ class Friends extends React.Component {
           {this.state.modalFriend && (<FriendModal
             setFriendModal={this.setModalFriend}
             friend={this.state.selectedFriend}
+            removeFriend={this.removeFriend}
+            blockFriend={this.blockFriend}
           />)}
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
             {!this.state.modalFriend && (

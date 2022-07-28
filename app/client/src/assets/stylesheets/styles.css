@@ -500,4 +500,6 @@ body {
 .owner-icon {
   border-top: 3px solid yellow;
   border-bottom: 3px solid yellow;
+  border-left: 3px solid yellow;
+  border-right: 3px solid yellow;
 }
