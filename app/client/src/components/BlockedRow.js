@@ -12,8 +12,8 @@ export default function BlockedRow(props) {
                 currentTarget.onerror = null;
                 currentTarget.src="https://better-default-discord.netlify.app/Icons/Gradient-Pink.png";}}/>
             <span>{props.blocked.name}<br /></span></div>
-            <div className="col-auto align-self-center">
-                <button className="btn btn-primary fw-bold bg-gradient-danger" type="button" onClick={unblockThisGuy}>
+            <div className="col-auto align-self-center text-end">
+                <button className="btn block-button btn-primary fw-bold bg-gradient-danger" type="button" onClick={unblockThisGuy}>
                     <span>Unblock Player</span>
                 </button>
             </div>

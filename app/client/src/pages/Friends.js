@@ -100,7 +100,7 @@ class Friends extends React.Component {
             if (res2.data) {
               console.log("viewFriends data: ", res2.data);
               this.state.friendIDs = res2.data
-              this.setState({friendIDs: res2.data});
+              this.setState({friendIDs: res2.data}); // stability addition
             }
           })
           .then(async () => {

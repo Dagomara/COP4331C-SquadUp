@@ -511,3 +511,10 @@ body {
 .modal-friend-image {
   flex: 0.2 0;
 }
+
+.block-button span {
+  margin-left: 0px;
+}
+.block-button {
+  margin: auto;
+}

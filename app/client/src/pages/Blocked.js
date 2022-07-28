@@ -32,7 +32,8 @@ class Blocked extends React.Component {
             games: undefined,
             blockedIDs: undefined,
             blocked: [],
-            loginRedirect: false
+            loginRedirect: false,
+            newBlocked: {}
         };
 
         this.unblockPlayer = async (blockedId) => {
@@ -67,6 +68,8 @@ class Blocked extends React.Component {
       .then(async res => {
         console.log("res" + res.data.login);
         if(res.data.login) {
+          // make sure discordId doesn't stall on setState (viewFriends issues)
+          this.state.discordId = res.data.discordId
           this.setState({
             login: true,
             username : res.data.username,
@@ -84,28 +87,33 @@ class Blocked extends React.Component {
             if (res2.data) {
               console.log("viewBlocked data: ", res2.data);
               this.state.blockedIDs = res2.data;
+              this.setState({blockedIDs: res2.data}); // stability addition
             }
           })
-
-          console.log(this.state.blockedIDs);
-          this.state.blockedIDs.forEach(async (id) => {
-            await axios.post(`${serverRoot}/api/viewProfile`, {discordID: id})
-            .then(res2 => {
-                if (res2.data) {
-                    console.log("res2.data: ", res2.data);
-                    this.setState({
-                      blocked: this.state.blocked.concat([{
+          .then(async () => {
+            console.log(this.state.blockedIDs);
+            this.state.blockedIDs.forEach(async (id) => {
+              await axios.post(`${serverRoot}/api/viewProfile`, {discordID: id})
+              .then(res2 => {
+                  if (res2.data) {
+                      console.log("res2.data: ", res2.data);
+                      let newDude = {[id]: {
                         name: res2.data.username,
                         avatar: `https://cdn.discordapp.com/avatars/${id}/${res2.data.avatar}.png`,
                         status: res2.data.status,
                         id: id
-                    }])});
-                    console.log("updated state w/ new blocked players: ", this.state.blocked);
-                }
-            })
-            .catch((err)=>{
-              console.log(err);
-            });
+                      }}
+                      let newBlocked = Object.assign(this.state.newBlocked, newDude);
+                      this.state.newBlocked = newBlocked; // I hate this still
+                      this.setState({ newBlocked: newBlocked }); // sketchy naming
+                      console.log("updated state w/ new blocked players: ", this.state.newBlocked);
+                  }
+              })
+              .catch((err)=>{
+                console.log(err);
+              });
+          });
+
           });
 
         }
@@ -147,14 +155,15 @@ class Blocked extends React.Component {
                                     </div>
                                     <div class="card-body">
                                       {(() => {
-                                        if (this.state.blocked != undefined && this.state.blocked.length > 0) {
+                                        if (this.state.newBlocked != undefined && Object.keys(this.state.newBlocked).length > 0) {
                                           return (
-                                            this.state.blocked.map((b, index) => (
-                                            <BlockedRow blocked={ b } unblockPlayer={this.unblockPlayer}/>
+                                            Object.keys(this.state.newBlocked).map((b, index) => (
+                                            <BlockedRow blocked={ this.state.newBlocked[b] } 
+                                              unblockPlayer={this.unblockPlayer}/>
                                           )));
                                         }
                                         else {
-                                            return (<p class="away">No Blocked Players. Cool!</p>);
+                                            return (<p class="away">Loading blocked players...</p>);
                                         }
                                       })()}
                                     </div>
