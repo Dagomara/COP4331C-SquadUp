@@ -17,20 +17,24 @@ export default function PlayerResultRow(props) {
   }
   return(
       <div class="row gameRow" id={props.obj.name}>
-          <div class="col-lg-3"><img class="img-fluid rounded-circle gameIcon" src={props.obj.avatar} /></div>
+          <div class="col-lg-3 align-self-center"><img class="img-fluid rounded-circle gameIcon" src={props.obj.avatar} /></div>
           <div class="col align-self-center">
               <p class="gameName">{props.obj.name}</p>
           </div>
-          <div className='col text-end'>
-            <button onClick={blockId} className='btn btn-primary fw-bold bg-gradient-danger'>
-              Block Player
-            </button>
-          </div>
-          <div className='col text-end'>
-            <button onClick={addId} className='btn btn-primary bg-gradient-primary'>
-              Add as Friend
-            </button>
-          </div>
+          {(props.myId != props.otherId) && (
+            <div className='col text-end align-self-center'>
+              <button onClick={blockId} className='btn btn-primary fw-bold bg-gradient-danger'>
+                Block Player
+              </button>
+            </div>
+          )}
+          {(props.myId != props.otherId) && (
+            <div className='col text-end align-self-center'>
+              <button onClick={addId} className='btn btn-primary bg-gradient-primary'>
+                Add as Friend
+              </button>
+            </div>
+          )}
       </div>
   );
 };

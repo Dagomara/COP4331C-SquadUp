@@ -36,6 +36,7 @@ class Friends extends React.Component {
             loginRedirect: false,
             modalFriend: false,
             selectedFriend: undefined,
+            chosenGames: []
         };
         // const [friendsList, setFriendsList] = React.useState([]);
         this.setModalFriend = (val) => {
@@ -45,8 +46,8 @@ class Friends extends React.Component {
         }
 
         // remove friend call
-        this.removeFriend = async (friendsId) => {
-          await axios.post(`${serverRoot}/api/deleteFriend`, {discordID: this.state.discordId, friends: friendsId})
+        this.removeFriend = async (id) => {
+          await axios.post(`${serverRoot}/api/deleteFriend`, {discordID: this.state.discordId, friends: id})
           .then(res => {
               console.log("Friend Removed ", res.status);
               window.location.reload(false);
@@ -57,8 +58,13 @@ class Friends extends React.Component {
         }
 
         // block player/friend call
+<<<<<<< Updated upstream
         this.blockFriend = async (blockFriendsId) => {
           await axios.post(`${serverRoot}/api/addBlocked`, {discordID: this.state.discordId, friends: blockFriendsId})
+=======
+        this.blockFriend = async (id) => {
+          await axios.post(`${serverRoot}/api/addBlocked`, {discordID: this.state.discordId, blocked: id})
+>>>>>>> Stashed changes
           .then(res => {
               console.log("Friend Blocked", res.status);
               window.location.reload(false);
@@ -156,6 +162,8 @@ class Friends extends React.Component {
             friend={this.state.selectedFriend}
             removeFriend={this.removeFriend}
             blockFriend={this.blockFriend}
+            serverRoot={serverRoot}
+            games={this.state.chosenGames}
           />)}
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
             {!this.state.modalFriend && (
@@ -181,7 +189,14 @@ class Friends extends React.Component {
                                                   Object.keys(this.state.friends).map((id, index) => {
                                                     console.log("id: ", id, "friend data: ", this.state.friends[id]);
                                                   return (
-                                                    <FriendRow friend={ this.state.friends[id] } onClick={(e) => {
+                                                    <FriendRow friend={ this.state.friends[id] } onClick={async (e) => {
+                                                        await axios.post(`${serverRoot}/api/viewProfile`, {discordID: id})
+                                                        .then(res => {
+                                                          if (res.data) {
+                                                            console.log("clicked friend's res.data: ", res.data);
+                                                            this.setState({chosenGames: res.data.games});
+                                                          }
+                                                        })
                                                         this.setState({modalFriend: true});
                                                         this.setState({selectedFriend: this.state.friends[id]});
                                                         e.preventDefault();

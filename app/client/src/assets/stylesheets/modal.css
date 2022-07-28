@@ -71,6 +71,24 @@
     background-color: #42464D;
     border-radius: 12px;
   }
+
+  .body-border-friend {
+    width: 80%;
+    background-color: #42464D;
+    border-radius: 12px;
+  }
+
+  .body-border-friend .gameRow {
+    width: 90%;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top: 10px;
+  }
+
+  .body-border-friend .gameRow:hover {
+    cursor: default;
+    background-color:#36393F;
+  }
   
   .titleCloseBtn {
     display: flex;

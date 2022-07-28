@@ -294,30 +294,33 @@ export default function QueueHandler(props) {
 
                     return Object.keys(players).map(id => {return (
                       <div className='row queue-player text-white'>
-                        <div className='col sm-2 text-center'>
+                        <div className='col sm-2 text-center align-self-center'>
                           <img 
                             className={ownerId == id ? iconProps+' owner-icon' : iconProps}
                             src={players[id].avatar} alt={`avatar of ${id}`}
                           />
                         </div>
-                        <div className='col sm-5'>
+                        <div className='col sm-5 align-self-center'>
                           <p>{players[id].name}</p>
                         </div>
                       </div>
                     );});
                   })()}
                   <div className='row'>
-                    <div class="col text-start">
+                    <div class="col text-start align-self-center">
                       <button class="btn btn-primary fw-bold bg-gradient-danger" onClick={leaveRequest} type="button">&lt;&nbsp;Leave Squad</button>
                     </div>
-                    <div className='col'>
+                    <div className='col align-self-center'>
                       <p className='online'>
                         Finding more players... {Object.keys(players).length}/{playersNeeded}
                       </p>
                     </div>
-                    <div class="col text-end">
+                    {(ownerId == discordId) && (<div class="col text-end align-self-center">
                       <button class="btn btn-primary bg-gradient-primary" type="submit" onClick={playRequest}>Ready UP!</button>
-                    </div>
+                    </div>)}
+                    {(ownerId != discordId) && (<div class="col text-end align-self-center">
+                      <p className='text-white'>Waiting for host to begin...</p>
+                    </div>)}
                   </div>
                   <button onClick={(e) => {
                     setQueueStatus("playing"); e.preventDefault();
@@ -335,13 +338,13 @@ export default function QueueHandler(props) {
                     let iconProps = 'img-fluid rounded-circle queue-icon';
                     return Object.keys(players).map(id => {return (
                       <div className='row queue-player text-white'>
-                        <div className='col sm-2 text-center'>
+                        <div className='col sm-2 text-center align-self-center'>
                           <img 
                             className={ownerId == id ? iconProps+' owner-icon' : iconProps}
                             src={players[id].avatar} alt={`avatar of ${id}`}
                           />
                         </div>
-                        <div className='col sm-5'>
+                        <div className='col sm-5 align-self-center'>
                           <p>{players[id].name}</p>
                         </div>
                       </div>

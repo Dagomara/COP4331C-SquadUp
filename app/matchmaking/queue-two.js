@@ -103,7 +103,7 @@ const fuzzyMatch = async (pl, q) => {
                     return;
                   }
                 }
-              });
+              }).catch((err)=>{console.log("viewBlocked error!! ", err)});
               if (hasBlocked)
                 return false;
               // All other checking code goes afer this!

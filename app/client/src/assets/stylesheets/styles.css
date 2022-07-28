@@ -493,6 +493,10 @@ body {
   font-size: large;
 }
 
+.queue-player .col p {
+  margin-bottom:0px;
+}
+
 .queue-icon {
   height: 3em;
 }
@@ -502,4 +506,8 @@ body {
   border-bottom: 3px solid yellow;
   border-left: 3px solid yellow;
   border-right: 3px solid yellow;
+}
+
+.modal-friend-image {
+  flex: 0.2 0;
 }

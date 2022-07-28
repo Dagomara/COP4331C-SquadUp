@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import '../assets/stylesheets/modal.css';
+import GameRow from './GameRow';
+import axios from 'axios';
 
 function FriendModal(props) {
   let setFriendModal = props.setFriendModal; 
+  let games = props.games;
   let { name, avatar, status } = props.friend;
   const removeThisGuy = () => {
       props.removeFriend(props.friend.id);
@@ -10,7 +13,10 @@ function FriendModal(props) {
   const blockThisGuy = () => {
     props.blockFriend(props.friend.id);
   }
-    return (
+
+  // Upon opening this friendModal, grab this person's games!
+
+  return (
     <div className="modalBackground text-white">
       <div className="friend-modalContainer">
       <div className="friend-modalContainer2">
@@ -18,18 +24,35 @@ function FriendModal(props) {
           <button className="text-white" onClick={() => { setFriendModal(false);  }}> X </button>
         </div>
         <div className="title-friend">
-          <div className="title-border">
-          <img className="img-modal rounded-circle" src={avatar} 
-            onError={({ currentTarget }) => {
-            currentTarget.onerror = null;
-            currentTarget.src="https://better-default-discord.netlify.app/Icons/Gradient-Pink.png";}}></img>
-          <span className="friend-name">&nbsp;&nbsp;{name}</span><br/>
-          <span className="online"><i class="fas fa-circle"></i>&nbsp;{status}</span>
+          <div className="title-border row">
+            <div className="col sm-1 md-2 modal-friend-image">
+              <img className="img-modal rounded-circle" src={avatar} 
+                onError={({ currentTarget }) => {
+                currentTarget.onerror = null;
+                currentTarget.src="https://better-default-discord.netlify.app/Icons/Gradient-Pink.png";}}
+              />
+            </div>
+            <div className="col align-self-center">
+              <span className="friend-name">{name}</span><br/>
+              <span className={status}><i class="fas fa-circle"></i>&nbsp;{status}</span>
+            </div>
           </div>
         </div>
         <div className="body">
-        <div className="body-border">
-          <p>Your friends games will appear here.</p>
+        <div className="body-border-friend">
+          {(() => {
+            if (games != undefined && games.length > 0) {
+                return (
+                games.map((game, index) => {
+                  console.log("game: ", game);
+                return (
+                  <GameRow gameID={game.gameID} />
+                )}));
+            }
+            else {
+                return (<p class="away">Your friend's games will appear here.</p>);
+            }
+          })()}
         </div>
         </div>
         <div className="footer">
