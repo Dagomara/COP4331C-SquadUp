@@ -101,12 +101,7 @@ class Profile extends React.Component {
   
       return (
         <div className='Profile' id='page-top'>
-          {this.state.modalGame && (<GameModal
-            setGameModal={this.setGameM}
-            gameID={this.state.selectedGameID}
-          />)}
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
-          {!this.state.modalGame && (
             <div id="wrapper">
             <Navbar username={this.state.username} avatarURL={this.state.avatarURL} page="profile"/>
         <div class="d-flex flex-column" id="content-wrapper">
@@ -182,7 +177,7 @@ class Profile extends React.Component {
                 </div>
             </div>
         </div>
-            </div>)}
+            </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../assets/js/theme.js"></script>
         </div>
