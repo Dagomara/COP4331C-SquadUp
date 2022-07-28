@@ -33,12 +33,19 @@ class Profile extends React.Component {
             games: undefined,
             loginRedirect: false,
             modalGame: false,
-            selectedGame: undefined
+            selectedGame: undefined,
+            selectedGameID: undefined
         };
         this.setGameM = (val) => {
           this.setState({
             modalGame: val
           }); 
+        }
+        this.selectGame = (id) => {
+          this.state.selectedGameID = id;
+          this.setState({
+            selectedGameID: id
+          });
         }
       }
 
@@ -96,8 +103,7 @@ class Profile extends React.Component {
         <div className='Profile' id='page-top'>
           {this.state.modalGame && (<GameModal
             setGameModal={this.setGameM}
-            username={this.state.username}
-            avatarURL={this.state.avatarURL}
+            gameID={this.state.selectedGameID}
           />)}
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"></link>
           {!this.state.modalGame && (
@@ -138,6 +144,7 @@ class Profile extends React.Component {
                                                     if (this.state.games != undefined && this.state.games.length > 0) {
                                                         return (
                                                         this.state.games.map((game, index) => {
+                                                          console.log("Currently built game: ", game)
                                                             // The GameRow will pluck some info including game name & icon.
                                                             let selectGame = (e, pluckedInfo)=>{
                                                               let biggerGame = JSON.parse(JSON.stringify(game));
@@ -153,7 +160,9 @@ class Profile extends React.Component {
                                                                 <GameRow
                                                                     gameID={game.gameID}
                                                                     onClick={() => {
-                                                                      this.setState({modalGame: true});
+                                                                      this.setGameM(true);
+                                                                      console.log("user clicked game with gameID ", game.gameID)
+                                                                      this.selectGame(game.gameID);
                                                                       }}
                                                                 />
                                                             )
