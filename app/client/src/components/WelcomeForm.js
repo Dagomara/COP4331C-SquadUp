@@ -227,6 +227,9 @@ export default function WelcomeForm(props) {
                     </div>
                     <hr />
                 <div className="row mb-3">
+                    <div className="col-sm-12 col-xl-12 align-self-center mb-3 py-0 mb-sm-0 splash-box py-4">
+                        <p className="text-white py-0 my-0">Please make sure to <a className="betterBlueHover" href="https://discord.gg/nWUCnEnx" target="_blank">join our Discord server</a> if you haven't already!</p>
+                    </div>
                     <div className="col-sm-12 col-xl-12 align-self-center mb-3 mb-sm-0 splash-box py-4">
                         <p className="text-white">On SquadUP, you can go by any username. Is this the one you'd like to use?</p>
                         <Field

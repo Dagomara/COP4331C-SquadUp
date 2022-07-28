@@ -532,3 +532,11 @@ body {
 .navbar-img {
   height:max-content;
 }
+
+.betterBlueHover {
+  color:#00B4DB;
+}
+
+.betterBlueHover:hover {
+  color:white;
+}
