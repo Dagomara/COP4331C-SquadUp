@@ -57,7 +57,7 @@ const fuzzyMatch = async (pl, q) => {
         if (withinN(q.players.length+q.players_needed, pl.players_needed+1, 5)) {
             let filtsMatch = undefined;
             Object.keys(pl.filters).map((filt, ind) => {
-                console.log(`checking ${filt}...`)  ;
+                console.log(`checking ${filt}... req=${pl.filters[filt]}, q=${q.filters[filt]}`)  ;
                 if (filtsMatch === false)
                   return;
                 // make sure this case fits well enough
@@ -80,7 +80,7 @@ const fuzzyMatch = async (pl, q) => {
                         break;
                     default: // should never happen
                         console.log("default case encountered? ", filt, pl.filters[filt]);
-                        filtsMatch = false;
+                        filtsMatch = true;
                 }
                 console.log("ind just filtered: ", ind, "out of", Object.keys(pl.filters).length-1);
                 if (ind == Object.keys(pl.filters).length-1)
