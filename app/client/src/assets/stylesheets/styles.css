@@ -519,3 +519,16 @@ body {
 .block-button {
   margin: auto;
 }
+
+.btn-crimson {
+  background-color: crimson;
+  font-size:x-small;
+  color:white;
+  height:2em;
+  display: inline-flex;
+  align-items: center;
+}
+
+.navbar-img {
+  height:max-content;
+}

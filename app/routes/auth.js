@@ -201,17 +201,19 @@ router.get("/getUserData", cors(corsOptionsDelegate), (req, res)=>{
 
 // TODO: fix logout 
 // Log out
-router.get('/logout', cors(corsOptionsDelegate), (req, res) => {
+router.get('/logout', cors(corsOptionsDelegate), async (req, res) => {
+    console.log("Someone is trying to log out!");
     if (req.session.userdata) {
-        // res.set("Access-Control-Allow-Origin", serverRoot); 
         console.log(`Logging out ${req.session.userdata.username}...`);
+        // goOffline call
+        await User.findOneAndUpdate({discordID:req.session.userdata.id}, 
+            { $set:{ status:'offline'}});
         delete req.session.userdata;
         //delete req.session.cookie;
         res.json({
             login : false
         });
         console.log("req.session: \n", req.session); 
-        // goOffline call
     }
 });
 
