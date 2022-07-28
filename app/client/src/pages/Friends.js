@@ -57,8 +57,8 @@ class Friends extends React.Component {
         }
 
         // block player/friend call
-        this.blockFriend = async (friendsId) => {
-          await axios.post(`${serverRoot}/api/addBlocked`, {discordID: this.state.discordId, friends: friendsId})
+        this.blockFriend = async (blockFriendsId) => {
+          await axios.post(`${serverRoot}/api/addBlocked`, {discordID: this.state.discordId, friends: blockFriendsId})
           .then(res => {
               console.log("Friend Blocked", res.status);
               window.location.reload(false);
@@ -90,7 +90,8 @@ class Friends extends React.Component {
             tag: res.data.tag,
             status: "online",
             friendIDs: [],
-            friends: {}
+            friends: {},
+            blockedfriends: []
           });
 
           await axios.post(`${serverRoot}/api/viewFriends`, {discordID: this.state.discordId})

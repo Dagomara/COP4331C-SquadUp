@@ -7,7 +7,7 @@ export default function GameRow(props) {
             name: getName(props.gameID),
             icon: findImg(props.gameID)
         }))}>
-            <div class="col-lg-3"><img class="img-fluid rounded-circle gameIcon" src={findImg(props.gameID)} /></div>
+            <div class="col-lg-3"><img class="img-fluid gameIcon" src={findImg(props.gameID)} /></div>
             <div class="col align-self-center">
                 <p class="gameName">{getName(props.gameID)}</p>
             </div>
