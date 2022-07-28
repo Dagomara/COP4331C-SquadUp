@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 mongoose.connect("mongodb+srv://herokuApp:4R3rqM7iQP02Hf4c@squadup.09b3w.mongodb.net/discordauth?retryWrites=true&w=majority");
 
-const DiscordUser = new mongoose.Schema({
+const DiscordUserSchema = new mongoose.Schema({
 	discordID	: {type: String, required: true},
 	tag		: {type: Number, required: true},
 	username	: {type: String, required: true},
@@ -14,4 +14,4 @@ const DiscordUser = new mongoose.Schema({
 	blocked	: [Number]
 });
 
-const DiscordUser = module.exports = mongoose.model('User', UserSchema);
+const DiscordUserSchema = module.exports = mongoose.model('User', UserSchema);
