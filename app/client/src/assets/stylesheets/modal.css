@@ -118,6 +118,10 @@
   .user-name {
     font-size: 25px;
   }
+
+  .game-name {
+    font-size: 25px;
+  }
   
   .modalContainer .body {
     flex: 50%;
