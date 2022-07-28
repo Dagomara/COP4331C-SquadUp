@@ -297,7 +297,11 @@ export default function QueueHandler(props) {
                         <div className='col sm-2 text-center align-self-center'>
                           <img 
                             className={ownerId == id ? iconProps+' owner-icon' : iconProps}
-                            src={players[id].avatar} alt={`avatar of ${id}`}
+                            src={players[id].avatar} 
+                              onError={({ currentTarget }) => {
+                              currentTarget.onerror = null;
+                              currentTarget.src="https://better-default-discord.netlify.app/Icons/Gradient-Pink.png";}}
+                            alt={`avatar of ${id}`}
                           />
                         </div>
                         <div className='col sm-5 align-self-center'>
@@ -341,7 +345,11 @@ export default function QueueHandler(props) {
                         <div className='col sm-2 text-center align-self-center'>
                           <img 
                             className={ownerId == id ? iconProps+' owner-icon' : iconProps}
-                            src={players[id].avatar} alt={`avatar of ${id}`}
+                            src={players[id].avatar}
+                              onError={({ currentTarget }) => {
+                              currentTarget.onerror = null;
+                              currentTarget.src="https://better-default-discord.netlify.app/Icons/Gradient-Pink.png";}} 
+                            alt={`avatar of ${id}`}
                           />
                         </div>
                         <div className='col sm-5 align-self-center'>

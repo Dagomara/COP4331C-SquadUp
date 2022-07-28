@@ -17,7 +17,11 @@ export default function PlayerResultRow(props) {
   }
   return(
       <div class="row gameRow" id={props.obj.name}>
-          <div class="col-lg-3 align-self-center"><img class="img-fluid rounded-circle gameIcon" src={props.obj.avatar} /></div>
+          <div class="col-lg-3 align-self-center"><img class="img-fluid rounded-circle gameIcon" src={props.obj.avatar}
+            onError={({ currentTarget }) => {
+            currentTarget.onerror = null;
+            currentTarget.src="https://better-default-discord.netlify.app/Icons/Gradient-Pink.png";}}/>
+           </div>
           <div class="col align-self-center">
               <p class="gameName">{props.obj.name}</p>
           </div>

@@ -219,7 +219,11 @@ export default function WelcomeForm(props) {
         <form onSubmit={formRenderProps.onSubmit}>
           {formStep === 0 && (<div className="p-5 splash-section">
                 <div className="text-center">
-                    <h1 className="fw-bold text-white mb-4 splash-heading"><img className="rounded-circle" src={props.avatarURL} style={{marginRight: '30px'}} />Welcome {props.username}<span style={{color: 'gray'}}>#{props.tag}</span>!</h1>
+                    <h1 className="fw-bold text-white mb-4 splash-heading"><img className="rounded-circle" src={props.avatarURL}                 
+                      onError={({ currentTarget }) => {
+                      currentTarget.onerror = null;
+                      currentTarget.src="https://better-default-discord.netlify.app/Icons/Gradient-Pink.png";}} 
+                      style={{marginRight: '30px'}} />Welcome {props.username}<span style={{color: 'gray'}}>#{props.tag}</span>!</h1>
                     </div>
                     <hr />
                 <div className="row mb-3">
@@ -258,7 +262,11 @@ export default function WelcomeForm(props) {
             </div>)}
           {formStep === 1 && (<div className="p-5 splash-section">
               <div className="text-center">
-                  <h1 className="fw-bold text-white mb-4 splash-heading"><img className="rounded-circle" src={props.avatarURL} style={{marginRight: '30px'}} />Welcome {props.username}<span style={{color: 'gray'}}>#{props.tag}</span>!</h1>
+                  <h1 className="fw-bold text-white mb-4 splash-heading"><img className="rounded-circle" src={props.avatarURL} 
+                    onError={({ currentTarget }) => {
+                    currentTarget.onerror = null;
+                    currentTarget.src="https://better-default-discord.netlify.app/Icons/Gradient-Pink.png";}}
+                  style={{marginRight: '30px'}} />Welcome {props.username}<span style={{color: 'gray'}}>#{props.tag}</span>!</h1>
                   </div>
                   <hr />
               <div className="row mb-3">
@@ -281,7 +289,11 @@ export default function WelcomeForm(props) {
           </div>)}
           {formStep === 2 && (<div className="p-5 splash-section">
                 <div className="text-center">
-                    <h1 className="fw-bold text-white mb-4 splash-heading"><img className="rounded-circle" src={props.avatarURL} style={{marginRight: '30px'}} />Welcome {props.username}<span style={{color: 'gray'}}>#{props.tag}</span>!</h1>
+                    <h1 className="fw-bold text-white mb-4 splash-heading"><img className="rounded-circle" src={props.avatarURL} 
+                      onError={({ currentTarget }) => {
+                      currentTarget.onerror = null;
+                      currentTarget.src="https://better-default-discord.netlify.app/Icons/Gradient-Pink.png";}}
+                    style={{marginRight: '30px'}} />Welcome {props.username}<span style={{color: 'gray'}}>#{props.tag}</span>!</h1>
                     </div>
                     <hr />
                 <div className="row mb-3">
