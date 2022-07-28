@@ -61,7 +61,7 @@ async def on_message(message):
                 print("channel doesn't exist :)")
 
 if __name__ == "__main__":
-    client.run("OTkzMjM3MTEzODIwNjc2MTY3.GWLvLN.o1Aw4mDgfueHF4sSbr5RiFgLTntN5q3tTsTY24")
+    client.run(TOKEN)
 
 
 # @client.event
