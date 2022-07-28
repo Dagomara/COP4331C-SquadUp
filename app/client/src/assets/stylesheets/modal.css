@@ -31,7 +31,7 @@
 
   .friend-modalContainer {
     width: 500px;
-    height: 500px;
+    height: 550px;
     border-radius: 12px;
     background-color: #36393F;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
@@ -48,6 +48,8 @@
     display: flex;
     flex-direction: column;
     padding: 25px;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
   
   .modalContainer .title {
@@ -76,6 +78,9 @@
     width: 80%;
     background-color: #42464D;
     border-radius: 12px;
+    max-height: 80%;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .body-border-friend .gameRow {
@@ -149,6 +154,7 @@
     align-items: center;
     font-size: 1.7rem;
     text-align: center;
+    max-height: 60%;
   }
   
   .friend-modalContainer .footer {
