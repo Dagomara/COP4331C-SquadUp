@@ -1,3 +1,7 @@
+.static-navbar {
+  background-color:var(--squadup-transparent-slate-blue);
+}
+
 .static-navbar img {
   max-height: 80px;
 }
@@ -11,23 +15,34 @@
   border-radius: 20px;
   max-width: 800px;
   margin: 0 auto;
+  color: white;
 }
 
 .static-body {
   --squadup-purple: #521658;
   --squadup-lightpurple: #ff76c1;
   --squadup-discpurple: #3d0f68;
+  --squadup-transparent-slate-blue: #06080ac2;
   --clear: rgba(0, 0, 0, 0);
 }
 
 .static-html, .static-body {
+  background-image: url("../../assets/img/steve-johnson-kWUbY4ozhaI-unsplash.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: #25da3a;
+  margin-top:0px;
+  margin-bottom:0px;
+  padding-top:1px;
+  padding-bottom:1px;
   background-color: var(--squadup-purple);
   min-height: 100vh;
   max-height: 100%;
 }
 
 #loginPane .static-container-fluid {
-  background-color: var(--squadup-lightpurple);
+  background-color: var(--squadup-transparent-slate-blue);
   border-radius: 20px;
   max-width: 800px;
   margin: 0 auto;
@@ -40,7 +55,7 @@
 }
 
 .static-container-fluid {
-  background-color: var(--squadup-lightpurple);
+  background-color: var(--squadup-transparent-slate-blue);
   border-radius: 20px;
   max-width: 800px;
   margin: 0 auto;

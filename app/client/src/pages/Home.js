@@ -12,8 +12,14 @@ const Home = () => {
           <div id="loginPane" className="p-5 mb-4 round-3">
             <p />
             <div className="container-fluid static-container-fluid py-5">
-              <p style={{color: 'rgb(0,0,0)', textAlign: 'center', fontWeight: 'bold', fontSize: '17px'}}>Traditional matchmaking sucks.</p>
-              <p style={{color: 'rgb(0,0,0)', textAlign: 'center', fontWeight: 'bold', fontSize: '17px'}}>Join today and SquadUp with real friends</p><button className="btn btn-static btn-primary w-100" type="button" onClick={(e) => {e.preventDefault(); window.location.href=redirectUrl;}} style={{fontSize: '17px'}}><i className="fab fa-discord" />&nbsp;Log in through Discord</button>
+              <p style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '17px'}}>Traditional matchmaking sucks.</p>
+              <h4 style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '17px'}}>Join today and SquadUP with real friends.</h4><button className="btn btn-static btn-primary w-100" type="button" onClick={(e) => {e.preventDefault(); window.location.href=redirectUrl;}} style={{fontSize: '17px'}}><i className="fab fa-discord" />&nbsp;Log in through Discord</button>
+            </div>
+
+            <div className="container-fluid static-container-fluid py-5 mt-5">
+              <p style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '17px'}}>
+                Made with love by Michael Miller, Elias Cousino, Leo Alepuz, Reece Segui, Cesar Hernandez, and Alex Zommer. For COP4331c, Summer 2022.
+              </p>
             </div>
           </div>
           <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

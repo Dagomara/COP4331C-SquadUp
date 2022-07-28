@@ -10,7 +10,8 @@ function About() {
           <div id="loginPane">
             <p className="fs-1 fw-bold" style={{textAlign: 'center'}}>About</p>
             <div className="container-fluid static-container-fluid py-5">
-              <p style={{color: 'rgb(0,0,0)', fontSize: '18px'}}>The SquadUp service is all about queueing up with other players of similar skill level to you with one click of a button. With that click of a button you are able to not only play but also chat with the person(s) you have queued up with via Discord. SquadUp is all about bringing gamers together.</p>
+              <p style={{ fontSize: '18px'}}>The SquadUp service surrounds queuing up with other players of similar skill level to you with one click of a button. You can chat with those you have queued up with via the Discord channel our app automatically makes!</p>
+              <h4 className="text-center mt-5"><strong className>SquadUp is all about bringing gamers together.</strong></h4>
             </div>
           </div>
           <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

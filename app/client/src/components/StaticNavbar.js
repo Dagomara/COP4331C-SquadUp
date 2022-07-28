@@ -8,9 +8,9 @@ export default function StaticNavbar(props) {
         return props.page == pg ? "nav-link nav-link-static active active-static" : "nav-link nav-link-static";
     }
     return (
-        <nav className="navbar static-navbar navbar-light navbar-expand-md navbar-fixed-top navigation-clean-button" style={{background: 'var(--ucf-gray)', borderRadius: 20, borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomRightRadius: 20, borderBottomLeftRadius: 20, borderStyle: 'none', paddingTop: 0, paddingBottom: '10px'}}>
+        <nav className="navbar static-navbar navbar-light navbar-expand-md navbar-fixed-top navigation-clean-button" style={{borderStyle: 'none', paddingTop: 0, paddingBottom: '10px'}}>
             <div className="container"><button data-bs-toggle="collapse" className="navbar-toggler" data-bs-target="#navcol-1"><span className="visually-hidden">Toggle navigation</span><span className="navbar-toggler-icon" /></button>
-              <div><a className="navbar-brand" href="#"><img className="img-fluid" src={BrandImg} /> </a></div>
+              <div><a className="navbar-brand" href="/"><img className="img-fluid" src={BrandImg} /> </a></div>
               <div className="collapse navbar-collapse" id="navcol-1" style={{color: 'rgb(255,255,255)'}}>
                 <ul className="navbar-nav">
                   <li className="nav-item nav-item-static"><a className={activeOrNot("home")} style={{color: 'rgba(228, 241, 254)'}} href="/">Home</a></li>
