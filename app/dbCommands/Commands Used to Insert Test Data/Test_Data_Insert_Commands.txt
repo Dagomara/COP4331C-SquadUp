@@ -1,0 +1,183 @@
+db.Users.insertMany([{
+  "discordID": "179717105585573115",
+  "tag": 12346,
+  "username": "Robin",
+  "status": "offline",
+  "gender": "Male",
+  "school": "BCC",
+  "games": [
+    {
+      "gameID": 2,
+      "level": 100,
+      "positions": [
+        "defence"
+      ],
+      "characters": [
+        "spy",
+        "medic",
+        "scout"
+      ]
+    },
+    {
+      "gameID": 3,
+      "servers": [
+        "2B2T"
+      ],
+      "position": "casual"
+    },
+    {
+      "gameID": 1,
+      "level": "platinum",
+      "positions": [
+        "jungle"
+      ],
+      "characters": [
+        "Brand"
+      ]
+    }
+  ],
+  "friends": [],
+  "blocked": []
+}, {
+  "discordID": "123456789101112131",
+  "tag": 54321,
+  "username": "Cyborg",
+  "status": "online",
+  "gender": "Male",
+  "school": "TTG",
+  "games": [
+    {
+      "gameID": 2,
+      "level": 100,
+      "positions": [
+        "attack"
+      ],
+      "characters": [
+        "engineer"
+      ]
+    }
+  ],
+  "friends": ["4575674574567"],
+  "blocked": ["280827046685573126"]
+}])
+
+db.Users.insertMany([{
+  "discordID": "987456105585345615",
+  "tag": 00000,
+  "username": "Raven",
+  "status": "online",
+  "gender": "female",
+  "school": "UCF",
+  "games": [
+    {
+      "gameID": 2,
+      "level": 150,
+      "positions": [
+        "attack"
+      ],
+      "characters": [
+        "scout"
+      ]
+    },
+    {
+      "gameID": 3,
+      "servers": [
+        "2B2T",
+	  "Hipixel",
+	  "TheHive"
+      ],
+      "position": "hardcore"
+    },
+    {
+      "gameID": 1,
+      "level": "platnum",
+      "positions": [
+        "botlane"
+      ],
+      "characters": [
+        "Viego",
+	  "Sona",
+	  "Nilah"
+      ]
+    }
+  ],
+  "friends": ["4575674574567", "5906725124345645", ],
+  "blocked": ["123456789101112131", "456457853524542"]
+}, {
+  "discordID": "987654321123456789",
+  "tag": 10101,
+  "username": "Starfire",
+  "status": "online",
+  "gender": "female",
+  "school": "UCF",
+  "games": [
+    {
+      "gameID": 2,
+      "level": 100,
+      "positions": [
+        "attack"
+      ],
+      "characters": [
+        "engineer"
+      ]
+    }
+  ],
+  "friends": ["4575674574567", "987456105585345615", "123456789101112131"],
+  "blocked": ["179717105585573115"]
+}])
+
+db.Users.insertOne([{
+  "discordID": "123456123456123457",
+  "tag": 11111,
+  "username": "BeastBoy",
+  "status": "online",
+  "gender": "male",
+  "school": "UCF",
+  "games": [
+    {
+      "gameID": 2,
+      "level": 1,
+      "positions": [
+        "attack",
+        "defense"
+      ],
+      "characters": [
+        "scout",
+        "pyro",
+        "sniper",
+	  "medic",
+        "solder"
+      ]
+    },
+    {
+      "gameID": 3,
+      "servers": [
+        "Hypixel",
+        "TheHive",
+	  "2B2T"
+      ],
+      "position": "casual"
+    },
+    {
+      "gameID": 1,
+      "level": "platinum",
+      "positions": [
+        "botlane",
+        "jungle"
+      ],
+      "characters": [
+        "Brand"
+
+      ]
+    }
+  ],
+  "friends": [
+    "1231232312344324",
+    "4575674574567",
+    "5906725124345645",
+    "456457853524542",
+    "987456105585345615",
+    "123456789101112131"
+  ],
+  "blocked": ["179717105585573115"]
+}])
