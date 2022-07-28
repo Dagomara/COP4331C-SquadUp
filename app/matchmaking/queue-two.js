@@ -90,12 +90,28 @@ const fuzzyMatch = async (pl, q) => {
               console.log("Got pretty far with queue #", q.queueId, ". Seeing if anyone's blocked...");
               // filter out blocked players
               let hasBlocked = false;
-              await axios.post(`${process.env.URL_ROOT_SERVER}/api/viewBlocked`, {discordID: pl.discordID})
+              // await User.find({discordID:pl.discordId})
+              // .then( (users, err) => {
+              //   if (!err) {
+              //     if (users.length > 0)
+              //       console.log("very cool, got blocked users for this request: ", users[0].blocked);
+              //     else {
+              //       console.log("Request issue. Telling user to retry...");
+              //       throw "Try try reloading!";
+              //     }
+              //   }
+              //   else
+              //     throw err;
+              // }).catch(function(err) {
+              //   res.status(400).json({"error": err});
+              // });
+              await axios.post(`${process.env.URL_ROOT_SERVER}/api/viewBlocked`, {discordID: pl.discordId})
               .then(res => {
                 if (res.data) {
                   console.log("viewBlocked data: ", res.data);
                   let blockedIDs = res.data;
-                  let intersection = blockedIDs.filter(element => q.discordID.includes(element));
+                  const intersection = blockedIDs.filter(value => q.players.includes(value));
+                  //let intersection = blockedIDs.filter(element => q.discordID.includes(element));
                   console.log("intersection: ", intersection);
                   if(intersection && intersection[0]){
                     console.log("At least one of your queue members is blocked");

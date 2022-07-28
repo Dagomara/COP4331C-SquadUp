@@ -189,6 +189,7 @@ export default function QueueHandler(props) {
         console.log("Queue was abandoned by owner!");
         setMostRecentPayload(payload);
         setQueueStatus("abandoned");
+        goBack();
       }
     });
 
