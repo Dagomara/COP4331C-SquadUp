@@ -210,7 +210,8 @@ router.get('/logout', cors(corsOptionsDelegate), (req, res) => {
         res.json({
             login : false
         });
-        console.log("req.session: \n", req.session);
+        console.log("req.session: \n", req.session); 
+        // goOffline call
     }
 });
 

@@ -58,13 +58,8 @@ class Friends extends React.Component {
         }
 
         // block player/friend call
-<<<<<<< Updated upstream
-        this.blockFriend = async (blockFriendsId) => {
-          await axios.post(`${serverRoot}/api/addBlocked`, {discordID: this.state.discordId, friends: blockFriendsId})
-=======
         this.blockFriend = async (id) => {
           await axios.post(`${serverRoot}/api/addBlocked`, {discordID: this.state.discordId, blocked: id})
->>>>>>> Stashed changes
           .then(res => {
               console.log("Friend Blocked", res.status);
               window.location.reload(false);
