@@ -41,6 +41,27 @@ export default function QueueHandler(props) {
     avatar: `https://cdn.discordapp.com/avatars/${discordId}/${avatar}.png`,
     isOwner: false, name: username
   }}); // for fellow player infos
+
+  // For testing zone's "Next stage test" button. 
+  const advanceQueueStatus = () => {
+    if (queueStatus == "queueing") {
+      queueStatus = "enqueued";
+      setQueueStatus(queueStatus);
+    }
+    else if (queueStatus == "enqueued") {
+      queueStatus = "waiting";
+      setQueueStatus(queueStatus);
+    }
+    else if (queueStatus == "waiting") {
+      queueStatus = "playing";
+      setQueueStatus(queueStatus);
+    }
+    else if (queueStatus == "playing") {
+      queueStatus = "quit";
+      setQueueStatus(queueStatus);
+    }
+  }
+
   // Sets one player's information and updates the state of `players`. 
   const setPlayer = (id, stuff) => {
     // If player did not exist already, make them!
@@ -66,6 +87,7 @@ export default function QueueHandler(props) {
     setPlayers(players); // to cause rerenders throughout component
     console.log("setPlayer: new players obj: ", players);
   }
+
   // Deletes a player ands updates the state of `players`. 
   const delPlayer = (id) => {
     console.log(`delPlayer: deleting ${players[id].name}!`);
@@ -73,6 +95,7 @@ export default function QueueHandler(props) {
     setPlayers(players);
     console.log("delPlayer: see the changes! ", players);
   }
+
   // Sets up all owner stuff given just an ownerId. 
   const establishOwner = (id) => {
     setOwnerId(id);
@@ -124,6 +147,7 @@ export default function QueueHandler(props) {
     
     // Server response when we've been squadded up with other users. 
     socket.on("queue-request-response", (payload) => {
+      if (queueStatus == "enqueueing" && payload.discordId == discordId) queueStatus = "queueing";
       console.log("received a queue request response for queueId", payload.queueId);
       console.log("queueStatus: ", queueStatus);
       if (queueStatus == "queueing" && payload.discordId == discordId) {
@@ -216,6 +240,7 @@ export default function QueueHandler(props) {
   }, [queueStatus, queueId]); // only rebuild event listeners on these changes
 
   const queueRequest = (e) => {
+    queueStatus = "enqueueing";
     console.log("Sending queue request with ", qrrPayload);
     socket.emit("queue-request", qrrPayload);
     e.preventDefault();
@@ -265,23 +290,60 @@ export default function QueueHandler(props) {
             <div class="card-body">
               {queueStatus=="queueing" && ( // after queue req first sent
                 <div>
-                  <p className="away">Looking for game...</p>
-                  <pre className='text-white'>{JSON.stringify(qrrPayload, null, 2)}</pre>
-                  <button onClick={(e) => {
-                    setQueueStatus("waiting"); e.preventDefault();
-                  }}>Next stage test</button>
-                  <button onClick={goBack}>Back to Options</button>
-                  <button onClick={queueRequest}>Send queue request!</button>
-                  <div class="row">
+                  <h2 className='text-white text-center'>
+                    Does this look good? 
+                  </h2>
+                  <div className="row splash-option text-black" >
+                    <div className="col-sm-5 col-md-4 text-start align-self-center">
+                      <p className="w-100 text-capitalize">Players Needed</p>
+                    </div>
+                    <div className="col">
+                        <p>{qrrPayload.players_needed}</p>
+                    </div>
+                  </div>
+                  {(() => {
+                    if (qrrPayload.filters != undefined && Object.keys(qrrPayload.filters).length > 0) {
+                        return (
+                        Object.keys(qrrPayload.filters).map((filt, index) => {
+                          let typing = typeof qrrPayload.filters[filt];
+                          if (typing === 'object') typing = 1; // array
+                          else if (typing === 'boolean') typing = 2;
+                          else typing = 3; // string, others will just be written
+                          return (
+                            <div className="row splash-option text-black" >
+                              <div className="col-sm-5 col-md-4 text-start align-self-center">
+                                <p className="w-100 text-capitalize">{filt}</p>
+                              </div>
+                              <div className="col">
+                                {(typing == 1) && (
+                                  <p>{qrrPayload.filters[filt].join(", ")}</p>
+                                )}
+                                {(typing == 2) && (
+                                  <p>{(qrrPayload.filters[filt]) ? "Yes" : "No"}</p>
+                                )}
+                                {(typing >= 3) && (
+                                  <p>{qrrPayload.filters[filt]}</p>
+                                )}
+                              </div>
+                            </div>
+                        )}));
+                    }
+                    else {
+                        return (<p class="away">Loading Friends...</p>);
+                    }
+                  })()}
+                  <p className="text-small text-center away mt-4">Beta Warning: Matched players will only loosely meet these requirements, due to a smaller playerbase. </p>
+                  <div class="row mt-4">
                     <div class="col">
                       <button class="btn btn-primary fw-bold bg-gradient-danger" onClick={goBack} type="button">&lt;&nbsp;Back to Options</button>
                     </div>
                     <div class="col text-end">
                       <button class="btn btn-primary bg-gradient-primary" type="submit" onClick={queueRequest}>SquadUP!</button>
-                    </div>
+                    </div>  
                   </div>
                 </div>
               )}
+              {queueStatus=="enqueued" && (<p className="away">Looking for game...</p>)}
               {queueStatus=="waiting" && ( // in a match & waiting to start
                 <div>
                   <h2 className='text-white text-center'>
@@ -326,9 +388,6 @@ export default function QueueHandler(props) {
                       <p className='text-white'>Waiting for host to begin...</p>
                     </div>)}
                   </div>
-                  <button onClick={(e) => {
-                    setQueueStatus("playing"); e.preventDefault();
-                  }}>Next stage test</button>
                 </div>
               )}
               {queueStatus=="playing" && ( // Playing with the group!
@@ -363,9 +422,6 @@ export default function QueueHandler(props) {
                       <button class="btn btn-primary fw-bold bg-gradient-danger" onClick={quitRequest} type="button">Quit Match</button>
                     </div>
                   </div>
-                  <button onClick={(e) => {
-                    setQueueStatus("quit"); e.preventDefault();
-                  }}>Next stage test</button>
                 </div>
               )}
               {queueStatus=="quit" && ( // Match has been quit :) 
@@ -415,8 +471,16 @@ export default function QueueHandler(props) {
                 <button onClick={leaveRequest}>Try leaving the queue</button>
                 <button onClick={playRequest}>Try playing the queue</button>
                 <button onClick={quitRequest}>Try quitting the queue</button>
+                <button onClick={(e) => {
+                  advanceQueueStatus(); e.preventDefault();
+                }}>Next stage test</button>
               </div>
             </div>
+            {(queueStatus == "queueing") && (<div>
+              <pre className='text-white'>{JSON.stringify(qrrPayload, null, 2)}</pre>
+              <button onClick={goBack}>Back to Options</button>
+              <button onClick={queueRequest}>Send queue request!</button>
+            </div>)}
           </div>
         </div>
       </div>)}
